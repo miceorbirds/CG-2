@@ -1,7 +1,3 @@
-//
-// Created by mi on 04.08.2020.
-//
-
 #include "error_logger.h"
 #include <comdef.h>
 

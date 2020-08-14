@@ -1,7 +1,3 @@
-//
-// Created by mi on 06.08.2020.
-//
-
 #include "keyboard_event.h"
 
 KeyboardEvent::KeyboardEvent()

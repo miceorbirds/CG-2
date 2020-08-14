@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{4165f4b5-0814-4b31-93f0-30c0822578d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Keyboard">
+      <UniqueIdentifier>{50394234-75b9-47c2-b3d3-46d8f3395436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mouse">
+      <UniqueIdentifier>{4b37d174-a6ef-436a-bae7-0740864cd7c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{7d5b43ea-d98b-4584-b382-828470218ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Keyboard">
+      <UniqueIdentifier>{d125723d-99c6-47a5-91ba-1ef649b0d529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mouse">
+      <UniqueIdentifier>{55f55854-fc2a-480f-9937-187778d12068}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine.cpp">
@@ -34,22 +52,22 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphics\adapter_reader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="graphics\graphics.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="keyboard\keyboard_class.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Keyboard</Filter>
     </ClCompile>
     <ClCompile Include="keyboard\keyboard_event.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Keyboard</Filter>
     </ClCompile>
     <ClCompile Include="mouse\mouse_class.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Mouse</Filter>
     </ClCompile>
     <ClCompile Include="mouse\mouse_event.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Mouse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,25 +87,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphics\adapter_reader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\graphics.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\vertex.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="keyboard\keyboard_class.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Keyboard</Filter>
     </ClInclude>
     <ClInclude Include="keyboard\keyboard_event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mouse\mouse_class.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Keyboard</Filter>
     </ClInclude>
     <ClInclude Include="mouse\mouse_event.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Mouse</Filter>
     </ClInclude>
+    <ClInclude Include="mouse\mouse_class.h">
+      <Filter>Header Files\Mouse</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="vertexshader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

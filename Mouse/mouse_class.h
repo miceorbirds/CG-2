@@ -1,9 +1,5 @@
-//
-// Created by mi on 07.08.2020.
-//
 #pragma once
-#ifndef CG_MOUSE_CLASS_H
-#define CG_MOUSE_CLASS_H
+
 #include "mouse_event.h"
 #include <queue>
 
@@ -39,6 +35,3 @@ private:
     int x = 0;
     int y = 0;
 };
-
-
-#endif //CG_MOUSE_CLASS_H

@@ -1,10 +1,4 @@
-//
-// Created by mi on 07.08.2020.
-//
 #pragma once
-#ifndef CG_MOUSE_EVENT_H
-#define CG_MOUSE_EVENT_H
-
 
 struct MousePoint
 {
@@ -43,5 +37,3 @@ public:
     int GetPosY() const;
 };
 
-
-#endif //CG_MOUSE_EVENT_H

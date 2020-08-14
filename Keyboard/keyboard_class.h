@@ -1,9 +1,5 @@
-//
-// Created by mi on 06.08.2020.
-//
 #pragma once
-#ifndef CG_KEYBOARD_CLASS_H
-#define CG_KEYBOARD_CLASS_H
+
 #include "keyboard_event.h"
 #include <queue>
 
@@ -32,6 +28,3 @@ private:
     std::queue<KeyboardEvent> keyBuffer;
     std::queue<unsigned char> charBuffer;
 };
-
-
-#endif //CG_KEYBOARD_CLASS_H

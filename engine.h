@@ -1,4 +1,5 @@
 #pragma once
+
 #include "window_container.h"
 
 class Engine : WindowContainer {

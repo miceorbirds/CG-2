@@ -1,9 +1,4 @@
-//
-// Created by mi on 07.08.2020.
-//
 #pragma once
-#ifndef CG_GRAPHICS_H
-#define CG_GRAPHICS_H
 
 #include "adapter_reader.h"
 
@@ -24,6 +19,3 @@ private:
     Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout_;
     Microsoft::WRL::ComPtr<ID3D10Blob> vertex_shader_buffer_;
 };
-
-
-#endif //CG_GRAPHICS_H

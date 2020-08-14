@@ -1,4 +1,5 @@
 #pragma once
+
 #include "error_logger.h"
 
 class WindowContainer;

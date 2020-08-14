@@ -1,9 +1,4 @@
-//
-// Created by mi on 06.08.2020.
-//
 #pragma once
-#ifndef CG_KEYBOARD_EVENT_H
-#define CG_KEYBOARD_EVENT_H
 
 class KeyboardEvent
 {
@@ -25,6 +20,5 @@ public:
 private:
     EventType type;
     unsigned char key;
-} ;
+};
 
-#endif //CG_KEYBOARD_EVENT_H

@@ -1,11 +1,6 @@
-//
-// Created by mi on 05.08.2020.
-//
-
 #pragma once
 
 #include <memory>
-
 #include "render_window.h"
 #include "Keyboard/keyboard_class.h"
 #include "Mouse/mouse_class.h"

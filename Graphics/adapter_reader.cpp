@@ -1,7 +1,3 @@
-//
-// Created by mi on 07.08.2020.
-//
-
 #include "adapter_reader.h"
 
 std::vector<AdapterData> AdapterReader::adapters_;

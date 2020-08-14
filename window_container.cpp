@@ -1,7 +1,3 @@
-//
-// Created by mi on 05.08.2020.
-//
-
 #include "window_container.h"
 
 WindowContainer::WindowContainer()

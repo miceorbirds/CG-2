@@ -1,7 +1,3 @@
-//
-// Created by mi on 07.08.2020.
-//
-
 #include "mouse_class.h"
 
 void MouseClass::OnLeftPressed(int x, int y)
