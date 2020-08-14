@@ -33,12 +33,6 @@
     <ClCompile Include="window_container.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="build\cmakefiles\3.17.20032601-msvc_2\compileridc\CMakeCCompilerId.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="build\cmakefiles\3.17.20032601-msvc_2\compileridcxx\CMakeCXXCompilerId.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="graphics\adapter_reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,42 +77,6 @@
     <ClInclude Include="graphics\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathAVX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathAVX2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathBE.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathF16C.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathFMA3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathFMA4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathSSE3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\extensions\DirectXMathSSE4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\inc\DirectXCollision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\inc\DirectXColors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\inc\DirectXMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\directxmath\inc\DirectXPackedVector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="keyboard\keyboard_class.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,32 +89,5 @@
     <ClInclude Include="mouse\mouse_event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\directxmath\inc\DirectXCollision.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\directxmath\inc\DirectXMathConvert.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\directxmath\inc\DirectXMathMatrix.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\directxmath\inc\DirectXMathMisc.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\directxmath\inc\DirectXMathVector.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="include\directxmath\inc\DirectXPackedVector.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="build\cmakefiles\3.17.20032601-msvc_2\CMakeDetermineCompilerABI_C.bin">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="build\cmakefiles\3.17.20032601-msvc_2\CMakeDetermineCompilerABI_CXX.bin">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="build\cmakefiles\cg.dir\CXX.includecache" />
   </ItemGroup>
 </Project>

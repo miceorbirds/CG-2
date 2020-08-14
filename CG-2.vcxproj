@@ -22,6 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{26EF30FC-CA6D-4791-AA39-110099B3218F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -75,6 +76,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -88,6 +90,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -97,9 +100,17 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="build\cmakefiles\3.17.20032601-msvc_2\compileridcxx\CMakeCXXCompilerId.cpp" />
-    <ClCompile Include="build\cmakefiles\3.17.20032601-msvc_2\compileridc\CMakeCCompilerId.c" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="error_logger.cpp" />
     <ClCompile Include="graphics\adapter_reader.cpp" />
@@ -119,18 +130,6 @@
     <ClInclude Include="graphics\adapter_reader.h" />
     <ClInclude Include="graphics\graphics.h" />
     <ClInclude Include="graphics\vertex.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathAVX.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathAVX2.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathBE.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathF16C.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathFMA3.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathFMA4.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathSSE3.h" />
-    <ClInclude Include="include\directxmath\extensions\DirectXMathSSE4.h" />
-    <ClInclude Include="include\directxmath\inc\DirectXCollision.h" />
-    <ClInclude Include="include\directxmath\inc\DirectXColors.h" />
-    <ClInclude Include="include\directxmath\inc\DirectXMath.h" />
-    <ClInclude Include="include\directxmath\inc\DirectXPackedVector.h" />
     <ClInclude Include="keyboard\keyboard_class.h" />
     <ClInclude Include="keyboard\keyboard_event.h" />
     <ClInclude Include="mouse\mouse_class.h" />
@@ -138,17 +137,6 @@
     <ClInclude Include="render_window.h" />
     <ClInclude Include="string_converter.h" />
     <ClInclude Include="window_container.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="build\cmakefiles\3.17.20032601-msvc_2\CMakeDetermineCompilerABI_C.bin" />
-    <None Include="build\cmakefiles\3.17.20032601-msvc_2\CMakeDetermineCompilerABI_CXX.bin" />
-    <None Include="build\cmakefiles\cg.dir\CXX.includecache" />
-    <None Include="include\directxmath\inc\DirectXCollision.inl" />
-    <None Include="include\directxmath\inc\DirectXMathConvert.inl" />
-    <None Include="include\directxmath\inc\DirectXMathMatrix.inl" />
-    <None Include="include\directxmath\inc\DirectXMathMisc.inl" />
-    <None Include="include\directxmath\inc\DirectXMathVector.inl" />
-    <None Include="include\directxmath\inc\DirectXPackedVector.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,17 +1,12 @@
-//
-// Created by mi on 07.08.2020.
-//
 #pragma once
-#ifndef CG_ADAPTER_READER_H
-#define CG_ADAPTER_READER_H
 
 
 #include "../error_logger.h"
 #include <d3d11.h>
-#include <dxgi.h>
+#pragma comment(lib,"d3d11.lib")
+#pragma comment(lib,"DXGI.lib")
 #include <wrl/client.h>
-#include <vector>
-//#include "vertex.h"
+#include <vector> 
 
 class AdapterData
 {
@@ -30,4 +25,4 @@ private:
 };
 
 
-#endif //CG_ADAPTER_READER_H
+
