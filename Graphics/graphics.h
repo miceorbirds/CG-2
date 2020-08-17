@@ -1,6 +1,7 @@
 #pragma once
 
 #include "adapter_reader.h"
+#include "shaders.h"
 
 class Graphics
 {
@@ -11,11 +12,12 @@ private:
     bool InitializeDirectX(HWND hwnd, int width, int height);
     bool InitializeShaders();
 
-    Microsoft::WRL::ComPtr<ID3D11Device> device_;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context_;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> swapchain_;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view_;
+    Microsoft::WRL::ComPtr<ID3D11Device> m_device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapchain;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_render_target_view;
 
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout_;
-    Microsoft::WRL::ComPtr<ID3D10Blob> vertex_shader_buffer_;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout> m_input_layout;
+
+    VertexShader m_vertexshader;
 };

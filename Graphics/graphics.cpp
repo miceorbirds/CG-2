@@ -49,10 +49,10 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
             0,  //# OF FEATURE LEVELS IN ARRAY
             D3D11_SDK_VERSION,
             &swapchain_desc, // swapchain description
-            this->swapchain_.GetAddressOf(), //Swapchain Address
-            this->device_.GetAddressOf(), //Device Address
+            this->m_swapchain.GetAddressOf(), //Swapchain Address
+            this->m_device.GetAddressOf(), //Device Address
             nullptr,  //Supported feature level
-            this->device_context_.GetAddressOf() //Device Context Address
+            this->m_device_context.GetAddressOf() //Device Context Address
             );
     if(FAILED(hr))
     {
@@ -61,41 +61,47 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
     }
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-    hr = this->swapchain_->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
+    hr = this->m_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
     if (FAILED(hr)) //If error occurred
     {
         ErrorLogger::Log(hr, "GetBuffer Failed.");
         return false;
     }
 
-    hr = this->device_->CreateRenderTargetView(backBuffer.Get(), nullptr, this->render_target_view_.GetAddressOf());
+    hr = this->m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, this->m_render_target_view.GetAddressOf());
     if (FAILED(hr)) //If error occurred
     {
         ErrorLogger::Log(hr, "Failed to create render target view.");
         return false;
     }
 
-    this->device_context_->OMSetRenderTargets(1, this->render_target_view_.GetAddressOf(), nullptr);
+    this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), nullptr);
     return true;
 }
 
 void Graphics::RenderFrame()
 {
     float bgcolor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
-    this->device_context_->ClearRenderTargetView(this->render_target_view_.Get(), bgcolor);
-    this->swapchain_->Present(1, 0);
+    this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
+    this->m_swapchain->Present(1, 0);
 }
 
 bool Graphics::InitializeShaders()
 {
+    if (!m_vertexshader.Initialize(this->m_device, L""))
+    {
+        return false;
+    }
+
+
     D3D11_INPUT_ELEMENT_DESC layout[] =
-            {
-                    {"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-            };
+    {
+        {"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
+    };
 
     UINT numElements = ARRAYSIZE(layout);
 
-    HRESULT hr = this->device_->CreateInputLayout(layout, numElements, this->vertex_shader_buffer_->GetBufferPointer(), this->vertex_shader_buffer_->GetBufferSize(), this->input_layout_.GetAddressOf());
+    HRESULT hr = this->m_device->CreateInputLayout(layout, numElements, this->m_vertexshader.GetBuffer()->GetBufferPointer(), this->m_vertexshader.GetBuffer()->GetBufferSize(), this->m_input_layout.GetAddressOf());
     if (FAILED(hr))
     {
         ErrorLogger::Log(hr, "Failed to create input layout.");
