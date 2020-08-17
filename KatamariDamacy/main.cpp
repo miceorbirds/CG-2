@@ -6,17 +6,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ int       nCmdShow)
 {
    Engine engine;
-   engine.Initialize(hInstance, "Hello World", "MyWindowClass", 800, 600);
-   while(engine.ProcessMessages())
+   if (engine.Initialize(hInstance, "Hello World", "MyWindowClass", 800, 600))
    {
-       engine.Update();
-       engine.Renderframe();
+       while(engine.ProcessMessages())
+       {
+           engine.Update();
+           engine.Renderframe();
+       }
    }
-    return 0;
+   return 0;
 }
 
-// INPUT ASSEMBLER
-// VERTEX SHADER
+// INPUT ASSEMBLER - COMPLETED
+// VERTEX SHADER - COMPLETED
 // RASTERIZER
 // PIXEL SHADER
 // OUTPUT MERGER

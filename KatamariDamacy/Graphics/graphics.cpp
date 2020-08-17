@@ -88,9 +88,23 @@ void Graphics::RenderFrame()
 
 bool Graphics::InitializeShaders()
 {
-    if (!m_vertexshader.Initialize(this->m_device, L""))
+    std::wstring shaderfolder = L"";
+#pragma region DetermineShaderPath
+    if (IsDebuggerPresent() == TRUE)
     {
-        return false;
+#ifdef _DEBUG //Debug Mode
+    #ifdef _WIN64 //x64
+            shaderfolder = L"..\\x64\\Debug\\";
+    #else  //x86 (Win32)
+          shaderfolder = L"..\\Debug\\";
+    #endif
+    #else //Release Mode
+    #ifdef _WIN64 //x64
+        shaderfolder = L"..\\x64\\Release\\";
+    #else  //x86 (Win32)
+        shaderfolder = L"..\\Release\\";
+    #endif
+#endif
     }
 
 
@@ -101,11 +115,11 @@ bool Graphics::InitializeShaders()
 
     UINT numElements = ARRAYSIZE(layout);
 
-    HRESULT hr = this->m_device->CreateInputLayout(layout, numElements, this->m_vertexshader.GetBuffer()->GetBufferPointer(), this->m_vertexshader.GetBuffer()->GetBufferSize(), this->m_input_layout.GetAddressOf());
-    if (FAILED(hr))
+    if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout, numElements))
     {
-        ErrorLogger::Log(hr, "Failed to create input layout.");
         return false;
     }
+
+
     return true;
 }
