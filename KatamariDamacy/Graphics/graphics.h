@@ -23,6 +23,8 @@ private:
     PixelShader m_pixelshader;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertex_buffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertex_buffer2;
+
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 };

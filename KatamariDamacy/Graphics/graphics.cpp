@@ -123,10 +123,13 @@ void Graphics::RenderFrame()
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
+    // Red tri
     this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
+    this->m_device_context->Draw(3, 0);
+    // Green tri
+    this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer2.GetAddressOf(), &stride, &offset);
+    this->m_device_context->Draw(3, 0);
 
-    this->m_device_context->Draw(4, 0);
-    
     
     this->m_swapchain->Present(1, NULL);
 }
@@ -196,6 +199,34 @@ bool Graphics::InitializeScene()
     vertexBufferData.pSysMem = v;
 
     HRESULT hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, this->m_vertex_buffer.GetAddressOf());
+    if (FAILED(hr))
+    {
+        ErrorLogger::Log(hr, "Failed to create vertex buffer.");
+        return false;
+    }
+
+
+    //Triangle 2 (Green)
+    //Triangle Verts
+    Vertex v2[] =
+    {
+        Vertex(-0.25f, -0.25f, 0.0f, 1.0f, 0.0f), //Bottom Left 
+        Vertex(0.00f,  0.25f, 0.0f, 1.0f, 0.0f), //Top Middle
+        Vertex(0.25f, -0.25f, 0.0f, 1.0f, 0.0f), //Bottom Right 
+    };
+
+    ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+
+    vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    vertexBufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vertexBufferDesc.CPUAccessFlags = 0;
+    vertexBufferDesc.MiscFlags = 0;
+
+    ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+    vertexBufferData.pSysMem = v2;
+
+    hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, this->m_vertex_buffer2.GetAddressOf());
     if (FAILED(hr))
     {
         ErrorLogger::Log(hr, "Failed to create vertex buffer.");

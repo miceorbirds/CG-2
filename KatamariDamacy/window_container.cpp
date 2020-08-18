@@ -143,7 +143,7 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                     auto* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
                     if (raw->header.dwType == RIM_TYPEMOUSE)
                     {
-                        m_mouse.OnMouseMoveRaw(raw->data.m_mouse.lLastX, raw->data.m_mouse.lLastY);
+                        m_mouse.OnMouseMoveRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
                     }
                 }
             }
