@@ -87,19 +87,36 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
     viewport.Width = width;
     viewport.Height = height;
 
-    // set the viewport
+    // Set the viewport
     this->m_device_context->RSSetViewports(1, &viewport);
     
+
+    //Create Rasterizer State
+    D3D11_RASTERIZER_DESC rasterizerDesc;
+    ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+    rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+    hr = this->m_device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizer_state.GetAddressOf());
+    if (FAILED(hr))
+    {
+        ErrorLogger::Log(hr, "Failed to create rasterizer state.");
+        return false;
+    }
+
+
+
     return true;
 }
 
 void Graphics::RenderFrame()
 {
-    float bgcolor[] = { 0.0f, 0.0f, 0.4f, 1.0f };
+    float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
     
     this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
     this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 
     this->m_device_context->VSSetShader(m_vertexshader.GetShader(), NULL, 0);
     this->m_device_context->PSSetShader(m_pixelshader.GetShader(), NULL, 0);
@@ -139,6 +156,8 @@ bool Graphics::InitializeShaders()
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         {"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
+        {"COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0   },
+
     };
 
     UINT numElements = ARRAYSIZE(layout);
@@ -158,9 +177,9 @@ bool Graphics::InitializeScene()
 {
     Vertex v[] =
     {
-        Vertex(0.0f, -0.1f), //Center Point
-        Vertex(-0.1f, 0.0f), //Left Point
-        Vertex(0.1f, 0.0f), //Right Point
+        Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 0.0f), //Bottom Left [Red]
+        Vertex(0.0f, 0.5f, 1.0f, 0.0f, 0.0f), //Top Middle [Green]
+        Vertex(0.5f, -0.5f, 1.0f, 0.0f, 0.0f), //Bottom Right [Blue]
     };
 
     D3D11_BUFFER_DESC vertexBufferDesc;
