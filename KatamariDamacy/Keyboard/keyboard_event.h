@@ -11,14 +11,14 @@ public:
     };
 
     KeyboardEvent();
-    KeyboardEvent(const EventType, const unsigned char key);
+    KeyboardEvent(const EventType, const unsigned char m_key);
     bool IsPress() const;
     bool IsRelease() const;
     bool IsValid() const;
     unsigned char GetKeyCode() const;
 
 private:
-    EventType type;
-    unsigned char key;
+    EventType m_type;
+    unsigned char m_key;
 };
 

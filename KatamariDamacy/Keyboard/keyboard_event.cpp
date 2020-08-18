@@ -2,34 +2,34 @@
 
 KeyboardEvent::KeyboardEvent()
         :
-        type(EventType::Invalid),
-        key(0u)
+        m_type(EventType::Invalid),
+        m_key(0u)
 {
 }
 
-KeyboardEvent::KeyboardEvent(const EventType type, const unsigned char key)
+KeyboardEvent::KeyboardEvent(const EventType m_type, const unsigned char m_key)
         :
-        type(type),
-        key(key)
+        m_type(m_type),
+        m_key(m_key)
 {
 }
 
 bool KeyboardEvent::IsPress() const
 {
-    return this->type == EventType::Press;
+    return this->m_type == EventType::Press;
 }
 
 bool KeyboardEvent::IsRelease() const
 {
-    return this->type == EventType::Release;
+    return this->m_type == EventType::Release;
 }
 
 bool KeyboardEvent::IsValid() const
 {
-    return this->type != EventType::Invalid;
+    return this->m_type != EventType::Invalid;
 }
 
 unsigned char KeyboardEvent::GetKeyCode() const
 {
-    return this->key;
+    return this->m_key;
 }

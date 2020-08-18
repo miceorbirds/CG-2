@@ -123,7 +123,7 @@ void Graphics::RenderFrame()
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    this->m_device_context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
 
     this->m_device_context->Draw(4, 0);
     
@@ -195,7 +195,7 @@ bool Graphics::InitializeScene()
     ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
     vertexBufferData.pSysMem = v;
 
-    HRESULT hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, this->vertexBuffer.GetAddressOf());
+    HRESULT hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, this->m_vertex_buffer.GetAddressOf());
     if (FAILED(hr))
     {
         ErrorLogger::Log(hr, "Failed to create vertex buffer.");

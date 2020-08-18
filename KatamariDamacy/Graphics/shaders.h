@@ -14,8 +14,8 @@ public:
 	ID3D10Blob* GetBuffer();
 	ID3D11InputLayout* GetInputLayout();
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> shader;
-	Microsoft::WRL::ComPtr<ID3D10Blob> shader_buffer;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_shader;
+	Microsoft::WRL::ComPtr<ID3D10Blob> m_shader_buffer;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_input_layout;
 };
 
@@ -26,6 +26,6 @@ public:
 	ID3D11PixelShader* GetShader();
 	ID3D10Blob* GetBuffer();
 private:
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> shader;
-	Microsoft::WRL::ComPtr<ID3D10Blob> shader_buffer;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_shader;
+	Microsoft::WRL::ComPtr<ID3D10Blob> m_shader_buffer;
 };

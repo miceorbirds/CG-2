@@ -13,12 +13,12 @@ public:
     ~RenderWindow();
 private:
     void RegisterWindowClass();
-    HWND handle_ = nullptr; //Handle to this window
-    HINSTANCE hInstance_ = nullptr; //Handle to application instance
-    std::string window_title_;
-    std::wstring window_title_wide_; //Wide string representation of window title
-    std::string window_class_;
-    std::wstring window_class_wide_; //Wide string representation of window class name
-    int width_ = 0;
-    int height_ = 0;
+    HWND m_handle = nullptr; //Handle to this window
+    HINSTANCE m_hInstance = nullptr; //Handle to application instance
+    std::string m_window_title;
+    std::wstring m_window_title_wide; //Wide string representation of window title
+    std::string m_window_class;
+    std::wstring m_window_class_wide; //Wide string representation of window class name
+    int m_width = 0;
+    int m_height = 0;
 };

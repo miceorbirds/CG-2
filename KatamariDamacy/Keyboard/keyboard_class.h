@@ -12,9 +12,9 @@ public:
     bool CharBufferIsEmpty();
     KeyboardEvent ReadKey();
     unsigned char ReadChar();
-    void OnKeyPressed(const unsigned char key);
-    void OnKeyReleased(const unsigned char key);
-    void OnChar(const unsigned char key);
+    void OnKeyPressed(const unsigned char m_key);
+    void OnKeyReleased(const unsigned char m_key);
+    void OnChar(const unsigned char m_key);
     void EnableAutoRepeatKeys();
     void DisableAutoRepeatKeys();
     void EnableAutoRepeatChars();
@@ -22,9 +22,9 @@ public:
     bool IsKeysAutoRepeat();
     bool IsCharsAutoRepeat();
 private:
-    bool autoRepeatKeys = false;
-    bool autoRepeatChars = false;
-    bool keyStates[256];
-    std::queue<KeyboardEvent> keyBuffer;
-    std::queue<unsigned char> charBuffer;
+    bool m_auto_repeat_keys = false;
+    bool m_auto_repeat_chars = false;
+    bool m_key_states[256];
+    std::queue<KeyboardEvent> m_keyBuffer;
+    std::queue<unsigned char> m_charBuffer;
 };

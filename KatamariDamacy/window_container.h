@@ -13,10 +13,10 @@ public:
     WindowContainer();
     LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 protected:
-    RenderWindow render_window;
-    KeyboardClass keyboard;
-    MouseClass mouse;
-    Graphics gfx;
+    RenderWindow m_render_window;
+    KeyboardClass m_keyboard;
+    MouseClass m_mouse;
+    Graphics m_gfx;
 private:
 
 };

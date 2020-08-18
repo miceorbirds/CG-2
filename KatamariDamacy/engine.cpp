@@ -2,11 +2,11 @@
 
 bool Engine::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
-    if (!this->render_window.Initialize(this, hInstance, window_title, window_class, width, height))
+    if (!this->m_render_window.Initialize(this, hInstance, window_title, window_class, width, height))
     {
         return false;
     };
-    if (!gfx.Initialize(this->render_window.GetHWND(), width, height))
+    if (!m_gfx.Initialize(this->m_render_window.GetHWND(), width, height))
     {
         return false;
     }
@@ -15,27 +15,27 @@ bool Engine::Initialize(HINSTANCE hInstance, std::string window_title, std::stri
 
 bool Engine::ProcessMessages()
 {
-    return this->render_window.ProcessMessages();
+    return this->m_render_window.ProcessMessages();
 }
 
 void Engine::Update() {
-    while (!keyboard.CharBufferIsEmpty())
+    while (!m_keyboard.CharBufferIsEmpty())
     {
-        unsigned char ch = keyboard.ReadChar();
+        unsigned char ch = m_keyboard.ReadChar();
     }
 
-    while (!keyboard.KeyBufferIsEmpty())
+    while (!m_keyboard.KeyBufferIsEmpty())
     {
-        KeyboardEvent kbe = keyboard.ReadKey();
+        KeyboardEvent kbe = m_keyboard.ReadKey();
         unsigned char keycode = kbe.GetKeyCode();
     }
-    while (!mouse.EventBufferIsEmpty())
+    while (!m_mouse.EventBufferIsEmpty())
     {
-       MouseEvent me = mouse.ReadEvent();
+       MouseEvent me = m_mouse.ReadEvent();
     }
 }
 
 void Engine::Renderframe()
 {
-    gfx.RenderFrame();
+    m_gfx.RenderFrame();
 }

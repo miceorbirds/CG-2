@@ -1,11 +1,11 @@
 #include "adapter_reader.h"
 
-std::vector<AdapterData> AdapterReader::adapters_;
+std::vector<AdapterData> AdapterReader::m_adapters;
 
 std::vector<AdapterData> AdapterReader::GetAdapters()
 {
-    if (!adapters_.empty()) //If already initialized
-        return adapters_;
+    if (!m_adapters.empty()) //If already initialized
+        return m_adapters;
 
     Microsoft::WRL::ComPtr<IDXGIFactory> pFactory;
 
@@ -21,10 +21,10 @@ std::vector<AdapterData> AdapterReader::GetAdapters()
     UINT index = 0;
     while (SUCCEEDED(pFactory->EnumAdapters(index, &pAdapter)))
     {
-        adapters_.emplace_back(pAdapter);
+        m_adapters.emplace_back(pAdapter);
         index += 1;
     }
-    return adapters_;
+    return m_adapters;
 }
 
 AdapterData::AdapterData(IDXGIAdapter * pAdapter)

@@ -29,16 +29,16 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_KEYDOWN:
         {
             auto keycode = static_cast<unsigned char>(wParam);
-            if (keyboard.IsKeysAutoRepeat())
+            if (m_keyboard.IsKeysAutoRepeat())
             {
-                keyboard.OnKeyPressed(keycode);
+                m_keyboard.OnKeyPressed(keycode);
             }
             else
             {
                 const bool wasPressed = lParam & 0x40000000;
                 if (!wasPressed)
                 {
-                    keyboard.OnKeyPressed(keycode);
+                    m_keyboard.OnKeyPressed(keycode);
                 }
             }
             return 0;
@@ -46,22 +46,22 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_KEYUP:
         {
             auto keycode = static_cast<unsigned char>(wParam);
-            keyboard.OnKeyReleased(keycode);
+            m_keyboard.OnKeyReleased(keycode);
             return 0;
         }
         case WM_CHAR:
         {
             auto ch = static_cast<unsigned char>(wParam);
-            if (keyboard.IsCharsAutoRepeat())
+            if (m_keyboard.IsCharsAutoRepeat())
             {
-                keyboard.OnChar(ch);
+                m_keyboard.OnChar(ch);
             }
             else
             {
                 const bool wasPressed = lParam & 0x40000000;
                 if (!wasPressed)
                 {
-                    keyboard.OnChar(ch);
+                    m_keyboard.OnChar(ch);
                 }
             }
             return 0;
@@ -71,49 +71,49 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnMouseMove(x, y);
+            m_mouse.OnMouseMove(x, y);
             return 0;
         }
         case WM_LBUTTONDOWN:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnLeftPressed(x, y);
+            m_mouse.OnLeftPressed(x, y);
             return 0;
         }
         case WM_RBUTTONDOWN:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnRightPressed(x, y);
+            m_mouse.OnRightPressed(x, y);
             return 0;
         }
         case WM_MBUTTONDOWN:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnMiddlePressed(x, y);
+            m_mouse.OnMiddlePressed(x, y);
             return 0;
         }
         case WM_LBUTTONUP:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnLeftReleased(x, y);
+            m_mouse.OnLeftReleased(x, y);
             return 0;
         }
         case WM_RBUTTONUP:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnRightReleased(x, y);
+            m_mouse.OnRightReleased(x, y);
             return 0;
         }
         case WM_MBUTTONUP:
         {
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
-            mouse.OnMiddleReleased(x, y);
+            m_mouse.OnMiddleReleased(x, y);
             return 0;
         }
         case WM_MOUSEWHEEL:
@@ -122,11 +122,11 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             int y = HIWORD(lParam);
             if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
             {
-                mouse.OnWheelUp(x, y);
+                m_mouse.OnWheelUp(x, y);
             }
             else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
             {
-                mouse.OnWheelDown(x, y);
+                m_mouse.OnWheelDown(x, y);
             }
             return 0;
         }
@@ -143,7 +143,7 @@ LRESULT WindowContainer::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                     auto* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
                     if (raw->header.dwType == RIM_TYPEMOUSE)
                     {
-                        mouse.OnMouseMoveRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+                        m_mouse.OnMouseMoveRaw(raw->data.m_mouse.lLastX, raw->data.m_mouse.lLastY);
                     }
                 }
             }

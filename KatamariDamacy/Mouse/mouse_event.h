@@ -24,12 +24,12 @@ public:
         Invalid
     };
 private:
-    EventType type;
+    EventType m_type;
     int x;
     int y;
 public:
     MouseEvent();
-    MouseEvent(const EventType type, const int x, const int y);
+    MouseEvent(const EventType m_type, const int x, const int y);
     bool IsValid() const;
     EventType GetType() const;
     MousePoint GetPos() const;
