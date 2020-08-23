@@ -116,6 +116,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="graphics\direct2d.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="error_logger.cpp" />
     <ClCompile Include="graphics\adapter_reader.cpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="window_container.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="graphics\direct2d.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="error_logger.h" />
     <ClInclude Include="graphics\adapter_reader.h" />

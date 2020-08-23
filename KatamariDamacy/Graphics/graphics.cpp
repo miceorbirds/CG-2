@@ -4,6 +4,8 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
     if(!InitializeDirectX(hwnd, width,height))
         return false;
+    if(!m_hud.Initialize(m_render_target_view))
+        return false;
     if(!InitializeShaders())
         return false;
     if (!InitializeScene())
@@ -45,7 +47,7 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
             adapters[0].pAdapter, //DXGI Adapter
             D3D_DRIVER_TYPE_UNKNOWN,
             nullptr, //FOR SOFTWARE DRIVER TYPE
-            D3D11_CREATE_DEVICE_DEBUG, //FLAGS FOR RUNTIME LAYERS
+            D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT, //FLAGS FOR RUNTIME LAYERS
             nullptr, //FEATURE LEVELS ARRAY
             0,  //# OF FEATURE LEVELS IN ARRAY
             D3D11_SDK_VERSION,
@@ -122,7 +124,6 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
         return false;
     }
 
-	
     // Create the Viewport
     D3D11_VIEWPORT viewport;
     ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -142,16 +143,14 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
     D3D11_RASTERIZER_DESC rasterizerDesc;
     ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 
-    rasterizerDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-    rasterizerDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_NONE;
     hr = this->m_device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizer_state.GetAddressOf());
     if (FAILED(hr))
     {
         ErrorLogger::Log(hr, "Failed to create rasterizer state.");
         return false;
     }
-
-
 
     return true;
 }

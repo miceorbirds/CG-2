@@ -3,6 +3,7 @@
 #include "adapter_reader.h"
 #include "shaders.h"
 #include "vertex.h"
+#include "direct2d.h"
 
 class Graphics
 {
@@ -31,4 +32,7 @@ private:
 
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
+
+    Direct2D m_hud;
+
 };

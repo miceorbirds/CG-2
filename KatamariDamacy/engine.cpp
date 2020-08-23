@@ -35,7 +35,7 @@ void Engine::Update() {
     }
 }
 
-void Engine::Renderframe()
+void Engine::RenderFrame()
 {
     m_gfx.RenderFrame();
 }

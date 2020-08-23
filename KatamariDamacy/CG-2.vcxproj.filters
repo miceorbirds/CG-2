@@ -72,6 +72,9 @@
     <ClCompile Include="graphics\shaders.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\direct2d.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files\Mouse</Filter>
     </ClInclude>
     <ClInclude Include="graphics\shaders.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\direct2d.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
