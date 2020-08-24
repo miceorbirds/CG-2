@@ -30,7 +30,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
 
-
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 
     Direct2D m_hud;

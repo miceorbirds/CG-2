@@ -1,7 +1,7 @@
 #include "window_container.h"
 #include "render_window.h"
 
-bool RenderWindow::Initialize(WindowContainer * pWindowContainer, HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
+bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
     this->m_hInstance = hInstance;
     this->m_width = width;
@@ -13,18 +13,29 @@ bool RenderWindow::Initialize(WindowContainer * pWindowContainer, HINSTANCE hIns
 
     this->RegisterWindowClass();
 
-    this->m_handle = CreateWindowEx(0, //Extended Windows style - we are using the default. For other options, see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
-                                  this->m_window_class_wide.c_str(), //Window class name
-                                  this->m_window_title_wide.c_str(), //Window Title
-                                  WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, //Windows style - See: https://msdn.microsoft.com/en-us/library/windows/desktop/ms632600(v=vs.85).aspx
-                                  0, //Window X Position
-                                  0, //Window Y Position
-                                  this->m_width, //Window Width
-                                  this->m_height, //Window Height
-                                  nullptr, //Handle to parent of this window. Since this is the first window, it has no parent window.
-                                  nullptr, //Handle to menu or child window identifier. Can be set to NULL and use menu in WindowClassEx if a menu is desired to be used.
-                                  this->m_hInstance, //Handle to the instance of module to be used with this window
-                                  pWindowContainer); //Param to create window
+    const auto center_screen_x = GetSystemMetrics(SM_CXSCREEN) / 2 - this->m_width / 2;
+    const auto center_screen_y = GetSystemMetrics(SM_CYSCREEN) / 2 - this->m_height / 2;
+	
+    RECT window_rectangle;
+    window_rectangle.left = center_screen_x;
+    window_rectangle.top = center_screen_y;
+    window_rectangle.right = window_rectangle.left + this->m_width;
+    window_rectangle.bottom = window_rectangle.top + this->m_height;
+    AdjustWindowRect(&window_rectangle, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+	
+    this->m_handle = CreateWindowEx(
+        0, //Extended Windows style - we are using the default. For other options, see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
+        this->m_window_class_wide.c_str(), //Window class name
+        this->m_window_title_wide.c_str(), //Window Title
+        WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, //Windows style - See: https://msdn.microsoft.com/en-us/library/windows/desktop/ms632600(v=vs.85).aspx
+        window_rectangle.left, //Window X Position
+        window_rectangle.top, //Window Y Position
+        window_rectangle.right - window_rectangle.left, //Window Width
+        window_rectangle.bottom - window_rectangle.top, //Window Height
+        nullptr, //Handle to parent of this window. Since this is the first window, it has no parent window.
+        nullptr, //Handle to menu or child window identifier. Can be set to NULL and use menu in WindowClassEx if a menu is desired to be used.
+        this->m_hInstance, //Handle to the instance of module to be used with this window
+        pWindowContainer); //Param to create window
 
     if (this->m_handle == nullptr)
     {
