@@ -180,7 +180,8 @@ void Graphics::RenderFrame()
     this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer2.GetAddressOf(), &stride, &offset);
     this->m_device_context->Draw(3, 0);
 
-	
+	// direct2d
+    m_hud.Draw();
 	
     this->m_swapchain->Present(1, NULL);
 }
