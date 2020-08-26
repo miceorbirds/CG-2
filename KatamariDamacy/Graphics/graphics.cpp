@@ -152,6 +152,24 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 		return false;
 	}
 
+	//Create sampler description for sampler state
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = this->m_device->CreateSamplerState(&sampDesc, this->m_sampler_state.GetAddressOf()); //Create sampler state
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create sampler state.");
+		return false;
+	}
+	
+
 	return true;
 }
 
@@ -165,6 +183,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
+	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
 	
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), NULL, 0);
@@ -172,13 +191,10 @@ void Graphics::RenderFrame()
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	
-	// Red tri
+	// Square
+	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
 	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
-	this->m_device_context->Draw(3, 0);
-
-	// Green tri
-	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer2.GetAddressOf(), &stride, &offset);
-	this->m_device_context->Draw(3, 0);
+	this->m_device_context->Draw(6, 0);
 
 	// direct2d
 	m_hud.Draw();
@@ -211,7 +227,7 @@ bool Graphics::InitializeShaders()
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
-		{"COLOR", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0,  D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0   },
+		{"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0,  D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0   },
 
 	};
 
@@ -230,12 +246,17 @@ bool Graphics::InitializeShaders()
 
 bool Graphics::InitializeScene()
 {
-	// Red Tri
+	// Textured Square
 	Vertex v[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f), //Bottom Left [Red]
-		Vertex(0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 0.0f), //Top Middle [Green]
-		Vertex(0.5f, -0.5f, 1.0f,1.0f, 0.0f, 0.0f), //Bottom Right [Blue]
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left
+		Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left
+		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
+
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 
+		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
+		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right
+
 	};
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
@@ -258,31 +279,16 @@ bool Graphics::InitializeScene()
 		return false;
 	}
 
-	//Triangle 2 (Green)
-	Vertex v2[] =
-	{
-		Vertex(-0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f), //Bottom Left 
-		Vertex( 0.00f,  0.25f, 0.0f, 0.0f, 1.0f, 0.0f), //Top Middle
-		Vertex( 0.25f, -0.25f, 0.0f, 0.0f, 1.0f, 0.0f), //Bottom Right 
-	};
-
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-
-	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
-	vertexBufferData.pSysMem = v2;
-
-	hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, this->m_vertex_buffer2.GetAddressOf());
+	hr = DirectX::CreateWICTextureFromFile(
+		this->m_device.Get(),
+		L"Data\\Textures\\piano.png",
+		nullptr,
+		m_texture.GetAddressOf());
 	if (FAILED(hr))
 	{
-		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
+		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
 		return false;
 	}
-
+	
 	return true;
 }

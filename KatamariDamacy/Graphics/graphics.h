@@ -4,6 +4,7 @@
 #include "shaders.h"
 #include "vertex.h"
 #include "direct2d.h"
+#include <WICTextureLoader.h>
 
 class Graphics
 {
@@ -24,7 +25,6 @@ private:
     PixelShader m_pixelshader;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertex_buffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertex_buffer2;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
@@ -32,6 +32,9 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
+ 
     Direct2D m_hud;
 
 };

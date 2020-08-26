@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"DXGI.lib")
+#pragma comment(lib,"DirectXTK.lib")
 #include <wrl/client.h>
 #include <vector> 
 
