@@ -151,11 +151,11 @@ void Direct2D::Draw()
     //auto render_target_size = m_d2d_render_target->GetSize();
 
     m_d2d_render_target->BeginDraw();
-    m_d2d_render_target->DrawGeometry(m_rectangle_geometry.Get(), m_brush_2.Get());
-    m_d2d_render_target->DrawTextLayout(m_origin,
-        m_text_layout.Get(),
-        m_brush_2.Get()
-    );
+    //m_d2d_render_target->DrawGeometry(m_rectangle_geometry.Get(), m_brush_2.Get());
+    //m_d2d_render_target->DrawTextLayout(m_origin,
+    //    m_text_layout.Get(),
+    //    m_brush_2.Get()
+    //);
     auto hr = m_d2d_render_target->EndDraw();
 	if(FAILED(hr))
 	{

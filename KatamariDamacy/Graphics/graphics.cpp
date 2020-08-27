@@ -156,8 +156,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
@@ -175,7 +175,7 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 void Graphics::RenderFrame()
 {
-	float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float bgcolor[] = { 0.13f, 0.7f, 0.67f, 1.0f };
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -250,11 +250,10 @@ bool Graphics::InitializeScene()
 	// Textured Square
 	Vertex v[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left  [0]
-		Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left    [1]
-		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right    [2]
-		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right [3]
-
+		Vertex(-0.5f, -0.5f, 1.0f, -2.0f, 2.0f), //Bottom Left  [0]
+		Vertex(-0.5f,   0.5f, 1.0f, -2.0f, -2.0f), //Top Left    [1]
+		Vertex(0.5f,   0.5f, 1.0f, 2.0f, -2.0f), //Top Right    [2]
+		Vertex(0.5f,  -0.5f, 1.0f, 2.0f, 2.0f), //Bottom Right [3]
 	};
 
 	DWORD indices[] =
@@ -305,7 +304,7 @@ bool Graphics::InitializeScene()
 	// Load texture
 	hr = DirectX::CreateWICTextureFromFile(
 		this->m_device.Get(),
-		L"Data\\Textures\\piano.png",
+		L"Data\\Textures\\cat.jpg",
 		nullptr,
 		m_texture.GetAddressOf());
 	if (FAILED(hr))
