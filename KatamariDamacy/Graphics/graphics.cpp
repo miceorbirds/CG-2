@@ -194,7 +194,8 @@ void Graphics::RenderFrame()
 	// Square
 	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
 	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), &stride, &offset);
-	this->m_device_context->Draw(6, 0);
+	this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	this->m_device_context->DrawIndexed(6, 0, 0);
 
 	// direct2d
 	m_hud.Draw();
@@ -249,16 +250,20 @@ bool Graphics::InitializeScene()
 	// Textured Square
 	Vertex v[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left
-		Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left
-		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
-
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 
-		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
-		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left  [0]
+		Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left    [1]
+		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right    [2]
+		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right [3]
 
 	};
 
+	DWORD indices[] =
+	{
+		0,1,2,
+		0,2,3
+	};
+
+	// Load vertex data
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
@@ -278,7 +283,26 @@ bool Graphics::InitializeScene()
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
 	}
+	
+	// Load index data
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * ARRAYSIZE(indices);
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
+	D3D11_SUBRESOURCE_DATA indexBufferData;
+	indexBufferData.pSysMem = indices;
+	hr = m_device->CreateBuffer(&indexBufferDesc, &indexBufferData, m_index_buffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create indices buffer.");
+		return hr;
+	}
+	
+	// Load texture
 	hr = DirectX::CreateWICTextureFromFile(
 		this->m_device.Get(),
 		L"Data\\Textures\\piano.png",
