@@ -5,6 +5,7 @@
 #include "vertex.h"
 #include "direct2d.h"
 #include <WICTextureLoader.h>
+#include "vertex_buffer.h"
 
 class Graphics
 {
@@ -23,8 +24,8 @@ private:
 
     VertexShader m_vertexshader;
     PixelShader m_pixelshader;
-
-    Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertex_buffer;
+	
+    VertexBuffer<Vertex> m_vertex_buffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_index_buffer;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
