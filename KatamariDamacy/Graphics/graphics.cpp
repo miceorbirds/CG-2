@@ -189,7 +189,13 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), NULL, 0);
 
 	UINT offset = 0;
-	
+
+	//Update Constant Buffer
+	m_const_buffer.data.x_offset = 0.0f;
+	m_const_buffer.data.y_offset = 0.5f;
+	if(!m_const_buffer.ApplyChanges())
+		return;
+	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_const_buffer.GetAddressOf());
 	// Square
 	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
 	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
@@ -287,6 +293,14 @@ bool Graphics::InitializeScene()
 		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
 		return false;
 	}
-	
+
+	//Initialize Constant Buffer(s)
+	hr = this->m_const_buffer.Initialize(m_device.Get(), m_device_context.Get());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize constant buffer.");
+		return false;
+	}
+
 	return true;
 }

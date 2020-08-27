@@ -7,6 +7,7 @@
 #include <WICTextureLoader.h>
 #include "vertex_buffer.h"
 #include "index_buffer.h"
+#include "const_buffer.h"
 
 class Graphics
 {
@@ -28,6 +29,7 @@ private:
 	
     VertexBuffer<Vertex> m_vertex_buffer;
     IndexBuffer m_index_buffer;
+    ConstantBuffer<CB_VS_vertexshader> m_const_buffer;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;

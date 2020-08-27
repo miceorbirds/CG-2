@@ -142,6 +142,8 @@
     <ClCompile Include="window_container.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\const_buffer.h" />
+    <ClInclude Include="Graphics\constant_buffer_types.h" />
     <ClInclude Include="graphics\direct2d.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="error_logger.h" />
