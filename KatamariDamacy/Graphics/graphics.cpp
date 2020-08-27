@@ -194,7 +194,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
 	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
 	this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	this->m_device_context->DrawIndexed(6, 0, 0);
+	this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
 
 	// direct2d
 	m_hud.Draw();
@@ -255,35 +255,21 @@ bool Graphics::InitializeScene()
 		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right [3]
 
 	};
-
-	DWORD indices[] =
-	{
-		0,1,2,
-		0,2,3
-	};
-
 	// Load vertex data
-
-
 	HRESULT hr = this->m_vertex_buffer.Initialize(this->m_device.Get(), v, ARRAYSIZE(v));
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create vertex buffer.");
 		return false;
 	}
-	
-	// Load index data
-	D3D11_BUFFER_DESC indexBufferDesc;
-	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(DWORD) * ARRAYSIZE(indices);
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA indexBufferData;
-	indexBufferData.pSysMem = indices;
-	hr = m_device->CreateBuffer(&indexBufferDesc, &indexBufferData, m_index_buffer.GetAddressOf());
+	DWORD indices[] =
+	{
+		0,1,2,
+		0,2,3
+	};
+	// Load index data
+	hr = this->m_index_buffer.Initialize(m_device.Get(),indices,ARRAYSIZE(indices));
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create indices buffer.");

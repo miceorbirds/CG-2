@@ -156,6 +156,7 @@
     <ClInclude Include="graphics\shaders.h" />
     <ClInclude Include="string_converter.h" />
     <ClInclude Include="graphics\vertex_buffer.h" />
+    <ClInclude Include="graphics\index_buffer.h" />
     <ClInclude Include="window_container.h" />
   </ItemGroup>
   <ItemGroup>
