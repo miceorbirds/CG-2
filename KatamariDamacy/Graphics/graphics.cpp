@@ -26,8 +26,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 	DXGI_SWAP_CHAIN_DESC swapchain_desc;
 	ZeroMemory(&swapchain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	swapchain_desc.BufferDesc.Width = m_window_width;
-	swapchain_desc.BufferDesc.Height = m_window_height;
+	swapchain_desc.BufferDesc.Width = this->m_window_width;
+	swapchain_desc.BufferDesc.Height = this->m_window_height;
 	swapchain_desc.BufferDesc.RefreshRate.Numerator = 60;
 	swapchain_desc.BufferDesc.RefreshRate.Denominator = 1;
 	swapchain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -82,8 +82,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 	//Describe our Depth/Stencil Buffer
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = m_window_width;
-	depthStencilDesc.Height = m_window_height;
+	depthStencilDesc.Width = this->m_window_width;
+	depthStencilDesc.Height = this->m_window_height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -132,8 +132,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = m_window_width;
-	viewport.Height = m_window_height;
+	viewport.Width = this->m_window_width;
+	viewport.Height = this->m_window_height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -193,8 +193,30 @@ void Graphics::RenderFrame()
 	UINT offset = 0;
 
 	//Update Constant Buffer
-	m_const_buffer.data.mat = DirectX::XMMatrixRotationRollPitchYaw(0.0f,0.0f,DirectX::XM_PIDIV2);
-	m_const_buffer.data.mat = DirectX::XMMatrixTranspose(m_const_buffer.data.mat);
+	auto world = DirectX::XMMatrixIdentity();
+	static auto eyePos = DirectX::XMVectorSet(0.0f, -4.0f, -2.0f, 0.0f);
+	DirectX::XMFLOAT3 eyePosFloat3{};
+	XMStoreFloat3(&eyePosFloat3, eyePos);
+	eyePosFloat3.y += 0.01f;
+	eyePos = DirectX::XMLoadFloat3(&eyePosFloat3);
+
+	static auto lookAtPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Look at center of the world
+	static auto upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //Positive Y Axis = Up
+	auto viewMatrix = DirectX::XMMatrixLookAtLH(eyePos, lookAtPos, upVector);
+	auto fovDegrees = 90.0f; //90 Degree Field of View
+	auto fovRadians = (fovDegrees / 360.0f) * DirectX::XM_2PI;
+	auto aspectRatio = static_cast<float>(this->m_window_width) / static_cast<float>(this->m_window_height);
+	auto nearZ = 0.1f;
+	auto farZ = 1000.0f;
+	auto projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
+
+
+	m_const_buffer.data.mat = world * viewMatrix * projectionMatrix;
+
+	
+	// Should transpose matrices from directX row major
+	// to column major so our shader guy will be happy
+	m_const_buffer.data.mat = XMMatrixTranspose(m_const_buffer.data.mat);
 	
 	if(!m_const_buffer.ApplyChanges())
 		return;
@@ -258,10 +280,10 @@ bool Graphics::InitializeScene()
 	// Textured Square
 	Vertex v[] =
 	{
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left  [0]
-		Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left    [1]
-		Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right    [2]
-		Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right [3]
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), //Bottom Left  [0]
+		Vertex(-0.5f,   0.5f, 0.0f, 0.0f, 0.0f), //Top Left    [1]
+		Vertex(0.5f,   0.5f, 0.0f, 1.0f, 0.0f), //Top Right    [2]
+		Vertex(0.5f,  -0.5f, 0.0f, 1.0f, 1.0f), //Bottom Right [3]
 
 	};
 	// Load vertex data
