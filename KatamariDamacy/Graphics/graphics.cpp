@@ -2,7 +2,9 @@
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
-	if(!InitializeDirectX(hwnd, width,height))
+	this->m_window_width = width;
+	this->m_window_height = height;
+	if(!InitializeDirectX(hwnd))
 		return false;
 	if(!m_hud.Initialize(m_render_target_view))
 		return false;
@@ -13,7 +15,7 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	return true;
 }
 
-bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
+bool Graphics::InitializeDirectX(HWND hwnd)
 {
 	auto adapters = AdapterReader::GetAdapters();
 	if(adapters.empty())
@@ -24,8 +26,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	DXGI_SWAP_CHAIN_DESC swapchain_desc;
 	ZeroMemory(&swapchain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	swapchain_desc.BufferDesc.Width = width;
-	swapchain_desc.BufferDesc.Height = height;
+	swapchain_desc.BufferDesc.Width = m_window_width;
+	swapchain_desc.BufferDesc.Height = m_window_height;
 	swapchain_desc.BufferDesc.RefreshRate.Numerator = 60;
 	swapchain_desc.BufferDesc.RefreshRate.Denominator = 1;
 	swapchain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -80,8 +82,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	//Describe our Depth/Stencil Buffer
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
+	depthStencilDesc.Width = m_window_width;
+	depthStencilDesc.Height = m_window_height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -130,8 +132,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = width;
-	viewport.Height = height;
+	viewport.Width = m_window_width;
+	viewport.Height = m_window_height;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -191,8 +193,9 @@ void Graphics::RenderFrame()
 	UINT offset = 0;
 
 	//Update Constant Buffer
-	m_const_buffer.data.x_offset = 0.0f;
-	m_const_buffer.data.y_offset = 0.5f;
+	m_const_buffer.data.mat = DirectX::XMMatrixRotationRollPitchYaw(0.0f,0.0f,DirectX::XM_PIDIV2);
+	m_const_buffer.data.mat = DirectX::XMMatrixTranspose(m_const_buffer.data.mat);
+	
 	if(!m_const_buffer.ApplyChanges())
 		return;
 	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_const_buffer.GetAddressOf());
@@ -210,7 +213,7 @@ void Graphics::RenderFrame()
 
 bool Graphics::InitializeShaders()
 {
-	std::wstring shaderfolder = L"";
+	std::wstring shaderfolder;
 #pragma region DetermineShaderPath
 	if (IsDebuggerPresent() == TRUE)
 	{

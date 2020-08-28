@@ -15,7 +15,7 @@ public:
     bool Initialize(HWND hwnd, int width, int height);
     void RenderFrame();
 private:
-    bool InitializeDirectX(HWND hwnd, int width, int height);
+    bool InitializeDirectX(HWND hwnd);
     bool InitializeShaders();
     bool InitializeScene();
 
@@ -41,5 +41,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
  
     Direct2D m_hud;
+
+    int m_window_width {0};
+    int m_window_height {0};
 
 };
