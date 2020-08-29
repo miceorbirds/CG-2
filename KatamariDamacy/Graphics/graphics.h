@@ -8,6 +8,7 @@
 #include "vertex_buffer.h"
 #include "index_buffer.h"
 #include "const_buffer.h"
+#include "camera.h"
 
 class Graphics
 {
@@ -41,6 +42,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
  
     Direct2D m_hud;
+    Camera m_camera;
 
     int m_window_width {0};
     int m_window_height {0};

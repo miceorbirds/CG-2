@@ -193,25 +193,9 @@ void Graphics::RenderFrame()
 	UINT offset = 0;
 
 	//Update Constant Buffer
-	auto world = DirectX::XMMatrixIdentity();
-	static auto eyePos = DirectX::XMVectorSet(0.0f, -4.0f, -2.0f, 0.0f);
-	DirectX::XMFLOAT3 eyePosFloat3{};
-	XMStoreFloat3(&eyePosFloat3, eyePos);
-	eyePosFloat3.y += 0.01f;
-	eyePos = DirectX::XMLoadFloat3(&eyePosFloat3);
-
-	static auto lookAtPos = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f); //Look at center of the world
-	static auto upVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f); //Positive Y Axis = Up
-	auto viewMatrix = DirectX::XMMatrixLookAtLH(eyePos, lookAtPos, upVector);
-	auto fovDegrees = 90.0f; //90 Degree Field of View
-	auto fovRadians = (fovDegrees / 360.0f) * DirectX::XM_2PI;
-	auto aspectRatio = static_cast<float>(this->m_window_width) / static_cast<float>(this->m_window_height);
-	auto nearZ = 0.1f;
-	auto farZ = 1000.0f;
-	auto projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
-
-
-	m_const_buffer.data.mat = world * viewMatrix * projectionMatrix;
+	auto world = XMMatrixIdentity();
+	m_camera.AdjustPosition(0.0f, 0.01f, 0.0f);
+	m_const_buffer.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
 
 	
 	// Should transpose matrices from directX row major
@@ -326,6 +310,9 @@ bool Graphics::InitializeScene()
 		ErrorLogger::Log(hr, "Failed to initialize constant buffer.");
 		return false;
 	}
+
+	m_camera.SetPosition(0.0f, 0.0f, -2.0f);
+	m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width)/static_cast<float>(m_window_height),0.1f, 1000.f);
 
 	return true;
 }
