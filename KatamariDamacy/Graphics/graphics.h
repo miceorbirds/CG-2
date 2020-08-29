@@ -15,6 +15,8 @@ class Graphics
 public:
     bool Initialize(HWND hwnd, int width, int height);
     void RenderFrame();
+
+    Camera m_camera;
 private:
     bool InitializeDirectX(HWND hwnd);
     bool InitializeShaders();
@@ -42,7 +44,6 @@ private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
  
     Direct2D m_hud;
-    Camera m_camera;
 
     int m_window_width {0};
     int m_window_height {0};

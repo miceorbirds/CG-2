@@ -194,8 +194,7 @@ void Graphics::RenderFrame()
 
 	//Update Constant Buffer
 	auto world = XMMatrixIdentity();
-	m_camera.AdjustPosition(0.01f, 0.0f, 0.0f);
-	m_camera.SetLookAtPos(XMFLOAT3(.0f,.0f,.0f));
+
 	m_const_buffer.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
 
 	
