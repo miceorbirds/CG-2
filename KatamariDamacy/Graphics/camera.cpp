@@ -105,6 +105,34 @@ void Camera::AdjustRotation(float x, float y, float z)
 	this->UpdateViewMatrix();
 }
 
+void Camera::SetLookAtPos(XMFLOAT3 look_at_pos)
+{
+	//Verify that look at pos is not the same as cam pos. They cannot be the same as that wouldn't make sense and would result in undefined behavior.
+	if (look_at_pos.x == this->m_pos.x && look_at_pos.y == this->m_pos.y && look_at_pos.z == this->m_pos.z)
+		return;
+
+	look_at_pos.x = this->m_pos.x - look_at_pos.x;
+	look_at_pos.y = this->m_pos.y - look_at_pos.y;
+	look_at_pos.z = this->m_pos.z - look_at_pos.z;
+
+	auto pitch = 0.0f;
+	if (look_at_pos.y != 0.0f)
+	{
+		const float distance = sqrt(look_at_pos.x * look_at_pos.x + look_at_pos.z * look_at_pos.z);
+		pitch = atan(look_at_pos.y / distance);
+	}
+
+	auto yaw = 0.0f;
+	if (look_at_pos.x != 0.0f)
+	{
+		yaw = atan(look_at_pos.x / look_at_pos.z);
+	}
+	if (look_at_pos.z > 0)
+		yaw += XM_PI;
+
+	this->SetRotation(pitch, yaw, 0.0f);
+}
+
 void Camera::UpdateViewMatrix() //Updates view matrix and also updates the movement vectors
 {
 	//Calculate camera rotation matrix
