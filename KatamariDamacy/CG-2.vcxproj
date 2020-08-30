@@ -140,6 +140,7 @@
     <ClCompile Include="render_window.cpp" />
     <ClCompile Include="graphics\shaders.cpp" />
     <ClCompile Include="string_converter.cpp" />
+    <ClCompile Include="Graphics\timer.cpp" />
     <ClCompile Include="window_container.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="string_converter.h" />
     <ClInclude Include="graphics\vertex_buffer.h" />
     <ClInclude Include="graphics\index_buffer.h" />
+    <ClInclude Include="Graphics\timer.h" />
     <ClInclude Include="window_container.h" />
   </ItemGroup>
   <ItemGroup>
