@@ -13,6 +13,15 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 		return false;
 	if (!InitializeScene())
 		return false;
+
+	//Setup ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	auto& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX11_Init(this->m_device.Get(), this->m_device_context.Get());
+	ImGui::StyleColorsLight();
+	
 	return true;
 }
 
@@ -224,6 +233,18 @@ void Graphics::RenderFrame()
 	}
 	m_hud.RenderText(fpsString);
 	m_hud.Draw();
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	//Create ImGui Test Window
+	ImGui::Begin("Test");
+	ImGui::End();
+	//Assemble Together Draw Data
+	ImGui::Render();
+	//Render Draw Data
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	
 	this->m_swapchain->Present(1, NULL);
 }

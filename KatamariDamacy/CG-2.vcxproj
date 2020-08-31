@@ -132,6 +132,11 @@
     <ClCompile Include="error_logger.cpp" />
     <ClCompile Include="graphics\adapter_reader.cpp" />
     <ClCompile Include="graphics\graphics.cpp" />
+    <ClCompile Include="Graphics\ImGui\imgui.cpp" />
+    <ClCompile Include="Graphics\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="Graphics\ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Graphics\ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Graphics\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="keyboard\keyboard_class.cpp" />
     <ClCompile Include="keyboard\keyboard_event.cpp" />
     <ClCompile Include="main.cpp" />
@@ -152,6 +157,14 @@
     <ClInclude Include="error_logger.h" />
     <ClInclude Include="graphics\adapter_reader.h" />
     <ClInclude Include="graphics\graphics.h" />
+    <ClInclude Include="Graphics\ImGui\imconfig.h" />
+    <ClInclude Include="Graphics\ImGui\imgui.h" />
+    <ClInclude Include="Graphics\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="Graphics\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="Graphics\ImGui\imgui_internal.h" />
+    <ClInclude Include="Graphics\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Graphics\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Graphics\ImGui\imstb_truetype.h" />
     <ClInclude Include="graphics\vertex.h" />
     <ClInclude Include="keyboard\keyboard_class.h" />
     <ClInclude Include="keyboard\keyboard_event.h" />

@@ -10,6 +10,9 @@
 #include "const_buffer.h"
 #include "camera.h"
 #include "../timer.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_win32.h"
+#include "ImGui/imgui_impl_dx11.h"
 
 class Graphics
 {
