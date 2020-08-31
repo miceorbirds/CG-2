@@ -4,6 +4,7 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
 	this->m_window_width = width;
 	this->m_window_height = height;
+	this->m_fps_timer.Start();
 	if(!InitializeDirectX(hwnd))
 		return false;
 	if(!m_hud.Initialize(m_render_target_view))
@@ -212,6 +213,16 @@ void Graphics::RenderFrame()
 	this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
 
 	// direct2d
+	static auto fpsCounter = 0;
+	static std::string fpsString = "FPS: 0";
+	fpsCounter += 1;
+	if (m_fps_timer.GetMilisecondsElapsed() > 1000.0)
+	{
+		fpsString = "FPS: " + std::to_string(fpsCounter);
+		fpsCounter = 0;
+		m_fps_timer.Restart();
+	}
+	m_hud.RenderText(fpsString);
 	m_hud.Draw();
 	
 	this->m_swapchain->Present(1, NULL);

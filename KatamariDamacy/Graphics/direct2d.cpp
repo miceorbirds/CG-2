@@ -162,3 +162,17 @@ void Direct2D::Draw()
         ErrorLogger::Log(hr, "Failed to end draw direct2D");
 	}
 }
+
+void Direct2D::RenderText(std::string text)
+{
+	auto text_length = static_cast<UINT32>(text.length());
+	auto hr = m_dwrite_factory->CreateTextLayout(
+        StringConverter::StringToWide(text).c_str(), 
+        text_length, m_text_format.Get(),
+        200, 100, m_text_layout.GetAddressOf());
+
+    if (FAILED(hr))
+    {
+        ErrorLogger::Log(hr, "Failed to create text layout");
+    }
+}

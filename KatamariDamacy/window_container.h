@@ -17,6 +17,5 @@ protected:
     KeyboardClass m_keyboard;
     MouseClass m_mouse;
     Graphics m_gfx;
-private:
 
 };
