@@ -203,7 +203,8 @@ void Graphics::RenderFrame()
 	UINT offset = 0;
 
 	//Update Constant Buffer
-	auto world = XMMatrixIdentity();
+	static float translation_offset[3] = { 0,0,0 };
+	auto world = XMMatrixTranslation(translation_offset[0],translation_offset[1],translation_offset[2]);
 
 	m_const_buffer.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
 
@@ -234,12 +235,21 @@ void Graphics::RenderFrame()
 	m_hud.RenderText(fpsString);
 	m_hud.Draw();
 
+
+	static int counter = 0;
 	// Start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	//Create ImGui Test Window
 	ImGui::Begin("Test");
+	ImGui::Text("This is example text.");
+	if (ImGui::Button("CLICK ME!"))
+		counter += 1;
+	ImGui::SameLine();
+	auto clickCount = "Click Count: " + std::to_string(counter);
+	ImGui::Text(clickCount.c_str());
+	ImGui::DragFloat3("Translation X/Y/Z", translation_offset, 0.1f, -5.0f, 5.0f);
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -347,4 +357,14 @@ bool Graphics::InitializeScene()
 	m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width)/static_cast<float>(m_window_height),0.1f, 1000.f);
 
 	return true;
+}
+
+Graphics::~Graphics()
+{
+	if (nullptr != ImGui::GetCurrentContext())
+	{
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
 }

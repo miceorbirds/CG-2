@@ -12,7 +12,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_buffer;
 	UINT m_buffer_size = 0;
 public:
-	IndexBuffer() {}
+	IndexBuffer() = default;
 
 	ID3D11Buffer* Get()const
 	{
@@ -31,6 +31,8 @@ public:
 
 	HRESULT Initialize(ID3D11Device* device, DWORD* data, UINT numIndices)
 	{
+		if (m_buffer.Get() != nullptr)
+			m_buffer.Reset();
 		this->m_buffer_size = numIndices;
 		//Load Index Data
 		D3D11_BUFFER_DESC indexBufferDesc;

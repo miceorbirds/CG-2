@@ -10,8 +10,6 @@ class ConstantBuffer
 private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
 
-private:
-
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_buffer;
 	ID3D11DeviceContext* m_device_context = nullptr;
 
@@ -32,6 +30,8 @@ public:
 
 	HRESULT Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	{
+		if (m_buffer.Get() != nullptr)
+			m_buffer.Reset();
 		this->m_device_context = deviceContext;
 
 		D3D11_BUFFER_DESC desc;

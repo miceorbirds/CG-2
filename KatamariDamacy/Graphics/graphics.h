@@ -19,7 +19,7 @@ class Graphics
 public:
     bool Initialize(HWND hwnd, int width, int height);
     void RenderFrame();
-
+    ~Graphics();
 	
     Camera m_camera;
 private:
@@ -27,7 +27,6 @@ private:
     bool InitializeShaders();
     bool InitializeScene();
 
-	
     Microsoft::WRL::ComPtr<ID3D11Device> m_device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
     Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapchain;
@@ -52,5 +51,4 @@ private:
 
     int m_window_width {0};
     int m_window_height {0};
-
 };
