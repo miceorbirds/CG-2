@@ -91,20 +91,20 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	}
 
 	//Describe our Depth/Stencil Buffer
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = this->m_window_width;
-	depthStencilDesc.Height = this->m_window_height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
+	D3D11_TEXTURE2D_DESC depth_stencil_desc;
+	depth_stencil_desc.Width = this->m_window_width;
+	depth_stencil_desc.Height = this->m_window_height;
+	depth_stencil_desc.MipLevels = 1;
+	depth_stencil_desc.ArraySize = 1;
+	depth_stencil_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depth_stencil_desc.SampleDesc.Count = 1;
+	depth_stencil_desc.SampleDesc.Quality = 0;
+	depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;
+	depth_stencil_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depth_stencil_desc.CPUAccessFlags = 0;
+	depth_stencil_desc.MiscFlags = 0;
 
-	hr = this->m_device->CreateTexture2D(&depthStencilDesc, NULL, this->m_depth_stencil_buffer.GetAddressOf());
+	hr = this->m_device->CreateTexture2D(&depth_stencil_desc, NULL, this->m_depth_stencil_buffer.GetAddressOf());
 	if (FAILED(hr)) //If error occurred
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil buffer.");
@@ -122,14 +122,14 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 
 	// Create depth stencil state
-	D3D11_DEPTH_STENCIL_DESC depthstencildesc;
-	ZeroMemory(&depthstencildesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	D3D11_DEPTH_STENCIL_DESC stencil_desc;
+	ZeroMemory(&stencil_desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
-	depthstencildesc.DepthEnable = true;
-	depthstencildesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
-	depthstencildesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+	stencil_desc.DepthEnable = true;
+	stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	stencil_desc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
 
-	hr = this->m_device->CreateDepthStencilState(&depthstencildesc, this->m_depth_stencil_state.GetAddressOf());
+	hr = this->m_device->CreateDepthStencilState(&stencil_desc, this->m_depth_stencil_state.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil state.");
@@ -152,29 +152,54 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	
 
 	//Create Rasterizer State
-	D3D11_RASTERIZER_DESC rasterizerDesc;
-	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+	D3D11_RASTERIZER_DESC rasterizer_desc;
+	ZeroMemory(&rasterizer_desc, sizeof(D3D11_RASTERIZER_DESC));
 
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_NONE;
-	hr = this->m_device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizer_state.GetAddressOf());
+	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+	rasterizer_desc.CullMode = D3D11_CULL_NONE;
+	hr = this->m_device->CreateRasterizerState(&rasterizer_desc, this->m_rasterizer_state.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create rasterizer state.");
 		return false;
 	}
 
+	// Create Blend State
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(blendDesc));
+
+	D3D11_RENDER_TARGET_BLEND_DESC render_target_blend_desc;
+	ZeroMemory(&render_target_blend_desc, sizeof(render_target_blend_desc));
+
+	render_target_blend_desc.BlendEnable = true;
+	render_target_blend_desc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	render_target_blend_desc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	render_target_blend_desc.BlendOp = D3D11_BLEND_OP_ADD;
+	render_target_blend_desc.SrcBlendAlpha = D3D11_BLEND_ONE;
+	render_target_blend_desc.DestBlendAlpha = D3D11_BLEND_ZERO;
+	render_target_blend_desc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	render_target_blend_desc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	blendDesc.RenderTarget[0] = render_target_blend_desc;
+
+	hr = this->m_device->CreateBlendState(&blendDesc, this->m_blend_state.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create blend state.");
+		return false;
+	}
+
 	//Create sampler description for sampler state
-	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = this->m_device->CreateSamplerState(&sampDesc, this->m_sampler_state.GetAddressOf()); //Create sampler state
+	D3D11_SAMPLER_DESC sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampler_desc.MinLOD = 0;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state.GetAddressOf()); //Create sampler state
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create sampler state.");
@@ -195,8 +220,8 @@ void Graphics::RenderFrame()
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
+	this->m_device_context->OMSetBlendState(this->m_blend_state.Get(),NULL,0xFFF);
 	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
-	
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), NULL, 0);
 
@@ -206,16 +231,21 @@ void Graphics::RenderFrame()
 	static float translation_offset[3] = { 0,0,0 };
 	auto world = XMMatrixTranslation(translation_offset[0],translation_offset[1],translation_offset[2]);
 
-	m_const_buffer.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
-
-	
+	m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
 	// Should transpose matrices from directX row major
 	// to column major so our shader guy will be happy
-	m_const_buffer.data.mat = XMMatrixTranspose(m_const_buffer.data.mat);
+	m_cb_vs_vertexshader.data.mat = XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
 	
-	if(!m_const_buffer.ApplyChanges())
+	if(!m_cb_vs_vertexshader.ApplyChanges())
 		return;
-	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_const_buffer.GetAddressOf());
+
+	static auto alpha = 0.1f;
+	this->m_cb_ps_pixelshader.data.alpha = alpha;
+	this->m_cb_ps_pixelshader.ApplyChanges();
+	
+	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
+
 	// Square
 	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
 	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
@@ -243,13 +273,7 @@ void Graphics::RenderFrame()
 	ImGui::NewFrame();
 	//Create ImGui Test Window
 	ImGui::Begin("Test");
-	ImGui::Text("This is example text.");
-	if (ImGui::Button("CLICK ME!"))
-		counter += 1;
-	ImGui::SameLine();
-	auto clickCount = "Click Count: " + std::to_string(counter);
-	ImGui::Text(clickCount.c_str());
-	ImGui::DragFloat3("Translation X/Y/Z", translation_offset, 0.1f, -5.0f, 5.0f);
+	ImGui::DragFloat("Alpha", &alpha, 0.1f, 0.0f, 1.0f);
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -334,7 +358,7 @@ bool Graphics::InitializeScene()
 	}
 	
 	// Load texture
-	hr = DirectX::CreateWICTextureFromFile(
+	hr = CreateWICTextureFromFile(
 		this->m_device.Get(),
 		L"Data\\Textures\\piano.png",
 		nullptr,
@@ -346,10 +370,16 @@ bool Graphics::InitializeScene()
 	}
 
 	//Initialize Constant Buffer(s)
-	hr = this->m_const_buffer.Initialize(m_device.Get(), m_device_context.Get());
+	hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 	if (FAILED(hr))
 	{
-		ErrorLogger::Log(hr, "Failed to initialize constant buffer.");
+		ErrorLogger::Log(hr, "Failed to initialize CB_VS_vertexshader constant buffer.");
+		return false;
+	}
+	hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to initialize CB_PS_pixelshader constant buffer.");
 		return false;
 	}
 

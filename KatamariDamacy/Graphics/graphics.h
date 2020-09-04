@@ -37,12 +37,14 @@ private:
 	
     VertexBuffer<Vertex> m_vertex_buffer;
     IndexBuffer m_index_buffer;
-    ConstantBuffer<CB_VS_vertexshader> m_const_buffer;
+    ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
+    ConstantBuffer <CB_PS_pixelshader> m_cb_ps_pixelshader;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
+    Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
  
