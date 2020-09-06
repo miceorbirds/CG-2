@@ -126,8 +126,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	ZeroMemory(&stencil_desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
 	stencil_desc.DepthEnable = true;
-	stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
-	stencil_desc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+	stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	hr = this->m_device->CreateDepthStencilState(&stencil_desc, this->m_depth_stencil_state.GetAddressOf());
 	if (FAILED(hr))
@@ -156,14 +156,25 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	ZeroMemory(&rasterizer_desc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
-	rasterizer_desc.CullMode = D3D11_CULL_NONE;
+	rasterizer_desc.CullMode = D3D11_CULL_BACK;
 	hr = this->m_device->CreateRasterizerState(&rasterizer_desc, this->m_rasterizer_state.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create rasterizer state.");
 		return false;
 	}
+	//Create Rasterizer State for culling front
+	D3D11_RASTERIZER_DESC rasterizerDesc_CullFront;
+	ZeroMemory(&rasterizerDesc_CullFront, sizeof(D3D11_RASTERIZER_DESC));
 
+	rasterizerDesc_CullFront.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	rasterizerDesc_CullFront.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
+	hr = this->m_device->CreateRasterizerState(&rasterizerDesc_CullFront, this->m_rasterizer_state_cull_front.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create rasterizer state.");
+		return false;
+	}
 	// Create Blend State
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(blendDesc));
@@ -227,34 +238,13 @@ void Graphics::RenderFrame()
 
 	UINT offset = 0;
 	
-	{ //Pavement
-		//Update Constant Buffer
-		static float translationOffset[3] = { 0, 0, 4.0 };
-		auto world = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
-		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
-		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
-
-		if (!m_cb_vs_vertexshader.ApplyChanges())
-			return;
-		this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
-
-		this->m_cb_ps_pixelshader.data.alpha = 1.0f;
-		this->m_cb_ps_pixelshader.ApplyChanges();
-		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
-
-		//Square
-		this->m_device_context->PSSetShaderResources(0, 1, this->m_pavement_texture.GetAddressOf());
-		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
-		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
-	}
 	static auto alpha = 0.5f;
-	{ //Pink Texture
+	{ //Pavement cube
 		//Update Constant Buffer
 		static float translationOffset[3] = { 0, 0, -1.0f };
 		auto world = XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
 		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
-		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
+		m_cb_vs_vertexshader.data.mat = XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
 
 		if (!m_cb_vs_vertexshader.ApplyChanges())
 			return;
@@ -265,30 +255,13 @@ void Graphics::RenderFrame()
 		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
 
 		//Square
-		this->m_device_context->PSSetShaderResources(0, 1, this->m_pink_texture.GetAddressOf());
+		this->m_device_context->PSSetShaderResources(0, 1, this->m_pavement_texture.GetAddressOf());
 		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
 		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		this->m_device_context->RSSetState(this->m_rasterizer_state_cull_front.Get());
 		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
-	}
-	{ //Grass
-		//Update Constant Buffer
-		static float translationOffset[3] = { 0, 0, 0 };
-		auto world = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
-		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
-		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
+		this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 
-		if (!m_cb_vs_vertexshader.ApplyChanges())
-			return;
-		this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
-
-		this->m_cb_ps_pixelshader.data.alpha = 1.f;
-		this->m_cb_ps_pixelshader.ApplyChanges();
-		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
-
-		//Square
-		this->m_device_context->PSSetShaderResources(0, 1, this->m_grass_texture.GetAddressOf());
-		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
-		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
 	}
 	
@@ -372,11 +345,14 @@ bool Graphics::InitializeScene()
 	// Textured Square
 	Vertex v[] =
 	{
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), //Bottom Left  [0]
-		Vertex(-0.5f,   0.5f, 0.0f, 0.0f, 0.0f), //Top Left    [1]
-		Vertex(0.5f,   0.5f, 0.0f, 1.0f, 0.0f), //Top Right    [2]
-		Vertex(0.5f,  -0.5f, 0.0f, 1.0f, 1.0f), //Bottom Right [3]
-
+		Vertex(-0.5f,  -0.5f, -0.5f, 0.0f, 1.0f), //FRONT Bottom Left   - [0]
+		Vertex(-0.5f,   0.5f, -0.5f, 0.0f, 0.0f), //FRONT Top Left      - [1]
+		Vertex(0.5f,   0.5f, -0.5f, 1.0f, 0.0f), //FRONT Top Right     - [2]
+		Vertex(0.5f,  -0.5f, -0.5f, 1.0f, 1.0f), //FRONT Bottom Right   - [3]
+		Vertex(-0.5f,  -0.5f, 0.5f, 0.0f, 1.0f), //BACK Bottom Left   - [4]
+		Vertex(-0.5f,   0.5f, 0.5f, 0.0f, 0.0f), //BACK Top Left      - [5]
+		Vertex(0.5f,   0.5f, 0.5f, 1.0f, 0.0f), //BACK Top Right     - [6]
+		Vertex(0.5f,  -0.5f, 0.5f, 1.0f, 1.0f), //BACK Bottom Right   - [7]
 	};
 	// Load vertex data
 	HRESULT hr = this->m_vertex_buffer.Initialize(this->m_device.Get(), v, ARRAYSIZE(v));
@@ -388,8 +364,18 @@ bool Graphics::InitializeScene()
 
 	DWORD indices[] =
 	{
-		0,1,2,
-		0,2,3
+		0, 1, 2, //FRONT
+		0, 2, 3, //FRONT
+		4, 7, 6, //BACK 
+		4, 6, 5, //BACK
+		3, 2, 6, //RIGHT SIDE
+		3, 6, 7, //RIGHT SIDE
+		4, 5, 1, //LEFT SIDE
+		4, 1, 0, //LEFT SIDE
+		1, 5, 6, //TOP
+		1, 6, 2, //TOP
+		0, 3, 7, //BOTTOM
+		0, 7, 4, //BOTTOM
 	};
 	// Load index data
 	hr = this->m_index_buffer.Initialize(m_device.Get(),indices,ARRAYSIZE(indices));

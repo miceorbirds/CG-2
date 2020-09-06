@@ -44,6 +44,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state_cull_front;
     Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pink_texture;
