@@ -46,8 +46,10 @@ private:
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
     Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
- 
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pink_texture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_grass_texture;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pavement_texture;
+	
     Direct2D m_hud;
     Timer m_fps_timer;
 

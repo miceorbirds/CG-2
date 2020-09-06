@@ -91,20 +91,20 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 	}
 
 	//Describe our Depth/Stencil Buffer
-	D3D11_TEXTURE2D_DESC depth_stencil_desc;
-	depth_stencil_desc.Width = this->m_window_width;
-	depth_stencil_desc.Height = this->m_window_height;
-	depth_stencil_desc.MipLevels = 1;
-	depth_stencil_desc.ArraySize = 1;
-	depth_stencil_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depth_stencil_desc.SampleDesc.Count = 1;
-	depth_stencil_desc.SampleDesc.Quality = 0;
-	depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;
-	depth_stencil_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depth_stencil_desc.CPUAccessFlags = 0;
-	depth_stencil_desc.MiscFlags = 0;
+	D3D11_TEXTURE2D_DESC depth_stencil_texture_desc;
+	depth_stencil_texture_desc.Width = this->m_window_width;
+	depth_stencil_texture_desc.Height = this->m_window_height;
+	depth_stencil_texture_desc.MipLevels = 1;
+	depth_stencil_texture_desc.ArraySize = 1;
+	depth_stencil_texture_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depth_stencil_texture_desc.SampleDesc.Count = 1;
+	depth_stencil_texture_desc.SampleDesc.Quality = 0;
+	depth_stencil_texture_desc.Usage = D3D11_USAGE_DEFAULT;
+	depth_stencil_texture_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depth_stencil_texture_desc.CPUAccessFlags = 0;
+	depth_stencil_texture_desc.MiscFlags = 0;
 
-	hr = this->m_device->CreateTexture2D(&depth_stencil_desc, NULL, this->m_depth_stencil_buffer.GetAddressOf());
+	hr = this->m_device->CreateTexture2D(&depth_stencil_texture_desc, NULL, this->m_depth_stencil_buffer.GetAddressOf());
 	if (FAILED(hr)) //If error occurred
 	{
 		ErrorLogger::Log(hr, "Failed to create depth stencil buffer.");
@@ -217,7 +217,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
-	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
 	this->m_device_context->OMSetBlendState(this->m_blend_state.Get(),NULL,0xFFF);
@@ -226,32 +226,74 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), NULL, 0);
 
 	UINT offset = 0;
-
-	//Update Constant Buffer
-	static float translation_offset[3] = { 0,0,0 };
-	auto world = XMMatrixTranslation(translation_offset[0],translation_offset[1],translation_offset[2]);
-
-	m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
-	// Should transpose matrices from directX row major
-	// to column major so our shader guy will be happy
-	m_cb_vs_vertexshader.data.mat = XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
 	
-	if(!m_cb_vs_vertexshader.ApplyChanges())
-		return;
+	{ //Pavement
+		//Update Constant Buffer
+		static float translationOffset[3] = { 0, 0, 4.0 };
+		auto world = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
+		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
+		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
 
-	static auto alpha = 0.1f;
-	this->m_cb_ps_pixelshader.data.alpha = alpha;
-	this->m_cb_ps_pixelshader.ApplyChanges();
+		if (!m_cb_vs_vertexshader.ApplyChanges())
+			return;
+		this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+
+		this->m_cb_ps_pixelshader.data.alpha = 1.0f;
+		this->m_cb_ps_pixelshader.ApplyChanges();
+		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
+
+		//Square
+		this->m_device_context->PSSetShaderResources(0, 1, this->m_pavement_texture.GetAddressOf());
+		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
+		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
+	}
+	static auto alpha = 0.5f;
+	{ //Pink Texture
+		//Update Constant Buffer
+		static float translationOffset[3] = { 0, 0, -1.0f };
+		auto world = XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
+		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
+		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
+
+		if (!m_cb_vs_vertexshader.ApplyChanges())
+			return;
+		this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+
+		this->m_cb_ps_pixelshader.data.alpha = alpha;
+		this->m_cb_ps_pixelshader.ApplyChanges();
+		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
+
+		//Square
+		this->m_device_context->PSSetShaderResources(0, 1, this->m_pink_texture.GetAddressOf());
+		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
+		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
+	}
+	{ //Grass
+		//Update Constant Buffer
+		static float translationOffset[3] = { 0, 0, 0 };
+		auto world = XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(translationOffset[0], translationOffset[1], translationOffset[2]);
+		m_cb_vs_vertexshader.data.mat = world * m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix();
+		m_cb_vs_vertexshader.data.mat = DirectX::XMMatrixTranspose(m_cb_vs_vertexshader.data.mat);
+
+		if (!m_cb_vs_vertexshader.ApplyChanges())
+			return;
+		this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+
+		this->m_cb_ps_pixelshader.data.alpha = 1.f;
+		this->m_cb_ps_pixelshader.ApplyChanges();
+		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
+
+		//Square
+		this->m_device_context->PSSetShaderResources(0, 1, this->m_grass_texture.GetAddressOf());
+		this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
+		this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
+	}
 	
-	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
-	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pixelshader.GetAddressOf());
-
-	// Square
-	this->m_device_context->PSSetShaderResources(0, 1, this->m_texture.GetAddressOf());
-	this->m_device_context->IASetVertexBuffers(0, 1, m_vertex_buffer.GetAddressOf(), m_vertex_buffer.StridePtr(), &offset);
-	this->m_device_context->IASetIndexBuffer(m_index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	this->m_device_context->DrawIndexed(m_index_buffer.BufferSize(), 0, 0);
-
+	
+	
 	// direct2d
 	static auto fpsCounter = 0;
 	static std::string fpsString = "FPS: 0";
@@ -354,21 +396,31 @@ bool Graphics::InitializeScene()
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create indices buffer.");
-		return hr;
+		return false;
 	}
+
 	
-	// Load texture
-	hr = CreateWICTextureFromFile(
-		this->m_device.Get(),
-		L"Data\\Textures\\piano.png",
-		nullptr,
-		m_texture.GetAddressOf());
+	// Load textures
+	hr = CreateWICTextureFromFile(this->m_device.Get(), L"Data\\Textures\\seamless_grass.jpg", nullptr, m_grass_texture.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
+		return false;
+	}
+	hr = CreateWICTextureFromFile(this->m_device.Get(), L"Data\\Textures\\pinksquare.jpg", nullptr, m_pink_texture.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
+		return false;
+	}
+	hr = CreateWICTextureFromFile(this->m_device.Get(), L"Data\\Textures\\seamless_pavement.jpg", nullptr, m_pavement_texture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to create wic texture from file.");
 		return false;
 	}
 
+	
 	//Initialize Constant Buffer(s)
 	hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 	if (FAILED(hr))
