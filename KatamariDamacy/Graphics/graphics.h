@@ -2,17 +2,14 @@
 
 #include "adapter_reader.h"
 #include "shaders.h"
-#include "vertex.h"
 #include "direct2d.h"
 #include <WICTextureLoader.h>
-#include "vertex_buffer.h"
-#include "index_buffer.h"
-#include "const_buffer.h"
 #include "camera.h"
 #include "../timer.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_impl_dx11.h"
+#include "model.h"
 
 class Graphics
 {
@@ -35,10 +32,9 @@ private:
     VertexShader m_vertexshader;
     PixelShader m_pixelshader;
 	
-    VertexBuffer<Vertex> m_vertex_buffer;
-    IndexBuffer m_index_buffer;
     ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
     ConstantBuffer <CB_PS_pixelshader> m_cb_ps_pixelshader;
+    Model m_model;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;

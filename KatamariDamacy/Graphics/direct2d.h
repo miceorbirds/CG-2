@@ -29,7 +29,6 @@ private:
     const wchar_t* m_text = L"Hello";
     UINT32 m_text_length{ 0 };
 
-    Microsoft::WRL::ComPtr<ID2D1RectangleGeometry> m_rectangle_geometry;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_brush_1;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_brush_2;
     D2D1_POINT_2F m_origin { D2D1::Point2F(30, 30) };
