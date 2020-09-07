@@ -5,12 +5,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					  _In_ PWSTR    lpCmdLine,
 					  _In_ int       nCmdShow)
 {
-	HRESULT hr = CoInitialize(NULL);
+	auto hr = CoInitialize(NULL);
 	if (FAILED(hr))
 	{
 		ErrorLogger::Log(hr, "Failed to call CoInitialize.");
 		return -1;
 	}
+
+	COMException exception(0, "Hello mew!", __FILE__, __FUNCTION__, __LINE__);
+	ErrorLogger::Log(exception);
 	
 	Engine engine;
 	if (engine.Initialize(hInstance, "Hello World", "MyWindowClass", 800, 600))

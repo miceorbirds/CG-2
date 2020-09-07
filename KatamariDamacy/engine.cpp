@@ -4,13 +4,9 @@ bool Engine::Initialize(HINSTANCE hInstance, std::string window_title, std::stri
 {
 	m_timer.Start();
 	if (!this->m_render_window.Initialize(this, hInstance, window_title, window_class, width, height))
-	{
 		return false;
-	};
 	if (!m_gfx.Initialize(this->m_render_window.GetHWND(), width, height))
-	{
 		return false;
-	}
 	return true;
 }
 

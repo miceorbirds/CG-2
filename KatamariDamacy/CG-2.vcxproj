@@ -149,6 +149,7 @@
     <ClCompile Include="window_container.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="com_exception.h" />
     <ClInclude Include="Graphics\camera.h" />
     <ClInclude Include="Graphics\const_buffer.h" />
     <ClInclude Include="Graphics\constant_buffer_types.h" />
