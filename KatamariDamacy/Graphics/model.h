@@ -12,7 +12,7 @@ class Model
 public:
 	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	void SetTexture(ID3D11ShaderResourceView* texture);
-	void Draw(const XMMATRIX& view_projection_matrix);
+	void Draw(const XMMATRIX& view_projection_matrix) const;
 private:
 	void UpdateWorldMatrix();
 

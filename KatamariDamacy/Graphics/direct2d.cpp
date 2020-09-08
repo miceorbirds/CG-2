@@ -71,7 +71,7 @@ bool Direct2D::Initialize(Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_
 	return true;
 }
 
-void Direct2D::Draw()
+void Direct2D::Draw() const
 {
 	try
 	{

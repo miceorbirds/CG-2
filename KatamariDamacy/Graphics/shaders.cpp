@@ -30,17 +30,17 @@ bool VertexShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std:
 	return true;
 }
 
-ID3D11VertexShader* VertexShader::GetShader()
+ID3D11VertexShader* VertexShader::GetShader() const
 {
 	return this->m_shader.Get();
 }
 
-ID3D10Blob* VertexShader::GetBuffer()
+ID3D10Blob* VertexShader::GetBuffer() const
 {
 	return this->m_shader_buffer.Get();
 }
 
-ID3D11InputLayout* VertexShader::GetInputLayout()
+ID3D11InputLayout* VertexShader::GetInputLayout() const
 {
 
 	return this->m_input_layout.Get();
@@ -70,12 +70,12 @@ bool PixelShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::
 	return true;
 }
 
-ID3D11PixelShader* PixelShader::GetShader()
+ID3D11PixelShader* PixelShader::GetShader() const
 {
 	return this->m_shader.Get();
 }
 
-ID3D10Blob* PixelShader::GetBuffer()
+ID3D10Blob* PixelShader::GetBuffer() const
 {
 	return this->m_shader_buffer.Get();
 }

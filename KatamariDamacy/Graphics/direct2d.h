@@ -13,7 +13,7 @@ class Direct2D
 public:
     bool Initialize(Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view);
     void Update();
-    void Draw();
+    void Draw() const;
     void RenderText(std::string text);
 private:
     Microsoft::WRL::ComPtr<ID2D1Factory> m_d2d_factory;

@@ -61,7 +61,7 @@ void Model::SetTexture(ID3D11ShaderResourceView* texture)
 	this->m_texture = texture;
 }
 
-void Model::Draw(const XMMATRIX& view_projection_matrix)
+void Model::Draw(const XMMATRIX& view_projection_matrix) const
 {
 	//Update Constant buffer with WVP Matrix
 	this->m_cb_vs_vertexshader->data.mat = this->m_world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
