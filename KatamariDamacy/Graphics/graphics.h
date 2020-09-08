@@ -19,6 +19,7 @@ public:
     ~Graphics();
 	
     Camera m_camera;
+    Model m_model;
 private:
     bool InitializeDirectX(HWND hwnd);
     bool InitializeShaders();
@@ -34,7 +35,6 @@ private:
 	
     ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
     ConstantBuffer <CB_PS_pixelshader> m_cb_ps_pixelshader;
-    Model m_model;
 
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
