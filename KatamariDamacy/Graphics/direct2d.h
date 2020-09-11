@@ -6,8 +6,6 @@
 #include <string>
 #include <wrl/client.h>
 
-
-
 class Direct2D
 {
 public:
