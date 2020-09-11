@@ -54,6 +54,4 @@ private:
 	XMVECTOR m_vec_left;
 	XMVECTOR m_vec_right;
 	XMVECTOR m_vec_backward;
-
-
 };
