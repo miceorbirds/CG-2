@@ -70,19 +70,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -12,6 +12,5 @@ public:
     void RenderFrame();
 private:
     Timer m_timer;
-	
 };
 
