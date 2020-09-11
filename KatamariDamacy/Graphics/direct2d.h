@@ -5,8 +5,8 @@
 #include <dwrite.h>
 #include <string>
 #include <wrl/client.h>
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "dwrite.lib")
+
+
 
 class Direct2D
 {

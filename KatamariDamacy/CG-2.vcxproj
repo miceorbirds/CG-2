@@ -70,20 +70,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(SolutionDir)KatamariDamacy\Inc\assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -99,6 +99,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>d3d11.lib;DXGI.lib;D3DCompiler.lib;dwrite.lib;d2d1.lib;DirectXTK.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -115,17 +116,24 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;DXGI.lib;D3DCompiler.lib;dwrite.lib;d2d1.lib;DirectXTK.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d11.lib;DXGI.lib;D3DCompiler.lib;dwrite.lib;d2d1.lib;DirectXTK.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d11.lib;DXGI.lib;D3DCompiler.lib;dwrite.lib;d2d1.lib;DirectXTK.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Graphics\camera.cpp" />
