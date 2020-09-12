@@ -263,7 +263,7 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
-		if (!m_model.Initialize("Data\\Objects\\nanosuit\\nanosuit.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_grass_texture.Get(), this->m_cb_vs_vertexshader))
+		if (!m_model.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_grass_texture.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);

@@ -40,7 +40,7 @@ void Engine::Update()
 			}
 		}
 	}
-	this->m_gfx.m_model.AdjustRotation(.0f, .001 * delta_time, .0f);
+	//this->m_gfx.m_model.AdjustRotation(.0f, .001 * delta_time, .0f);
 	
 	const auto camera_speed = 0.006f;
 
