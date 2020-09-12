@@ -29,7 +29,7 @@ void Model::SetTexture(ID3D11ShaderResourceView* texture)
 	this->m_texture = texture;
 }
 
-void Model::Draw(const XMMATRIX& view_projection_matrix) const
+void Model::Draw(const XMMATRIX& view_projection_matrix)
 {
 	//Update Constant buffer with WVP Matrix
 	this->m_cb_vs_vertexshader->data.mat = this->m_world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
@@ -38,10 +38,11 @@ void Model::Draw(const XMMATRIX& view_projection_matrix) const
 	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader->GetAddressOf());
 
 	this->m_device_context->PSSetShaderResources(0, 1, &this->m_texture); //Set Texture
-	this->m_device_context->IASetIndexBuffer(this->m_index_buffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-	UINT offset = 0;
-	this->m_device_context->IASetVertexBuffers(0, 1, this->m_vertex_buffer.GetAddressOf(), this->m_vertex_buffer.StridePtr(), &offset);
-	this->m_device_context->DrawIndexed(this->m_index_buffer.BufferSize(), 0, 0); //Draw
+	for (int i = 0; i < m_meshes.size(); i++)
+	{
+		m_meshes[i].Draw();
+	}
+	
 }
 
 void Model::UpdateWorldMatrix()
@@ -58,10 +59,16 @@ bool Model::LoadModel(const std::string& file_path)
 {
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile(file_path,
+	const aiScene* pScene = importer.ReadFile(file_path.c_str(),
 		aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 	if (pScene == nullptr)
+	{
+		const char* what = importer.GetErrorString();
+		printf(what);
+		MessageBoxA(NULL, what, "Error", MB_ICONERROR);
 		return false;
+	}
+
 	this->ProcessNode(pScene->mRootNode, pScene);
 	return true;
 }
@@ -71,7 +78,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	for (UINT i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(this->ProcessMesh(mesh, scene));
+		m_meshes.push_back(this->ProcessMesh(mesh, scene));
 	}
 
 	for (UINT i = 0; i < node->mNumChildren; i++)

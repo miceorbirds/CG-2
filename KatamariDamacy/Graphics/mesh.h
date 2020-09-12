@@ -13,7 +13,7 @@ public:
 	Mesh(ID3D11Device* device, ID3D11DeviceContext* device_context, std::vector<Vertex>& vertices, std::vector<DWORD>& indices);
 	Mesh(const Mesh& mesh);
 	void Draw();
-private:
+//private:
 	VertexBuffer<Vertex> m_vertex_buffer;
 	IndexBuffer m_index_buffer;
 	ID3D11DeviceContext* m_device_context;

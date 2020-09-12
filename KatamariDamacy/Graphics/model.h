@@ -9,7 +9,7 @@ class Model
 public:
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	void SetTexture(ID3D11ShaderResourceView* texture);
-	void Draw(const XMMATRIX& view_projection_matrix) const;
+	void Draw(const XMMATRIX& view_projection_matrix);
 	const XMVECTOR& GetPositionVector() const;
 	const XMFLOAT3& GetPositionFloat3() const;
 	const XMVECTOR& GetRotationVector() const;
@@ -37,7 +37,7 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
-	std::vector<Mesh> meshes;
+	std::vector<Mesh> m_meshes;
 
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_device_context = nullptr;
