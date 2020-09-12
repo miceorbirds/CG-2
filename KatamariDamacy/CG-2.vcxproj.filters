@@ -212,4 +212,10 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="Libs\x64\Debug\assimp-vc142-mtd.lib" />
+    <Library Include="Libs\x64\Debug\DirectXTK.lib" />
+    <Library Include="Libs\x64\Release\assimp-vc142-mt.lib" />
+    <Library Include="Libs\x64\Release\DirectXTK.lib" />
+  </ItemGroup>
 </Project>
