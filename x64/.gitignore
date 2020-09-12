@@ -1,0 +1,6 @@
+![Dd]ebug/
+![Rr]elease/
+[Dd]ebug/*
+[Rr]elease/*
+![Rr]elease/assimp-vc142-mt.dll
+![Dd]ebug/assimp-vc142-mtd.dll
