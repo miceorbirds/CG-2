@@ -80,11 +80,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath);$(SolutionDir)KatamariDamacy\Inc\assimp\Compiler</LibraryPath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,6 +151,7 @@
     <ClCompile Include="keyboard\keyboard_event.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\model.cpp" />
+    <ClCompile Include="Graphics\mesh.cpp" />
     <ClCompile Include="mouse\mouse_class.cpp" />
     <ClCompile Include="mouse\mouse_event.cpp" />
     <ClCompile Include="render_window.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="keyboard\keyboard_class.h" />
     <ClInclude Include="keyboard\keyboard_event.h" />
     <ClInclude Include="Graphics\model.h" />
+    <ClInclude Include="Graphics\mesh.h" />
     <ClInclude Include="mouse\mouse_class.h" />
     <ClInclude Include="mouse\mouse_event.h" />
     <ClInclude Include="render_window.h" />

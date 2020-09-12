@@ -1,23 +1,19 @@
 #pragma once
 
-#include "vertex.h"
-#include "vertex_buffer.h"
-#include "index_buffer.h"
-#include "const_buffer.h"
+#include "mesh.h"
 
 using namespace DirectX;
 
 class Model
 {
 public:
-	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
+	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	void SetTexture(ID3D11ShaderResourceView* texture);
 	void Draw(const XMMATRIX& view_projection_matrix) const;
 	const XMVECTOR& GetPositionVector() const;
 	const XMFLOAT3& GetPositionFloat3() const;
 	const XMVECTOR& GetRotationVector() const;
 	const XMFLOAT3& GetRotationFloat3() const;
-
 	void SetPosition(const XMVECTOR& pos);
 	void SetPosition(const XMFLOAT3& pos);
 	void SetPosition(float x, float y, float z);
@@ -37,6 +33,11 @@ public:
 	const XMVECTOR& GetLeftVector() const;
 private:
 	void UpdateWorldMatrix();
+	bool LoadModel(const std::string& file_path);
+	void ProcessNode(aiNode* node, const aiScene* scene);
+	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+
+	std::vector<Mesh> meshes;
 
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_device_context = nullptr;
