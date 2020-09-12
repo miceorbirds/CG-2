@@ -169,7 +169,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
-		this->m_model.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
 	// direct2d
@@ -263,7 +263,7 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
-		if (!m_model.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_grass_texture.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_grass_texture.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
