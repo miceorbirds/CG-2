@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Graphics\ImGui">
       <UniqueIdentifier>{42efa3bc-b212-49e0-be27-122bf4145e94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{7192002a-d7a9-46c2-97cd-318998e60c5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{102e4a6e-7c54-43f9-984e-1f704553e9f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine.cpp">
@@ -107,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="Graphics\mesh.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\game_object.cpp">
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,8 +212,8 @@
     <ClInclude Include="Graphics\mesh.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Game\game_object.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
