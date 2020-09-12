@@ -80,11 +80,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\Any\Dbg;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)KatamariDamacy\Inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\x64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)KatamariDamacy\Libs\Any\Rel;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -187,6 +187,7 @@
     <ClInclude Include="mouse\mouse_event.h" />
     <ClInclude Include="render_window.h" />
     <ClInclude Include="graphics\shaders.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="string_converter.h" />
     <ClInclude Include="graphics\vertex_buffer.h" />
     <ClInclude Include="graphics\index_buffer.h" />
