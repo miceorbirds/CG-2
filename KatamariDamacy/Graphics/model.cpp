@@ -16,8 +16,8 @@ void Model::Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_m
 	for (int i = 0; i < m_meshes.size(); i++)
 	{
 		//Update Constant buffer with WVP Matrix
-		this->m_cb_vs_vertexshader->data.mat = m_meshes[i].GetTransformMatrix() * world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
-		this->m_cb_vs_vertexshader->data.mat = XMMatrixTranspose(this->m_cb_vs_vertexshader->data.mat);
+		this->m_cb_vs_vertexshader->data.WVP_matrix = m_meshes[i].GetTransformMatrix() * world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
+		this->m_cb_vs_vertexshader->data.world_matrix = m_meshes[i].GetTransformMatrix() * world_matrix; // calculate World
 		this->m_cb_vs_vertexshader->ApplyChanges();
 		m_meshes[i].Draw();
 	}
@@ -71,6 +71,10 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& tran
 		vertex.pos.x = mesh->mVertices[i].x;
 		vertex.pos.y = mesh->mVertices[i].y;
 		vertex.pos.z = mesh->mVertices[i].z;
+
+		vertex.normal.x = mesh->mNormals[i].x;
+		vertex.normal.y = mesh->mNormals[i].y;
+		vertex.normal.z = mesh->mNormals[i].z;
 
 		if (mesh->mTextureCoords[0])
 		{

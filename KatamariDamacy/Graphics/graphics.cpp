@@ -224,12 +224,13 @@ bool Graphics::InitializeShaders()
 		shaderfolder = L"..\\Release\\";
 #endif
 #endif
-}
+	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
 	};
 
 	UINT num_elements = ARRAYSIZE(layout);
@@ -253,7 +254,7 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.ambient_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
 
-		if (!m_game_object.Initialize("Data\\Objects\\Samples\\dodge_challenger.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\Nanosuit\\nanosuit.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
