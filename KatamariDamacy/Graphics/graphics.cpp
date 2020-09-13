@@ -155,6 +155,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
+	this->m_cb_ps_light.ApplyChanges();
+	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+
 	float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(),
@@ -190,7 +193,9 @@ void Graphics::RenderFrame()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	//Create ImGui Test Window
-	ImGui::Begin("Test");
+	ImGui::Begin("Light Controls");
+	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_light_color.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_light_strength, 0.01f, 0.0f, 1.0f);
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -219,7 +224,7 @@ bool Graphics::InitializeShaders()
 		shaderfolder = L"..\\Release\\";
 #endif
 #endif
-	}
+}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -230,10 +235,8 @@ bool Graphics::InitializeShaders()
 	UINT num_elements = ARRAYSIZE(layout);
 
 	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout, num_elements))
-	{
 		return false;
-	}
-	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader.cso"))
+	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_light.cso"))
 		return false;
 	return true;
 }
@@ -245,8 +248,10 @@ bool Graphics::InitializeScene()
 		//Initialize Constant Buffer(s)
 		auto hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-		hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
+		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
+		this->m_cb_ps_light.data.ambient_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
+		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
 
 		if (!m_game_object.Initialize("Data\\Objects\\Samples\\dodge_challenger.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
