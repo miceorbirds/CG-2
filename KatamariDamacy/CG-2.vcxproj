@@ -138,6 +138,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game\game_object.cpp" />
+    <ClCompile Include="Game\landscape.cpp" />
+    <ClCompile Include="Game\landscapee.cpp" />
     <ClCompile Include="Game\renderable_game_object.cpp" />
     <ClCompile Include="Graphics\camera.cpp" />
     <ClCompile Include="Graphics\color.cpp" />
@@ -170,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="com_exception.h" />
     <ClInclude Include="Game\game_object.h" />
+    <ClInclude Include="Game\landscape.h" />
     <ClInclude Include="Game\renderable_game_object.h" />
     <ClInclude Include="Graphics\camera.h" />
     <ClInclude Include="Graphics\color.h" />

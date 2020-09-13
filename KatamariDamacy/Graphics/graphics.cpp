@@ -181,7 +181,7 @@ void Graphics::RenderFrame()
 		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
-		//this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
+		this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
 		this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
@@ -277,7 +277,6 @@ bool Graphics::InitializeScene()
 			return false;
 		if (!m_light.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
-
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
 		m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width) / static_cast<float>(m_window_height),
 			0.1f, 3000.f);
