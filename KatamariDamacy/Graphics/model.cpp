@@ -12,13 +12,13 @@ bool Model::Initialize(const std::string& file_path, ID3D11Device* device, ID3D1
 
 void Model::Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_matrix)
 {
-	//Update Constant buffer with WVP Matrix
-	this->m_cb_vs_vertexshader->data.mat = world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
-	this->m_cb_vs_vertexshader->data.mat = XMMatrixTranspose(this->m_cb_vs_vertexshader->data.mat);
-	this->m_cb_vs_vertexshader->ApplyChanges();
 	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader->GetAddressOf());
 	for (int i = 0; i < m_meshes.size(); i++)
 	{
+		//Update Constant buffer with WVP Matrix
+		this->m_cb_vs_vertexshader->data.mat = m_meshes[i].GetTransformMatrix() * world_matrix * view_projection_matrix; //Calculate World-View-Projection Matrix
+		this->m_cb_vs_vertexshader->data.mat = XMMatrixTranspose(this->m_cb_vs_vertexshader->data.mat);
+		this->m_cb_vs_vertexshader->ApplyChanges();
 		m_meshes[i].Draw();
 	}
 }
@@ -28,9 +28,9 @@ bool Model::LoadModel(const std::string& file_path)
 	this->directory = StringHelper::GetDirectoryFromPath(file_path);
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile(file_path.c_str(),
+	const aiScene* scene = importer.ReadFile(file_path.c_str(),
 		aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
-	if (pScene == nullptr)
+	if (scene == nullptr)
 	{
 		const char* what = importer.GetErrorString();
 		printf(what);
@@ -38,25 +38,26 @@ bool Model::LoadModel(const std::string& file_path)
 		return false;
 	}
 
-	this->ProcessNode(pScene->mRootNode, pScene);
+	this->ProcessNode(scene->mRootNode, scene, XMMatrixIdentity());
 	return true;
 }
 
-void Model::ProcessNode(aiNode* node, const aiScene* scene)
+void Model::ProcessNode(aiNode* node, const aiScene* scene, const XMMATRIX& parent_transform_matrix)
 {
+	XMMATRIX node_transform_matrix = XMMatrixTranspose(XMMATRIX(&node->mTransformation.a1)) * parent_transform_matrix;
+
 	for (UINT i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		m_meshes.push_back(this->ProcessMesh(mesh, scene));
+		m_meshes.emplace_back(this->ProcessMesh(mesh, scene, node_transform_matrix));
 	}
-
 	for (UINT i = 0; i < node->mNumChildren; i++)
 	{
-		this->ProcessNode(node->mChildren[i], scene);
+		this->ProcessNode(node->mChildren[i], scene, node_transform_matrix);
 	}
 }
 
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& transform_matrix)
 {
 	// Data to fill
 	std::vector<Vertex> vertices;
@@ -92,7 +93,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 	std::vector<Texture> diffuse_textures = LoadMaterialTextures(material, aiTextureType::aiTextureType_DIFFUSE, scene);
 	textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
-	return Mesh(this->m_device, this->m_device_context, vertices, indices, textures);
+	return Mesh(this->m_device, this->m_device_context, vertices, indices, textures, transform_matrix);
 }
 
 TextureStorageType Model::DetermineTextureStorageType(const aiScene* scene, aiMaterial* material, unsigned int index, aiTextureType texture_type)

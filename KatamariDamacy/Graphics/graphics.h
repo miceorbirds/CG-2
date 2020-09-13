@@ -9,7 +9,7 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_impl_dx11.h"
-#include "../Game/game_object.h"
+#include "../Game/renderable_game_object.h"
 
 class Graphics
 {
@@ -19,7 +19,7 @@ public:
 	~Graphics();
 
 	Camera m_camera;
-	GameObject m_game_object;
+	RenderableGameObject m_game_object;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();

@@ -123,6 +123,9 @@
     <ClCompile Include="string_helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\renderable_game_object.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine.h">
@@ -226,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="string_helper.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\renderable_game_object.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

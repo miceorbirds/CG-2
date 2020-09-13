@@ -41,8 +41,13 @@ void Engine::Update()
 		}
 	}
 	//this->m_gfx.m_model.AdjustRotation(.0f, .001 * delta_time, .0f);
-	
-	const auto camera_speed = 0.006f;
+
+	float camera_speed = 0.006f;
+
+	if (m_keyboard.KeyIsPressed(VK_SHIFT))
+	{
+		camera_speed = 0.3f;
+	}
 
 	if (m_keyboard.KeyIsPressed('W'))
 	{

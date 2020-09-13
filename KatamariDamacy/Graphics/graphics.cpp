@@ -248,12 +248,12 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
-		if (!m_game_object.Initialize("Data\\Objects\\Samples\\person_embeddedindexed.blend", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\Samples\\dodge_challenger.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
 		m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width) / static_cast<float>(m_window_height),
-			0.1f, 1000.f);
+			0.1f, 3000.f);
 	}
 	catch (COMException& exception)
 	{
