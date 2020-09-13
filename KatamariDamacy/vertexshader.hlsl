@@ -18,6 +18,7 @@ struct VS_OUTPUT
     float4 outPosition : SV_POSITION;
     float2 outTexCoord : TEXCOORD;
     float3 outNormal : NORMAL;
+    float3 outWorldPos : WORLD_POSITION;
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -26,5 +27,6 @@ VS_OUTPUT main(VS_INPUT input)
     output.outPosition = mul(float4(input.inPos, 1.f), WVP_matrix);
     output.outTexCoord = input.inTexCoord;
     output.outNormal = normalize(mul(float4(input.inNormal, 0.0f), world_matrix));
+    output.outWorldPos = mul(float4(input.inPos, 1.0f), world_matrix);
     return output;
 }

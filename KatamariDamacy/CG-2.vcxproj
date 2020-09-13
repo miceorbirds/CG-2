@@ -154,6 +154,7 @@
     <ClCompile Include="Graphics\texture.cpp" />
     <ClCompile Include="keyboard\keyboard_class.cpp" />
     <ClCompile Include="keyboard\keyboard_event.cpp" />
+    <ClCompile Include="Graphics\light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\model.cpp" />
     <ClCompile Include="Graphics\mesh.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="keyboard\keyboard_event.h" />
     <ClInclude Include="Graphics\model.h" />
     <ClInclude Include="Graphics\mesh.h" />
+    <ClInclude Include="Graphics\light.h" />
     <ClInclude Include="mouse\mouse_class.h" />
     <ClInclude Include="mouse\mouse_event.h" />
     <ClInclude Include="render_window.h" />
@@ -213,7 +215,19 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="pixelshader_dynamic_point_light.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="pixelshader_light.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="pixelshader_nolight.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

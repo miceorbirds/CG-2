@@ -155,6 +155,12 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
+	this->m_cb_ps_light.data.dynamic_light_color = m_light.light_color;
+	this->m_cb_ps_light.data.dynamic_light_strength = m_light.light_strength;
+	this->m_cb_ps_light.data.dynamic_light_position = m_light.GetPositionFloat3();
+	this->m_cb_ps_light.data.dynamic_light_attenuation_a = m_light.attenuation_a;
+	this->m_cb_ps_light.data.dynamic_light_attenuation_b = m_light.attenuation_b;
+	this->m_cb_ps_light.data.dynamic_light_attenuation_c = m_light.attenuation_c;
 	this->m_cb_ps_light.ApplyChanges();
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
@@ -173,6 +179,10 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
 		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	}
+	{
+		//this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
+		this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
 	// direct2d
@@ -196,6 +206,13 @@ void Graphics::RenderFrame()
 	ImGui::Begin("Light Controls");
 	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_light_color.x, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_light_strength, 0.01f, 0.0f, 1.0f);
+	ImGui::NewLine();
+	ImGui::DragFloat3("Dynamic Light Color", &this->m_light.light_color.x, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat("Dynamic Light Strength", &this->m_light.light_strength, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat("Dynamic Light Attenuation A", &this->m_light.attenuation_a, 0.01f, 0.1f, 10.0f);
+	ImGui::DragFloat("Dynamic Light Attenuation B", &this->m_light.attenuation_b, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat("Dynamic Light Attenuation C", &this->m_light.attenuation_c, 0.01f, 0.0f, 10.0f);
+
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -224,7 +241,7 @@ bool Graphics::InitializeShaders()
 		shaderfolder = L"..\\Release\\";
 #endif
 #endif
-	}
+}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -237,7 +254,9 @@ bool Graphics::InitializeShaders()
 
 	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout, num_elements))
 		return false;
-	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_light.cso"))
+	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_dynamic_point_light.cso"))
+		return false;
+	if (!m_pixelshader_nolight.Initialize(this->m_device, shaderfolder + L"pixelshader_nolight.cso"))
 		return false;
 	return true;
 }
@@ -255,6 +274,8 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
 
 		if (!m_game_object.Initialize("Data\\Objects\\Nanosuit\\nanosuit.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+			return false;
+		if (!m_light.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);

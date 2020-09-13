@@ -28,12 +28,14 @@ public:
 
 	void SetLookAtPos(XMFLOAT3 look_at_pos);
 
-	const XMVECTOR& GetForwardVector();
-	const XMVECTOR& GetRightVector();
-	const XMVECTOR& GetBackwardVector();
-	const XMVECTOR& GetLeftVector();
+	const XMVECTOR& GetForwardVector(bool omitY = false);
+	const XMVECTOR& GetRightVector(bool omitY = false);
+	const XMVECTOR& GetBackwardVector(bool omitY = false);
+	const XMVECTOR& GetLeftVector(bool omitY = false);
 protected:
 	virtual void UpdateMatrix();
+	void UpdateDirectionVectors();
+
 	XMVECTOR m_pos_vector;
 	XMVECTOR m_rot_vector;
 	XMFLOAT3 m_pos;
@@ -49,4 +51,9 @@ protected:
 	XMVECTOR m_vec_left;
 	XMVECTOR m_vec_right;
 	XMVECTOR m_vec_backward;
+
+	XMVECTOR m_vec_forward_noY;
+	XMVECTOR m_vec_left_noY;
+	XMVECTOR m_vec_right_noY;
+	XMVECTOR m_vec_backward_noY;
 };
