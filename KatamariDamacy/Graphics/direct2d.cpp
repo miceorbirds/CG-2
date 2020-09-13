@@ -93,7 +93,7 @@ void Direct2D::RenderText(std::string text)
 	{
 		auto text_length = static_cast<UINT32>(text.length());
 		auto hr = m_dwrite_factory->CreateTextLayout(
-			StringConverter::StringToWide(text).c_str(),
+			StringHelper::StringToWide(text).c_str(),
 			text_length, m_text_format.Get(),
 			200, 100, m_text_layout.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create text layout");

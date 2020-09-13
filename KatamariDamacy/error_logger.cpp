@@ -10,7 +10,7 @@ void ErrorLogger::Log(const std::string& message)
 void ErrorLogger::Log(HRESULT hr, std::string message)
 {
     _com_error error(hr);
-    auto error_message = L"Error: " + StringConverter::StringToWide(message) + L"\n" + error.ErrorMessage();
+    auto error_message = L"Error: " + StringHelper::StringToWide(message) + L"\n" + error.ErrorMessage();
     MessageBoxW(nullptr, error_message.c_str(), L"Error", MB_ICONERROR);
 }
 

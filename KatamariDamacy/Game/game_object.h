@@ -5,7 +5,7 @@
 class GameObject
 {
 public:
-	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ID3D11ShaderResourceView* texture, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
+	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	void Draw(const XMMATRIX& view_projection_matrix);
 
 	const XMVECTOR& GetPositionVector() const;

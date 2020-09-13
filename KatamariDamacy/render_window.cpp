@@ -7,9 +7,9 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
     this->m_width = width;
     this->m_height = height;
     this->m_window_title = std::move(window_title);
-    this->m_window_title_wide = StringConverter::StringToWide(this->m_window_title);
+    this->m_window_title_wide = StringHelper::StringToWide(this->m_window_title);
     this->m_window_class = std::move(window_class);
-    this->m_window_class_wide = StringConverter::StringToWide(this->m_window_class); //wide string representation of class string (used for registering class and creating window)
+    this->m_window_class_wide = StringHelper::StringToWide(this->m_window_class); //wide string representation of class string (used for registering class and creating window)
 
     this->RegisterWindowClass();
 

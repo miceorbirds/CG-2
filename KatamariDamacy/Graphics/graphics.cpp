@@ -225,7 +225,6 @@ bool Graphics::InitializeShaders()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-
 	};
 
 	UINT num_elements = ARRAYSIZE(layout);
@@ -243,27 +242,13 @@ bool Graphics::InitializeScene()
 {
 	try
 	{
-		// Load textures
-		auto hr = CreateWICTextureFromFile(this->m_device.Get(),
-			L"Data\\Textures\\seamless_grass.jpg", nullptr,
-			m_grass_texture.GetAddressOf());
-		COM_ERROR_IF_FAILED(hr, "Failed to create wic texture from file.");
-		hr = CreateWICTextureFromFile(this->m_device.Get(),
-			L"Data\\Textures\\pinksquare.jpg", nullptr,
-			m_pink_texture.GetAddressOf());
-		COM_ERROR_IF_FAILED(hr, "Failed to create wic texture from file.");
-		hr = CreateWICTextureFromFile(this->m_device.Get(),
-			L"Data\\Textures\\seamless_pavement.jpg", nullptr,
-			m_pavement_texture.GetAddressOf());
-		COM_ERROR_IF_FAILED(hr, "Failed to create wic texture from file.");
-
 		//Initialize Constant Buffer(s)
-		hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
+		auto hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_pixelshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
-		if (!m_game_object.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_grass_texture.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\Samples\\person_embeddedindexed.blend", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
