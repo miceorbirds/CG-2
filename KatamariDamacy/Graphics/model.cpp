@@ -10,6 +10,18 @@ bool Model::Initialize(const std::string& file_path, ID3D11Device* device, ID3D1
 	return true;
 }
 
+bool Model::Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, bool set_texture_manually, const std::string& texture_file_path)
+{
+	this->m_device = device;
+	this->m_device_context = device_context;
+	this->m_cb_vs_vertexshader = &cb_vs_vertexshader;
+	m_set_texture_manually = true;
+	m_texture_file_path = texture_file_path;
+	if (!this->LoadModel(file_path))
+		return false;
+	return true;
+}
+
 void Model::Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_matrix)
 {
 	this->m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader->GetAddressOf());
@@ -94,9 +106,17 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& tran
 			indices.push_back(face.mIndices[j]);
 	}
 	std::vector<Texture> textures;
-	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	std::vector<Texture> diffuse_textures = LoadMaterialTextures(material, aiTextureType::aiTextureType_DIFFUSE, scene);
-	textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
+	if (m_set_texture_manually == true)
+	{
+		Texture own_texture(m_device, m_texture_file_path, aiTextureType::aiTextureType_DIFFUSE);
+		textures.emplace_back(own_texture);
+	}
+	else
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		std::vector<Texture> diffuse_textures = LoadMaterialTextures(material, aiTextureType::aiTextureType_DIFFUSE, scene);
+		textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
+	}
 	return Mesh(this->m_device, this->m_device_context, vertices, indices, textures, transform_matrix);
 }
 

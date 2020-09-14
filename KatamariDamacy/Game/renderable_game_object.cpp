@@ -11,6 +11,17 @@ bool RenderableGameObject::Initialize(const std::string& file_path, ID3D11Device
 	return true;
 }
 
+bool RenderableGameObject::Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, bool set_texture_manually, const std::string& texture_file_path)
+{
+	if (!m_model.Initialize(file_path, device, device_context, cb_vs_vertexshader, set_texture_manually, texture_file_path))
+		return false;
+
+	this->SetPosition(0.0f, 0.0f, 0.0f);
+	this->SetRotation(0.0f, 0.0f, 0.0f);
+	this->UpdateMatrix();
+	return true;
+}
+
 void RenderableGameObject::Draw(const XMMATRIX& viewProjectionMatrix)
 {
 	m_model.Draw(this->m_world_matrix, viewProjectionMatrix);

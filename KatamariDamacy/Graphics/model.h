@@ -8,6 +8,7 @@ class Model
 {
 public:
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
+	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, bool set_texture_manually, const std::string& texture_file_path);
 	void Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_matrix);
 private:
 	bool LoadModel(const std::string& file_path);
@@ -20,6 +21,8 @@ private:
 
 	std::vector<Mesh> m_meshes;
 
+	bool m_set_texture_manually{ false };
+	std::string m_texture_file_path;
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_device_context = nullptr;
 	ConstantBuffer<CB_VS_vertexshader>* m_cb_vs_vertexshader = nullptr;
