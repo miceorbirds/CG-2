@@ -147,6 +147,7 @@
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="error_logger.cpp" />
     <ClCompile Include="graphics\adapter_reader.cpp" />
+    <ClCompile Include="Graphics\directional_light.cpp" />
     <ClCompile Include="graphics\graphics.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui_draw.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="error_logger.h" />
     <ClInclude Include="graphics\adapter_reader.h" />
+    <ClInclude Include="Graphics\directional_light.h" />
     <ClInclude Include="graphics\graphics.h" />
     <ClInclude Include="Graphics\ImGui\imconfig.h" />
     <ClInclude Include="Graphics\ImGui\imgui.h" />

@@ -12,6 +12,7 @@
 #include "../Game/renderable_game_object.h"
 #include "light.h"
 #include "../Game/landscape.h"
+#include "directional_light.h"
 
 class Graphics
 {
@@ -25,6 +26,7 @@ public:
 	RenderableGameObject m_katamary;
 	std::vector<RenderableGameObject> m_items;
 
+	DirectionalLight m_sun;
 	Light m_light;
 	Landscape m_land;
 private:

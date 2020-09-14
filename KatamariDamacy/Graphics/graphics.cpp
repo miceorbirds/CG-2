@@ -279,6 +279,8 @@ bool Graphics::InitializeScene()
 			return false;
 		if (!m_game_object.Initialize("Data\\Objects\\Samples\\blue_cube_notexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
+		if (!m_sun.Initialize())
+			return false;
 		if (!m_light.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
