@@ -32,6 +32,10 @@ public:
 	const XMVECTOR& GetRightVector(bool omitY = false);
 	const XMVECTOR& GetBackwardVector(bool omitY = false);
 	const XMVECTOR& GetLeftVector(bool omitY = false);
+
+	void SetScale(const XMVECTOR& rot);
+	void SetScale(float x, float y, float z);
+
 protected:
 	virtual void UpdateMatrix();
 	void UpdateDirectionVectors();

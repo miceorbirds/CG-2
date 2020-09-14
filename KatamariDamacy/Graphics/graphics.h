@@ -11,7 +11,7 @@
 #include "ImGui/imgui_impl_dx11.h"
 #include "../Game/renderable_game_object.h"
 #include "light.h"
-//#include "../Game/landscape.h"
+#include "../Game/landscape.h"
 
 class Graphics
 {
@@ -26,7 +26,7 @@ public:
 	std::vector<RenderableGameObject> m_items;
 
 	Light m_light;
-	//Landcape m_land;
+	Landscape m_land;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();

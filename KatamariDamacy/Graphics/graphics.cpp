@@ -179,6 +179,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
 		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
 		this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
@@ -241,7 +242,7 @@ bool Graphics::InitializeShaders()
 		shaderfolder = L"..\\Release\\";
 #endif
 #endif
-}
+	}
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -273,10 +274,13 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.ambient_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
 
-		if (!m_game_object.Initialize("Data\\Objects\\Nanosuit\\nanosuit.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_light.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
+		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
+			return false;
+
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
 		m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width) / static_cast<float>(m_window_height),
 			0.1f, 3000.f);
