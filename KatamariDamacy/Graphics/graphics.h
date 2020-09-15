@@ -5,6 +5,7 @@
 #include "direct2d.h"
 #include <WICTextureLoader.h>
 #include "camera.h"
+#include <DirectXColors.h>
 #include "../timer.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_win32.h"
@@ -26,8 +27,9 @@ public:
 	RenderableGameObject m_katamary;
 	std::vector<RenderableGameObject> m_items;
 
-	DirectionalLight m_sun;
+	//DirectionalLight m_sun;
 	//Light m_light;
+	Light m_sun;
 	Landscape m_land;
 private:
 	bool InitializeDirectX(HWND hwnd);

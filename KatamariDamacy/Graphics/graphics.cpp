@@ -159,13 +159,19 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
-	this->m_cb_ps_light.data.diffuse_light_color = m_sun.GetColor();
-	this->m_cb_ps_light.data.diffuse_light_strength = m_sun.GetStrength();
-	this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
+	this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
+	this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
+	this->m_cb_ps_light.data.light_position = m_sun.GetPositionFloat3();
 	this->m_cb_ps_light.ApplyChanges();
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
-	float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float r, g, b;
+	XMVECTOR  colorVector;
+	colorVector = DirectX::Colors::PowderBlue.v;
+	r = XMVectorGetX(colorVector);
+	g = XMVectorGetY(colorVector);
+	b = XMVectorGetZ(colorVector);
+	float bgcolor[] = { r,g,b,1.0f };
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(),
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -179,15 +185,15 @@ void Graphics::RenderFrame()
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
-		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		//this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 
 		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_land.GetAddressOf());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
-		this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
-		this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
+		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
+		//this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
 		//this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
@@ -210,13 +216,8 @@ void Graphics::RenderFrame()
 	ImGui::NewFrame();
 	//Create ImGui Test Window
 	ImGui::Begin("Light Controls");
-	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_light_color.x, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_light_strength, 0.01f, 0.0f, 1.0f);
-	ImGui::NewLine();
-	ImGui::DragFloat3("Diffuse Light Color", &this->m_sun.light_color.x, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.light_strength, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat3("Sun direction", &this->m_sun.dir.x, 0.01f, 1.0f,-1.f);
-
+	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_color.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_strength, 0.01f, 0.0f, 1.0f);
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -274,19 +275,16 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-		this->m_cb_ps_light.data.ambient_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
+		this->m_cb_ps_light.data.ambient_color = XMFLOAT3(1.0f, 1.0f, 0.0f);
+		this->m_cb_ps_light.data.ambient_strength = 0.1f;
 
-		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data\\Objects\\banana_albedo.jpg"))
+		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_game_object.Initialize("Data\\Objects\\Samples\\blue_cube_notexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
-		if (!m_sun.Initialize())
+		if (!m_sun.Initialize(this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
-			return false;
-
-		if (!m_sun.Initialize())
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);

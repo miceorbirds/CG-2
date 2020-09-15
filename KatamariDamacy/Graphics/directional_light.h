@@ -21,9 +21,9 @@ public:
 	//void AdjustTime(float);
 	float specular_power;
 
-//private:
-	//void GenerateProjectionMatrix(float, float);
-	//bool isNight;
+	//private:
+		//void GenerateProjectionMatrix(float, float);
+		//bool isNight;
 	DirectX::XMFLOAT3 light_color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	float light_strength = 1.f;
 	XMFLOAT3 dir;

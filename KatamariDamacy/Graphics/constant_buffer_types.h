@@ -14,12 +14,11 @@ struct CB_PS_pixelshader
 
 struct CB_PS_light
 {
-	DirectX::XMFLOAT3 light_direction;
-
-	DirectX::XMFLOAT3 diffuse_light_color;
-	float diffuse_light_strength;
-	DirectX::XMFLOAT3 ambient_light_color;
-	float ambient_light_strength;
+	DirectX::XMFLOAT3 ambient_color;
+	float ambient_strength;
+	DirectX::XMFLOAT3 diffuse_color;
+	float diffuse_strength;
+	DirectX::XMFLOAT3 light_position;
 };
 
 struct CB_PS_light_pointbulb
