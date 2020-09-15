@@ -27,7 +27,7 @@ void DirectionalLight::SetDirection(float x, float y, float z)
 	this->dir = XMFLOAT3(x, y, z);
 }
 
-XMFLOAT3 DirectionalLight::GetDirectionalColor()
+XMFLOAT3 DirectionalLight::GetColor()
 {
 	return this->light_color;
 }

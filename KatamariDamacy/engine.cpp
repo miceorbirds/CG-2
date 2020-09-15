@@ -77,8 +77,8 @@ void Engine::Update()
 	{
 		XMVECTOR lightPosition = this->m_gfx.m_camera.GetPositionVector();
 		lightPosition += this->m_gfx.m_camera.GetForwardVector();
-		this->m_gfx.m_light.SetPosition(lightPosition);
-		this->m_gfx.m_light.SetRotation(this->m_gfx.m_camera.GetRotationFloat3());
+		//this->m_gfx.m_light.SetPosition(lightPosition);
+		//this->m_gfx.m_light.SetRotation(this->m_gfx.m_camera.GetRotationFloat3());
 	}
 }
 

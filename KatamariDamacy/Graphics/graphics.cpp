@@ -19,7 +19,7 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	auto& io = ImGui::GetIO();
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX11_Init(this->m_device.Get(), this->m_device_context.Get());
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
 
 	return true;
 }
@@ -141,9 +141,13 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state.GetAddressOf());
 		//Create sampler state
+		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create sampler state.");
+
+		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_land.GetAddressOf());
+		COM_ERROR_IF_FAILED(hr, "Failed to create land sampler state.");
 	}
 	catch (COMException& exception)
 	{
@@ -155,12 +159,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
-	this->m_cb_ps_light.data.dynamic_light_color = m_light.light_color;
-	this->m_cb_ps_light.data.dynamic_light_strength = m_light.light_strength;
-	this->m_cb_ps_light.data.dynamic_light_position = m_light.GetPositionFloat3();
-	this->m_cb_ps_light.data.dynamic_light_attenuation_a = m_light.attenuation_a;
-	this->m_cb_ps_light.data.dynamic_light_attenuation_b = m_light.attenuation_b;
-	this->m_cb_ps_light.data.dynamic_light_attenuation_c = m_light.attenuation_c;
+	this->m_cb_ps_light.data.diffuse_light_color = m_sun.GetColor();
+	this->m_cb_ps_light.data.diffuse_light_strength = m_sun.GetStrength();
+	this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
 	this->m_cb_ps_light.ApplyChanges();
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
@@ -180,11 +181,14 @@ void Graphics::RenderFrame()
 	{
 		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+
+		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_land.GetAddressOf());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
+		this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
 		this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
-		this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		//this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
 	// direct2d
@@ -209,11 +213,9 @@ void Graphics::RenderFrame()
 	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_light_color.x, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_light_strength, 0.01f, 0.0f, 1.0f);
 	ImGui::NewLine();
-	ImGui::DragFloat3("Dynamic Light Color", &this->m_light.light_color.x, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat("Dynamic Light Strength", &this->m_light.light_strength, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat("Dynamic Light Attenuation A", &this->m_light.attenuation_a, 0.01f, 0.1f, 10.0f);
-	ImGui::DragFloat("Dynamic Light Attenuation B", &this->m_light.attenuation_b, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat("Dynamic Light Attenuation C", &this->m_light.attenuation_c, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat3("Diffuse Light Color", &this->m_sun.light_color.x, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.light_strength, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat3("Sun direction", &this->m_sun.dir.x, 0.01f, 1.0f,-1.f);
 
 	ImGui::End();
 	//Assemble Together Draw Data
@@ -256,10 +258,10 @@ bool Graphics::InitializeShaders()
 
 	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout, num_elements))
 		return false;
-	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_dynamic_point_light.cso"))
+	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_light.cso"))
 		return false;
-	if (!m_pixelshader_nolight.Initialize(this->m_device, shaderfolder + L"pixelshader_nolight.cso"))
-		return false;
+	/*if (!m_pixelshader_nolight.Initialize(this->m_device, shaderfolder + L"pixelshader_nolight.cso"))
+		return false;*/
 	return true;
 }
 
@@ -275,15 +277,16 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.ambient_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		this->m_cb_ps_light.data.ambient_light_strength = 1.0f;
 
-		if (!m_katamary.Initialize("Data\\Objects\\banana_LOD0.obj", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data\\Objects\\banana_albedo.jpg"))
+		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data\\Objects\\banana_albedo.jpg"))
 			return false;
 		if (!m_game_object.Initialize("Data\\Objects\\Samples\\blue_cube_notexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_sun.Initialize())
 			return false;
-		if (!m_light.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
-			return false;
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
+			return false;
+
+		if (!m_sun.Initialize())
 			return false;
 
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);

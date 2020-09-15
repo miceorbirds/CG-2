@@ -12,13 +12,17 @@ struct CB_PS_pixelshader
 	float alpha = 1.0f;
 };
 
-struct CB_PS_light_onlyambient
+struct CB_PS_light
 {
+	DirectX::XMFLOAT3 light_direction;
+
+	DirectX::XMFLOAT3 diffuse_light_color;
+	float diffuse_light_strength;
 	DirectX::XMFLOAT3 ambient_light_color;
 	float ambient_light_strength;
 };
 
-struct CB_PS_light
+struct CB_PS_light_pointbulb
 {
 	DirectX::XMFLOAT3 ambient_light_color;
 	float ambient_light_strength;

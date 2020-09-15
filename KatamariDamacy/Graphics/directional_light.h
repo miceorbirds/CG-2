@@ -10,7 +10,7 @@ public:
 	void SetColor(float, float, float, float);
 	void SetDirection(float, float, float);
 
-	XMFLOAT3 GetDirectionalColor();
+	XMFLOAT3 GetColor();
 	float GetStrength();
 	XMFLOAT3 GetDirection();
 
@@ -21,7 +21,7 @@ public:
 	//void AdjustTime(float);
 	float specular_power;
 
-private:
+//private:
 	//void GenerateProjectionMatrix(float, float);
 	//bool isNight;
 	DirectX::XMFLOAT3 light_color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
