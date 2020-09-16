@@ -16,9 +16,14 @@ struct CB_PS_light
 {
 	DirectX::XMFLOAT3 ambient_color;
 	float ambient_strength;
+
 	DirectX::XMFLOAT3 diffuse_color;
 	float diffuse_strength;
+
 	DirectX::XMFLOAT3 light_position;
+	float specular_strength;
+
+	DirectX::XMFLOAT3 camera_position;
 };
 
 struct CB_PS_light_pointbulb

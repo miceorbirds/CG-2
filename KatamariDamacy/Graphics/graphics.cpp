@@ -162,6 +162,10 @@ void Graphics::RenderFrame()
 	this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
 	this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
 	this->m_cb_ps_light.data.light_position = m_sun.GetPositionFloat3();
+	this->m_cb_ps_light.data.ambient_color = m_sun.ambient_light_color;
+	this->m_cb_ps_light.data.ambient_strength = m_sun.ambient_light_strength;
+	this->m_cb_ps_light.data.camera_position = m_camera.GetPositionFloat3();
+	this->m_cb_ps_light.data.specular_strength = m_sun.specular_strength;
 	this->m_cb_ps_light.ApplyChanges();
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
@@ -185,7 +189,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
-		//this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 
 		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_land.GetAddressOf());
@@ -216,8 +220,13 @@ void Graphics::RenderFrame()
 	ImGui::NewFrame();
 	//Create ImGui Test Window
 	ImGui::Begin("Light Controls");
-	ImGui::DragFloat3("Ambient Light Color", &this->m_cb_ps_light.data.ambient_color.x, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("Ambient Light Strength", &this->m_cb_ps_light.data.ambient_strength, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat3("Ambient Light Color", &this->m_sun.ambient_light_color.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Ambient Light Strength", &this->m_sun.ambient_light_strength, 0.01f, 0.0f, 1.0f);
+	ImGui::NewLine();
+	ImGui::DragFloat3("Diffuse Light Color", &this->m_sun.diffuse_light_color.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.diffuse_light_strength, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Specular Strength", &this->m_sun.specular_strength, 0.01f, 0.0f, 1.0f);
+
 	ImGui::End();
 	//Assemble Together Draw Data
 	ImGui::Render();
@@ -275,12 +284,10 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-		this->m_cb_ps_light.data.ambient_color = XMFLOAT3(1.0f, 1.0f, 0.0f);
-		this->m_cb_ps_light.data.ambient_strength = 0.1f;
 
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
-		if (!m_game_object.Initialize("Data\\Objects\\Samples\\blue_cube_notexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data\\Objects\\Samples\\person_embeddedindexed.blend", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		if (!m_sun.Initialize(this->m_cb_vs_vertexshader))
 			return false;

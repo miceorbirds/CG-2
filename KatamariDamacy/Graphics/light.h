@@ -9,10 +9,12 @@ public:
 
 	bool isSun;
 	DirectX::XMFLOAT3 ambient_light_color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	float ambient_light_strength = 1.0f;
+	float ambient_light_strength = 0.1f;
 
-	DirectX::XMFLOAT3 diffuse_light_color = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-	float diffuse_light_strength = 1.0f;
+	DirectX::XMFLOAT3 diffuse_light_color = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	float diffuse_light_strength = 10.0f;
+
+	float specular_strength = 0.5f;
 
 	float attenuation_a = 1.0f;
 	float attenuation_b = 0.1f;
