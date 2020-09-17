@@ -17,10 +17,10 @@ public:
 	ID3D11ShaderResourceView* GetShaderResourceView();
 	ID3D11ShaderResourceView** GetShaderResourceViewAddress();
 
-	DirectX::XMMATRIX GetProjectionMatrix();
+	//	DirectX::XMMATRIX GetProjectionMatrix();
 private:
-	DirectX::XMMATRIX m_projectionMatrix;
-	DirectX::XMMATRIX m_orthoMatrix;
+	//	DirectX::XMMATRIX m_projectionMatrix;
+	//	DirectX::XMMATRIX m_orthoMatrix;
 
 	D3D11_VIEWPORT m_viewport;
 

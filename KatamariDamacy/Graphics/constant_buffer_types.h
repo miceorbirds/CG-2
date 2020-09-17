@@ -7,6 +7,11 @@ struct CB_VS_vertexshader
 	DirectX::XMMATRIX world_matrix;
 };
 
+struct CB_VS_vertexshader_lightview
+{
+	DirectX::XMMATRIX WVP_matrix;
+};
+
 struct CB_PS_pixelshader
 {
 	float alpha = 1.0f;
