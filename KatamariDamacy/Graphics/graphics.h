@@ -13,7 +13,7 @@
 #include "../Game/renderable_game_object.h"
 #include "light.h"
 #include "../Game/landscape.h"
-#include "directional_light.h"
+#include "shadow_map.h"
 
 class Graphics
 {
@@ -27,8 +27,6 @@ public:
 	RenderableGameObject m_katamary;
 	std::vector<RenderableGameObject> m_items;
 
-	//DirectionalLight m_sun;
-	//Light m_light;
 	Light m_sun;
 	Landscape m_land;
 private:
@@ -36,14 +34,20 @@ private:
 	bool InitializeShaders();
 	bool InitializeScene();
 
+	void RenderToWindow();
+	void RenderToTexture();
+
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapchain;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_render_target_view;
 
+	ShadowMap m_shadow_map;
+
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
-	PixelShader m_pixelshader_nolight;
+	VertexShader m_depth_vertexshader;
+	PixelShader m_depth_pixelshader;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
 	//ConstantBuffer <CB_PS_pixelshader> m_cb_ps_pixelshader;
@@ -53,10 +57,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state_cull_front;
+	//Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state_cull_front;
 	Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_land;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_shadowmap;
 
 	Direct2D m_hud;
 	Timer m_fps_timer;

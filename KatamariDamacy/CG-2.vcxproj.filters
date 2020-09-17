@@ -138,7 +138,7 @@
     <ClCompile Include="Graphics\texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\directional_light.cpp">
+    <ClCompile Include="Graphics\shadow_map.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,7 +257,7 @@
     <ClInclude Include="Graphics\texture.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\directional_light.h">
+    <ClInclude Include="Graphics\shadow_map.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

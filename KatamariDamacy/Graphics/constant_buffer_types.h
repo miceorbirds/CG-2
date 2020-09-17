@@ -38,3 +38,17 @@ struct CB_PS_light_pointbulb
 	float dynamic_light_attenuation_b;
 	float dynamic_light_attenuation_c;
 };
+
+struct CB_PS_light_shadows
+{
+	DirectX::XMFLOAT3 ambient_color;
+	float ambient_strength;
+
+	DirectX::XMFLOAT3 diffuse_color;
+	float diffuse_strength;
+
+	DirectX::XMFLOAT3 light_position;
+	float specular_strength;
+
+	DirectX::XMFLOAT3 camera_position;
+};

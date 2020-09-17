@@ -112,13 +112,6 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		CD3D11_RASTERIZER_DESC rasterizer_desc(D3D11_DEFAULT);
 		hr = this->m_device->CreateRasterizerState(&rasterizer_desc, this->m_rasterizer_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create rasterizer state.");
-		//Create Rasterizer State for culling front
-		CD3D11_RASTERIZER_DESC rasterizer_desc_cull_front(D3D11_DEFAULT);
-		rasterizer_desc_cull_front.CullMode = D3D11_CULL_FRONT;
-		hr = this->m_device->CreateRasterizerState(&rasterizer_desc_cull_front,
-			this->m_rasterizer_state_cull_front.GetAddressOf());
-		COM_ERROR_IF_FAILED(hr, "Failed to create rasterizer state.");
-
 		// Create Blend State
 		D3D11_RENDER_TARGET_BLEND_DESC render_target_blend_desc{ 0 };
 		render_target_blend_desc.BlendEnable = true;
@@ -170,7 +163,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
 	float r, g, b;
-	XMVECTOR  colorVector;
+	XMVECTOR colorVector;
 	colorVector = DirectX::Colors::PowderBlue.v;
 	r = XMVectorGetX(colorVector);
 	g = XMVectorGetY(colorVector);
@@ -191,14 +184,9 @@ void Graphics::RenderFrame()
 	{
 		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-
-		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_land.GetAddressOf());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
-		//this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
-		//this->m_device_context->PSSetShader(m_pixelshader_nolight.GetShader(), NULL, 0);
-		//this->m_light.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 
 	// direct2d
@@ -255,22 +243,23 @@ bool Graphics::InitializeShaders()
 		shaderfolder = L"..\\Release\\";
 #endif
 #endif
-	}
+}
 
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	D3D11_INPUT_ELEMENT_DESC layout_description[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
 	};
-
-	UINT num_elements = ARRAYSIZE(layout);
-
-	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout, num_elements))
+	UINT num_elements = ARRAYSIZE(layout_description);
+	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader.cso", layout_description, num_elements))
 		return false;
 	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_light.cso"))
 		return false;
-	/*if (!m_pixelshader_nolight.Initialize(this->m_device, shaderfolder + L"pixelshader_nolight.cso"))
+
+	/*if (!m_depth_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader_depth.cso", layout_description, num_elements))
+		return false;
+	if (!m_depth_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_depth.cso"))
 		return false;*/
 	return true;
 }
@@ -284,6 +273,9 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
+
+		if (!m_shadow_map.Initialize(this->m_device.Get()))
+			return false;
 
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;

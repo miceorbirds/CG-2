@@ -147,7 +147,6 @@
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="error_logger.cpp" />
     <ClCompile Include="graphics\adapter_reader.cpp" />
-    <ClCompile Include="Graphics\directional_light.cpp" />
     <ClCompile Include="graphics\graphics.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui_draw.cpp" />
@@ -166,6 +165,7 @@
     <ClCompile Include="mouse\mouse_event.cpp" />
     <ClCompile Include="render_window.cpp" />
     <ClCompile Include="graphics\shaders.cpp" />
+    <ClCompile Include="Graphics\shadow_map.cpp" />
     <ClCompile Include="string_helper.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="window_container.cpp" />
@@ -183,7 +183,6 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="error_logger.h" />
     <ClInclude Include="graphics\adapter_reader.h" />
-    <ClInclude Include="Graphics\directional_light.h" />
     <ClInclude Include="graphics\graphics.h" />
     <ClInclude Include="Graphics\ImGui\imconfig.h" />
     <ClInclude Include="Graphics\ImGui\imgui.h" />
@@ -205,6 +204,7 @@
     <ClInclude Include="mouse\mouse_event.h" />
     <ClInclude Include="render_window.h" />
     <ClInclude Include="graphics\shaders.h" />
+    <ClInclude Include="Graphics\shadow_map.h" />
     <ClInclude Include="string_helper.h" />
     <ClInclude Include="graphics\vertex_buffer.h" />
     <ClInclude Include="graphics\index_buffer.h" />
