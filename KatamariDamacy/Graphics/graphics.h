@@ -50,7 +50,8 @@ private:
 	PixelShader m_depth_pixelshader;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
-	//ConstantBuffer<CB_VS_vertexshader_lightview> m_cb_vs_depth;
+	ConstantBuffer<CB_VS_light_matrix> m_cb_vs_lightmatrix;
+
 	ConstantBuffer <CB_PS_light> m_cb_ps_light;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;

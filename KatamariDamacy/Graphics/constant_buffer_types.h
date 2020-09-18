@@ -7,9 +7,9 @@ struct CB_VS_vertexshader
 	DirectX::XMMATRIX world_matrix;
 };
 
-struct CB_VS_vertexshader_lightview
+struct CB_VS_light_matrix
 {
-	DirectX::XMMATRIX WVP_matrix;
+	DirectX::XMMATRIX WVP_light_matrix;
 };
 
 struct CB_PS_pixelshader
@@ -42,18 +42,4 @@ struct CB_PS_light_pointbulb
 	float dynamic_light_attenuation_a;
 	float dynamic_light_attenuation_b;
 	float dynamic_light_attenuation_c;
-};
-
-struct CB_PS_light_shadows
-{
-	DirectX::XMFLOAT3 ambient_color;
-	float ambient_strength;
-
-	DirectX::XMFLOAT3 diffuse_color;
-	float diffuse_strength;
-
-	DirectX::XMFLOAT3 light_position;
-	float specular_strength;
-
-	DirectX::XMFLOAT3 camera_position;
 };

@@ -286,5 +286,11 @@
     <FxCompile Include="pixelshader_depth.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="pixelshader_shadow.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="vertexshader_shadow.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
