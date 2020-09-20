@@ -69,23 +69,19 @@ float GetShadow(float4 shadowCoord)
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    float3 textureColor = objTexture_diffuse.Sample(objSamplerStateWrap, input.inTexCoord);
+    float3 sample_color = (objTexture_diffuse.Sample(objSamplerStateWrap, input.inTexCoord));
+	
+    float3 ambient_light = ambient_color * ambient_strength;
+	
     float3 light_direction = normalize(light_position - input.inWorldPos);
-    float3 lowLambert = max(dot(light_direction, input.inNormal), 0);
-    
-    float3 lightStrengh = diffuse_color * diffuse_strength * lowLambert;
-    
-    float3 color = lightStrengh * GetShadow(input.inShadowPosition) + ambient_color;
-    float3 finalColor = color * textureColor;
-    
-    
-    // specular
+    float diffuse_impact = max(dot(input.inNormal, light_direction), 0.0);
+    float3 diffuse_light = diffuse_impact * diffuse_color;
+	
     float3 view_direction = normalize(camera_position - input.inWorldPos);
     float3 reflection_direction = normalize(reflect(-light_direction, input.inNormal));
     float specular_impact = pow(max(dot(reflection_direction, view_direction), 0.0), 32);
     float3 specular_light = specular_strength * specular_impact * diffuse_color;
 	
-    // finally
-    finalColor = saturate(finalColor + specular_light);
-    return float4(finalColor, 1);
+    float3 final_color = (diffuse_light + ambient_light + specular_light) * sample_color;
+    return float4(final_color, 1.0f);
 }
