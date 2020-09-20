@@ -40,45 +40,72 @@ void Engine::Update()
 			}
 		}
 	}
-	this->m_gfx.m_katamary.AdjustRotation(.0f, .001 * delta_time, .0f);
+	//this->m_gfx.m_katamary.AdjustRotation(.001 * delta_time, 0.f, .0f);
 
 	float camera_speed = 0.006f;
-
+	auto mainObjectPos = XMFLOAT3(0, 0, 0);
+	auto mainObjectRot = XMFLOAT3(0, 0, 0);
 	if (m_keyboard.KeyIsPressed(VK_SHIFT))
 	{
-		camera_speed = 0.3f;
+		camera_speed = 0.01f;
 	}
 
-	if (m_keyboard.KeyIsPressed('W'))
+	if (m_keyboard.KeyIsPressed(VK_CONTROL))
 	{
-		this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetForwardVector() * camera_speed * delta_time);
+		if (m_keyboard.KeyIsPressed('W'))
+		{
+			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetForwardVector(true) * camera_speed * delta_time);
+			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetRightVector(true) * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('S'))
+		{
+			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetBackwardVector(true) * camera_speed * delta_time);
+			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetLeftVector(true) * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('A'))
+		{
+			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetLeftVector(true) * camera_speed * delta_time);
+			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetBackwardVector(true) * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('D'))
+		{
+			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetRightVector(true) * camera_speed * delta_time);
+			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetForwardVector(true) * camera_speed * delta_time);
+		}
 	}
-	if (m_keyboard.KeyIsPressed('S'))
+	else
 	{
-		this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetBackwardVector() * camera_speed * delta_time);
-	}
-	if (m_keyboard.KeyIsPressed('A'))
-	{
-		this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetLeftVector() * camera_speed * delta_time);
-	}
-	if (m_keyboard.KeyIsPressed('D'))
-	{
-		this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetRightVector() * camera_speed * delta_time);
-	}
-	if (m_keyboard.KeyIsPressed(VK_SPACE))
-	{
-		this->m_gfx.m_camera.AdjustPosition(0.0f, camera_speed * delta_time, 0.0f);
-	}
-	if (m_keyboard.KeyIsPressed('Z'))
-	{
-		this->m_gfx.m_camera.AdjustPosition(0.0f, -camera_speed * delta_time, 0.0f);
-	}
-	if (m_keyboard.KeyIsPressed('C'))
-	{
-		XMVECTOR lightPosition = this->m_gfx.m_camera.GetPositionVector();
-		lightPosition += this->m_gfx.m_camera.GetForwardVector();
-		//this->m_gfx.m_light.SetPosition(lightPosition);
-		//this->m_gfx.m_light.SetRotation(this->m_gfx.m_camera.GetRotationFloat3());
+		if (m_keyboard.KeyIsPressed('W'))
+		{
+			this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetForwardVector() * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('S'))
+		{
+			this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetBackwardVector() * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('A'))
+		{
+			this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetLeftVector() * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed('D'))
+		{
+			this->m_gfx.m_camera.AdjustPosition(this->m_gfx.m_camera.GetRightVector() * camera_speed * delta_time);
+		}
+		if (m_keyboard.KeyIsPressed(VK_SPACE))
+		{
+			this->m_gfx.m_camera.AdjustPosition(0.0f, camera_speed * delta_time, 0.0f);
+		}
+		if (m_keyboard.KeyIsPressed('Z'))
+		{
+			this->m_gfx.m_camera.AdjustPosition(0.0f, -camera_speed * delta_time, 0.0f);
+		}
+		if (m_keyboard.KeyIsPressed('C'))
+		{
+			XMVECTOR lightPosition = this->m_gfx.m_camera.GetPositionVector();
+			lightPosition += this->m_gfx.m_camera.GetForwardVector();
+			//this->m_gfx.m_light.SetPosition(lightPosition);
+			//this->m_gfx.m_light.SetRotation(this->m_gfx.m_camera.GetRotationFloat3());
+		}
 	}
 }
 

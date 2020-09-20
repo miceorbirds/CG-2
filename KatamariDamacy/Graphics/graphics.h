@@ -25,7 +25,7 @@ public:
 
 	Camera m_camera;
 	RenderableGameObject m_game_object;
-	RenderableGameObject m_katamary;
+	KatamariThing m_katamary;
 	std::vector<KatamariThing> m_items;
 
 	Light m_sun;
@@ -37,6 +37,7 @@ private:
 
 	void RenderToTexture();
 	void RenderToWindow();
+	void CheckCollision();
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
@@ -66,6 +67,7 @@ private:
 
 	Direct2D m_hud;
 	Timer m_fps_timer;
+	int score = 0;
 
 	int m_window_width{ 0 };
 	int m_window_height{ 0 };

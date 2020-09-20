@@ -1,6 +1,6 @@
 #include "graphics.h"
 
-constexpr int g_numItems = 5;
+constexpr int g_numItems = 1;
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
@@ -160,6 +160,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
+	this->m_katamary.UpdateKatamari();
+	CheckCollision();
+
 	this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
 	this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
 	this->m_cb_ps_light.data.light_position = m_sun.GetPositionFloat3();
@@ -201,7 +204,7 @@ void Graphics::RenderFrame()
 	fps_counter += 1;
 	if (m_fps_timer.GetMilisecondsElapsed() > 1000.0)
 	{
-		fps_string = "FPS: " + std::to_string(fps_counter);
+		fps_string = "FPS: " + std::to_string(score);
 		fps_counter = 0;
 		m_fps_timer.Restart();
 	}
@@ -275,7 +278,7 @@ bool Graphics::InitializeScene()
 	try
 	{
 		float screen_near = 0.1f;
-		float screen_depth = 50.f;
+		float screen_depth = 100.f;
 		//Initialize Constant Buffer(s)
 		auto hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
@@ -289,8 +292,10 @@ bool Graphics::InitializeScene()
 
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
-		if (!m_game_object.Initialize("Data/Objects/broccoli.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data/Objects/49_broccoli_albedo.jpeg"))
-			return false;
+		m_katamary.CreateKatamari();
+
+		//if (!m_game_object.Initialize("Data/Objects/broccoli.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data/Objects/49_broccoli_albedo.jpeg"))
+		//	return false;
 		if (!m_sun.Initialize(screen_near, screen_depth))
 			return false;
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
@@ -329,7 +334,7 @@ void Graphics::RenderToTexture()
 
 	{
 		//this->m_land.Draw(this->m_cb_vs_vertexshader, m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
-		this->m_game_object.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
+		//this->m_game_object.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
 		this->m_katamary.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
 	}
 }
@@ -369,13 +374,31 @@ void Graphics::RenderToWindow()
 	{
 		for (int i = 0; i < m_items.size(); ++i)
 		{
+			m_items[i].Update();
 			if (!m_items[i].IsGathered)
 			{
 				m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 			}
 			else
 			{
-				m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+				m_items[i].DrawAttached(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix(), m_katamary.GetWorld());
+			}
+		}
+	}
+}
+
+void Graphics::CheckCollision()
+{
+	for (int i = 0; i < m_items.size(); ++i)
+	{
+		if (!(m_items[i].IsGathered))
+		{
+			bool IsIntersected = false;
+			IsIntersected = m_katamary.collisionSphere.sphere.Intersects(m_items[i].collisionSphere.sphere);
+			if (IsIntersected)
+			{
+				m_items[i].collisionSphere.collision = INTERSECTS;
+				++score;
 			}
 		}
 	}
