@@ -287,7 +287,7 @@ bool Graphics::InitializeScene()
 
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
-		if (!m_game_object.Initialize("Data\\Objects\\Samples\\person_embeddedindexed.blend", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_game_object.Initialize("Data/Objects/broccoli.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data/Objects/49_broccoli_albedo.jpeg"))
 			return false;
 		if (!m_sun.Initialize(screen_near, screen_depth))
 			return false;
