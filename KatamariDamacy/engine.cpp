@@ -40,7 +40,7 @@ void Engine::Update()
 			}
 		}
 	}
-	this->m_gfx.m_katamary.AdjustRotation(.0f, .001 * delta_time, .0f);
+	this->m_gfx.m_katamari.AdjustRotation(.0f, .001 * delta_time, .0f);
 
 	float camera_speed = 0.006f;
 

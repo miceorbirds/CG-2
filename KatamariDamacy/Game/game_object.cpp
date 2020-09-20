@@ -140,6 +140,11 @@ void GameObject::SetLookAtPos(XMFLOAT3 lookAtPos)
 	this->SetRotation(pitch, yaw, 0.0f);
 }
 
+const XMVECTOR& GameObject::GetPosition()
+{
+	return this->m_pos_vector;
+}
+
 const XMVECTOR& GameObject::GetForwardVector(bool omitY)
 {
 	if (omitY)
@@ -170,6 +175,26 @@ const XMVECTOR& GameObject::GetLeftVector(bool omitY)
 		return this->m_vec_left_noY;
 	else
 		return this->m_vec_left;
+}
+
+void GameObject::SetScale(const XMVECTOR& scale)
+{
+	this->m_scale_vector = scale;
+	XMStoreFloat3(&this->m_scale, scale);
+	this->UpdateMatrix();
+}
+
+void GameObject::SetScale(const XMFLOAT3& scale)
+{
+	this->m_scale = scale;
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
+}
+void GameObject::SetScale(float x, float y, float z)
+{
+	this->m_scale = XMFLOAT3(x, y, z);
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
 }
 void GameObject::UpdateMatrix()
 {

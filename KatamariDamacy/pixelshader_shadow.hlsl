@@ -86,6 +86,6 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 specular_light = specular_strength * specular_impact * diffuse_color;
 	
     // finally
-    finalColor = saturate(finalColor + specular_light);
+    //finalColor = saturate(finalColor + specular_light);
     return float4(finalColor, 1);
 }

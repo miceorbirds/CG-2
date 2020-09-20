@@ -12,7 +12,7 @@ public:
 	float ambient_light_strength = 0.1f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	float diffuse_light_strength = 10.0f;
+	float diffuse_light_strength = 1.0f;
 
 	XMMATRIX GetViewMatrix();
 	XMMATRIX GetProjectionMatrix();

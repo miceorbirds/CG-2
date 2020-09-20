@@ -7,6 +7,9 @@ using namespace DirectX;
 class Model
 {
 public:
+	const XMVECTOR& Model::GetMinDirections();
+	const XMVECTOR& Model::GetMaxDirections();
+
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, bool set_texture_manually, const std::string& texture_file_path);
 	void Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_matrix);
@@ -28,4 +31,11 @@ private:
 	ConstantBuffer<CB_VS_vertexshader>* m_cb_vs_vertexshader = nullptr;
 
 	std::string directory = "";
+
+	float xPlus;
+	float yPlus;
+	float zPlus;
+	float xMinus;
+	float yMinus;
+	float zMinus;
 };

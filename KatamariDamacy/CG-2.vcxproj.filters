@@ -129,9 +129,6 @@
     <ClCompile Include="Game\katamari_thing.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\landscapee.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="Game\landscape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

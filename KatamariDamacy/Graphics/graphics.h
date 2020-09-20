@@ -24,8 +24,9 @@ public:
 
 	Camera m_camera;
 	RenderableGameObject m_game_object;
-	RenderableGameObject m_katamary;
-	std::vector<RenderableGameObject> m_items;
+	RenderableGameObject m_katamari;
+	std::vector<RenderableGameObject> m_katamari_things;
+	float katamari_size = 1;
 
 	Light m_sun;
 	Landscape m_land;
@@ -41,6 +42,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapchain;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_render_target_view;
+	D3D11_VIEWPORT m_viewport;
 
 	ShadowMap m_shadow_map;
 

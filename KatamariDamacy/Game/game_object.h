@@ -28,12 +28,14 @@ public:
 
 	void SetLookAtPos(XMFLOAT3 look_at_pos);
 
+	const XMVECTOR& GetPosition();
 	const XMVECTOR& GetForwardVector(bool omitY = false);
 	const XMVECTOR& GetRightVector(bool omitY = false);
 	const XMVECTOR& GetBackwardVector(bool omitY = false);
 	const XMVECTOR& GetLeftVector(bool omitY = false);
 
-	void SetScale(const XMVECTOR& rot);
+	void SetScale(const XMVECTOR& scale);
+	void SetScale(const XMFLOAT3& scale);
 	void SetScale(float x, float y, float z);
 
 protected:
@@ -42,8 +44,10 @@ protected:
 
 	XMVECTOR m_pos_vector;
 	XMVECTOR m_rot_vector;
+	XMVECTOR m_scale_vector;
 	XMFLOAT3 m_pos;
 	XMFLOAT3 m_rot;
+	XMFLOAT3 m_scale;
 
 	const XMVECTOR DEFAULT_FORWARD_VECTOR = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const XMVECTOR DEFAULT_UP_VECTOR = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
