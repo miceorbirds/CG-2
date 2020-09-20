@@ -112,6 +112,51 @@ void GameObject::AdjustRotation(float x, float y, float z)
 	this->UpdateMatrix();
 }
 
+void GameObject::SetScale(const XMVECTOR& scale)
+{
+	XMStoreFloat3(&this->m_scale, scale);
+	this->m_scale_vector = scale;
+	this->UpdateMatrix();
+}
+
+void GameObject::SetScale(const XMFLOAT3& scale)
+{
+	this->m_scale = scale;
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
+}
+void GameObject::SetScale(float x, float y, float z)
+{
+	this->m_scale = XMFLOAT3(x, y, z);
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
+}
+
+void GameObject::AdjustScale(const XMVECTOR& scale)
+{
+	this->m_scale_vector += scale;
+	XMStoreFloat3(&this->m_scale, this->m_scale_vector);
+	this->UpdateMatrix();
+}
+
+void GameObject::AdjustScale(const XMFLOAT3& scale)
+{
+	this->m_scale.x += scale.x;
+	this->m_scale.y += scale.y;
+	this->m_scale.z += scale.z;
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
+}
+
+void GameObject::AdjustScale(float x, float y, float z)
+{
+	this->m_scale.x += x;
+	this->m_scale.y += y;
+	this->m_scale.z += z;
+	this->m_scale_vector = XMLoadFloat3(&this->m_scale);
+	this->UpdateMatrix();
+}
+
 void GameObject::SetLookAtPos(XMFLOAT3 lookAtPos)
 {
 	//Verify that look at pos is not the same as cam pos. They cannot be the same as that wouldn't make sense and would result in undefined behavior.
@@ -171,6 +216,7 @@ const XMVECTOR& GameObject::GetLeftVector(bool omitY)
 	else
 		return this->m_vec_left;
 }
+
 void GameObject::UpdateMatrix()
 {
 	assert("UpdateMatrix must be overridden." && 0);

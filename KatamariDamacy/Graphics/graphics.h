@@ -14,6 +14,7 @@
 #include "light.h"
 #include "../Game/landscape.h"
 #include "shadow_map.h"
+#include "../Game/katamari_thing.h"
 
 class Graphics
 {
@@ -25,7 +26,7 @@ public:
 	Camera m_camera;
 	RenderableGameObject m_game_object;
 	RenderableGameObject m_katamary;
-	std::vector<RenderableGameObject> m_items;
+	std::vector<KatamariThing> m_items;
 
 	Light m_sun;
 	Landscape m_land;
@@ -68,4 +69,23 @@ private:
 
 	int m_window_width{ 0 };
 	int m_window_height{ 0 };
+
+	std::vector<std::string> pathToItems =
+	{
+		"Data/Objects/apple.fbx",
+		"Data/Objects/broccoli.fbx",
+		"Data/Objects/carrot.fbx",
+		"Data/Objects/lemon.fbx",
+		"Data/Objects/pomgranate.fbx",
+		"Data/Objects/strawberry.fbx",
+	};
+	std::vector<std::string> pathToTextures =
+	{
+		"Data/Objects/apple03_lr_albedo.jpeg",
+		"Data/Objects/49_broccoli_albedo.jpeg",
+		"Data/Objects/07_carrot_albedo.jpeg",
+		"Data/Objects/11_lemon_albedo.jpeg",
+		"Data/Objects/23_pomegranate_albedo.jpeg",
+		"Data/Objects/73_strawberry_albedo.jpeg",
+	};
 };

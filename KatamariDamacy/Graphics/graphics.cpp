@@ -1,5 +1,7 @@
 #include "graphics.h"
 
+constexpr int g_numItems = 5;
+
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
 	this->m_window_width = width;
@@ -294,6 +296,17 @@ bool Graphics::InitializeScene()
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
 			return false;
 
+		for (int j = 0; j < g_numItems; ++j)
+		{
+			for (int i = 0; i < pathToItems.size(); ++i)
+			{
+				KatamariThing game_obj;
+				game_obj.Initialize(pathToItems[i], this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, pathToTextures[i]);
+				game_obj.SetScale(0.02f, 0.02f, 0.02f);
+				m_items.push_back(game_obj);
+			}
+		};
+
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
 		m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width) / static_cast<float>(m_window_height),
 			screen_near, screen_depth);
@@ -348,9 +361,22 @@ void Graphics::RenderToWindow()
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
-		this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		//this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	}
+	{
+		for (int i = 0; i < m_items.size(); ++i)
+		{
+			if (!m_items[i].IsGathered)
+			{
+				m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+			}
+			else
+			{
+				m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+			}
+		}
 	}
 }
 

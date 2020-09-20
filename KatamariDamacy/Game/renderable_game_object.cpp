@@ -7,6 +7,7 @@ bool RenderableGameObject::Initialize(const std::string& file_path, ID3D11Device
 
 	this->SetPosition(0.0f, 0.0f, 0.0f);
 	this->SetRotation(0.0f, 0.0f, 0.0f);
+	this->SetScale(1.0f, 1.0f, 1.0f);
 	this->UpdateMatrix();
 	return true;
 }
@@ -18,6 +19,7 @@ bool RenderableGameObject::Initialize(const std::string& file_path, ID3D11Device
 
 	this->SetPosition(0.0f, 0.0f, 0.0f);
 	this->SetRotation(0.0f, 0.0f, 0.0f);
+	this->SetScale(0.1f, 0.1f, 0.1f);
 	this->UpdateMatrix();
 	return true;
 }
@@ -29,6 +31,6 @@ void RenderableGameObject::Draw(const XMMATRIX& viewProjectionMatrix)
 
 void RenderableGameObject::UpdateMatrix()
 {
-	this->m_world_matrix = XMMatrixRotationRollPitchYaw(this->m_rot.x, this->m_rot.y, this->m_rot.z) * XMMatrixTranslation(this->m_pos.x, this->m_pos.y, this->m_pos.z);
+	this->m_world_matrix = XMMatrixRotationRollPitchYaw(this->m_rot.x, this->m_rot.y, this->m_rot.z) * XMMatrixTranslation(this->m_pos.x, this->m_pos.y, this->m_pos.z) * XMMatrixScaling(this->m_scale.x, this->m_scale.y, this->m_scale.z);
 	this->UpdateDirectionVectors();
 }

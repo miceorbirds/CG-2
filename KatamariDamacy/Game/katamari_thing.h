@@ -12,7 +12,6 @@ public:
 	bool IsGathered = false;
 private:
 	DirectX::XMVECTOR centerOfCollision;
-
 	int getRandomNumber(int min, int max)
 	{
 		static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
@@ -21,4 +20,3 @@ private:
 
 	float diff = getRandomNumber(-20, 20);
 };
-
