@@ -303,6 +303,7 @@ bool Graphics::InitializeScene()
 				KatamariThing game_obj;
 				game_obj.Initialize(pathToItems[i], this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, pathToTextures[i]);
 				game_obj.SetScale(0.02f, 0.02f, 0.02f);
+				game_obj.CreateUniqueWorld();
 				m_items.push_back(game_obj);
 			}
 		};

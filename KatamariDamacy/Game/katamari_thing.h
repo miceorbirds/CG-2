@@ -10,6 +10,7 @@ public:
 		ContainmentType collision;
 	} collisionSphere;
 	bool IsGathered = false;
+	void CreateUniqueWorld();
 private:
 	DirectX::XMVECTOR centerOfCollision;
 	int getRandomNumber(int min, int max)
