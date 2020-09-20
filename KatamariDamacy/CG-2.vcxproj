@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="Game\game_object.cpp" />
     <ClCompile Include="Game\landscape.cpp" />
+    <ClCompile Include="Game\landscapee.cpp" />
     <ClCompile Include="Game\renderable_game_object.cpp" />
     <ClCompile Include="Graphics\camera.cpp" />
     <ClCompile Include="Graphics\color.cpp" />

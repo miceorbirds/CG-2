@@ -17,7 +17,11 @@ public:
 	ID3D11ShaderResourceView* GetShaderResourceView();
 	ID3D11ShaderResourceView** GetShaderResourceViewAddress();
 
+	//	DirectX::XMMATRIX GetProjectionMatrix();
 private:
+	//	DirectX::XMMATRIX m_projectionMatrix;
+	//	DirectX::XMMATRIX m_orthoMatrix;
+
 	D3D11_VIEWPORT m_viewport;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_shadowmap_texture;
