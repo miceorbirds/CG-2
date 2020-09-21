@@ -5,8 +5,9 @@ void KatamariThing::CreateUniqueWorld()
 {
 	SetPosition(getRandomNumber(-500, 500), 0.f, getRandomNumber(-500, 500));
 	UpdateMatrix();
+	float size = 0.1;
 	collisionSphere.sphere.Center = this->GetPositionFloat3();
-	collisionSphere.sphere.Radius = RADIUS;
+	collisionSphere.sphere.Radius = 10;
 	collisionSphere.collision = DISJOINT;
 	diff = getRandomNumber(-20, 20);
 }
@@ -14,8 +15,10 @@ void KatamariThing::CreateUniqueWorld()
 void KatamariThing::CreateKatamari()
 {
 	this->isKatamari = true;
+	float size = 2;
+	SetScale(size, size, size);
 	collisionSphere.sphere.Center = this->GetPositionFloat3();
-	collisionSphere.sphere.Radius = RADIUS;
+	collisionSphere.sphere.Radius = size / 2;
 	collisionSphere.collision = DISJOINT;
 }
 
