@@ -294,8 +294,6 @@ bool Graphics::InitializeScene()
 			return false;
 		m_katamary.CreateKatamari();
 
-		//if (!m_game_object.Initialize("Data/Objects/broccoli.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, "Data/Objects/49_broccoli_albedo.jpeg"))
-		//	return false;
 		if (!m_sun.Initialize(screen_near, screen_depth))
 			return false;
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
@@ -312,7 +310,6 @@ bool Graphics::InitializeScene()
 				m_items.push_back(game_obj);
 			}
 		};
-
 		m_camera.SetPosition(0.0f, 0.0f, -2.0f);
 		m_camera.SetProjectionValues(90.f, static_cast<float>(m_window_width) / static_cast<float>(m_window_height),
 			screen_near, screen_depth);
@@ -331,7 +328,6 @@ void Graphics::RenderToTexture()
 
 	this->m_device_context->VSSetShader(m_depth_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(m_depth_pixelshader.GetShader(), NULL, 0);
-
 	{
 		//this->m_land.Draw(this->m_cb_vs_vertexshader, m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
 		//this->m_game_object.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
@@ -367,7 +363,6 @@ void Graphics::RenderToWindow()
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
-		//this->m_game_object.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}

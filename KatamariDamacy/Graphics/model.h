@@ -7,19 +7,14 @@ using namespace DirectX;
 class Model
 {
 public:
-	const XMVECTOR& GetMinDirections();
-	const XMVECTOR& GetMaxDirections();
+	XMFLOAT3 centerBound;
+	float radiusBound;
 
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
 	bool Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, bool set_texture_manually, const std::string& texture_file_path);
 	void Draw(const XMMATRIX& world_matrix, const XMMATRIX& view_projection_matrix);
 
-	float xPlus;
-	float yPlus;
-	float zPlus;
-	float xMinus;
-	float yMinus;
-	float zMinus;
+	void CalculateBound(std::vector<Vertex>& vertex);
 private:
 	bool LoadModel(const std::string& file_path);
 	void ProcessNode(aiNode* node, const aiScene* scene, const XMMATRIX& parent_transform_matrix);

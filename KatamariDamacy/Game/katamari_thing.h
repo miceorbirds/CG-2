@@ -2,6 +2,9 @@
 #include "renderable_game_object.h"
 #include <DirectXCollision.h>
 #include "../Graphics/debug_draw.h"
+#include "../Inc/Effects.h"
+#include "../Inc/CommonStates.h"
+#include "../Inc/SimpleMath.h"
 
 class KatamariThing : public RenderableGameObject
 {
@@ -11,20 +14,13 @@ public:
 		ContainmentType collision;
 	} collisionSphere;
 	bool IsGathered = false;
-
 	void CreateUniqueWorld();
 	void CreateKatamari();
 	void Update();
 	void UpdateKatamari();
 	void DrawAttached(const XMMATRIX& viewProjectionMatrix, XMMATRIX katamari_world);
 
-	const bool CheckColision(KatamariThing& gameObject);
-	const bool CheckFutureColision(KatamariThing& gameObject, XMVECTOR adjustPosition);
-	const XMVECTOR GetMaxDirection();
-	const XMVECTOR GeMinDirection();
-
 private:
-
 	bool isKatamari = false;
 
 	//DirectX::XMVECTOR centerOfCollision;

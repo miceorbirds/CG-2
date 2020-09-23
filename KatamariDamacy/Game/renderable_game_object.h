@@ -9,8 +9,17 @@ public:
 	void Draw(const XMMATRIX& viewProjectionMatrix);
 	const XMMATRIX GetWorld();
 protected:
+	void CalcCenterBound();
+	XMFLOAT3 center_bound;
+	float radius_bound;
 	Model m_model;
 	void UpdateMatrix() override;
-
+	const XMFLOAT3& GetRotationRelativeFloat3() const;
 	XMMATRIX m_world_matrix = XMMatrixIdentity();
+
+	XMMATRIX old_rotation = XMMatrixIdentity();
+	bool setOldRotate = false;
+	RenderableGameObject* parent;
+	std::vector <RenderableGameObject*> childs;
+	float m_scale = 1;
 };

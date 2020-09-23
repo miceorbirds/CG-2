@@ -1,14 +1,5 @@
 #include "model.h"
-
-const XMVECTOR& Model::GetMinDirections()
-{
-	return XMLoadFloat3(&XMFLOAT3(this->xMinus, this->yMinus, this->zMinus));
-}
-
-const XMVECTOR& Model::GetMaxDirections()
-{
-	return XMLoadFloat3(&XMFLOAT3(this->xPlus, this->yPlus, this->zPlus));
-}
+#include "strsafe.h"
 
 bool Model::Initialize(const std::string& file_path, ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader)
 {
@@ -59,12 +50,6 @@ bool Model::LoadModel(const std::string& file_path)
 		MessageBoxA(NULL, what, "Error", MB_ICONERROR);
 		return false;
 	}
-	this->xPlus = -(std::numeric_limits<float>::max)();
-	this->xMinus = (std::numeric_limits<float>::max)();
-	this->yPlus = -(std::numeric_limits<float>::max)();
-	this->yMinus = (std::numeric_limits<float>::max)();
-	this->zPlus = -(std::numeric_limits<float>::max)();
-	this->zMinus = (std::numeric_limits<float>::max)();
 
 	this->ProcessNode(scene->mRootNode, scene, XMMatrixIdentity());
 	return true;
@@ -103,36 +88,6 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& tran
 		XMVECTOR vertexPos_v = XMVector3Transform(XMLoadFloat3(&vertex.pos), transform_matrix);
 		XMStoreFloat3(&vertexPos, vertexPos_v);
 
-		if (this->xPlus < vertexPos.x)
-		{
-			this->xPlus = vertexPos.x;
-		}
-
-		if (this->xMinus > vertexPos.x)
-		{
-			this->xMinus = vertexPos.x;
-		}
-
-		if (this->yPlus < vertexPos.y)
-		{
-			this->yPlus = vertexPos.y;
-		}
-
-		if (this->yMinus > vertexPos.y)
-		{
-			this->yMinus = vertexPos.y;
-		}
-
-		if (this->zPlus < vertexPos.z)
-		{
-			this->zPlus = vertexPos.z;
-		}
-
-		if (this->zMinus > vertexPos.z)
-		{
-			this->zMinus = vertexPos.z;
-		}
-
 		vertex.normal.x = mesh->mNormals[i].x;
 		vertex.normal.y = mesh->mNormals[i].y;
 		vertex.normal.z = mesh->mNormals[i].z;
@@ -145,12 +100,10 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& tran
 
 		vertices.push_back(vertex);
 	}
-
 	//Get indices
 	for (UINT i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
-
 		for (UINT j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
@@ -166,6 +119,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const XMMATRIX& tran
 		std::vector<Texture> diffuse_textures = LoadMaterialTextures(material, aiTextureType::aiTextureType_DIFFUSE, scene);
 		textures.insert(textures.end(), diffuse_textures.begin(), diffuse_textures.end());
 	}
+	CalculateBound(vertices);
 	return Mesh(this->m_device, this->m_device_context, vertices, indices, textures, transform_matrix);
 }
 
@@ -286,4 +240,40 @@ int Model::GetTextureIndex(aiString* str)
 {
 	assert(str->length >= 2);
 	return atoi(&str->C_Str()[1]);
+}
+
+void Model::CalculateBound(std::vector<Vertex>& vertex)
+{
+	float radiusBound;
+	XMFLOAT3 centerBound = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	int count = vertex.size();
+	for (int i = 0; i < count; i++)
+	{
+		centerBound.x += vertex[i].pos.x;
+		centerBound.y += vertex[i].pos.y;
+		centerBound.z += vertex[i].pos.z;
+	}
+	centerBound.x /= (float)count;
+	centerBound.y /= (float)count;
+	centerBound.z /= (float)count;
+
+	// find farthest point in set
+	radiusBound = 0.0f;
+	for (int i = 0; i < count; i++)
+	{
+		float dist;
+		dist = sqrtf(powf(centerBound.x - vertex[i].pos.x, 2) + powf(centerBound.y - vertex[i].pos.y, 2) + powf(centerBound.z - vertex[i].pos.z, 2));
+		if (dist > radiusBound)
+			radiusBound = dist;
+	}
+
+	radiusBound = sqrtf(radiusBound);
+
+	this->radiusBound = radiusBound;
+	this->centerBound = centerBound;
+
+	auto debug_string = L"++++++++++++++++++++ /n Radius bound: " + std::to_wstring(radiusBound) + L"/n";
+	OutputDebugString(debug_string.c_str());
+	debug_string = L"Center bound: " + std::to_wstring(centerBound.x) + L" " + std::to_wstring(centerBound.y) + L" " + std::to_wstring(centerBound.z) + L" " + L"/n **********************";
+	OutputDebugString(debug_string.c_str());
 }

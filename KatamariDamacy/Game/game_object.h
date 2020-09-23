@@ -47,8 +47,11 @@ protected:
 
 	XMVECTOR m_pos_vector;
 	XMVECTOR m_rot_vector;
+	XMVECTOR rot_relative_vector;
 	XMFLOAT3 m_pos;
 	XMFLOAT3 m_rot;
+
+	XMFLOAT3 rot_relative;
 
 	const XMVECTOR DEFAULT_FORWARD_VECTOR = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const XMVECTOR DEFAULT_UP_VECTOR = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
