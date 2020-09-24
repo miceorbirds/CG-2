@@ -43,8 +43,8 @@ void Engine::Update()
 	//this->m_gfx.m_katamary.AdjustRotation(.001 * delta_time, 0.f, .0f);
 
 	float camera_speed = 0.006f;
-	auto mainObjectPos = XMFLOAT3(0, 0, 0);
-	auto mainObjectRot = XMFLOAT3(0, 0, 0);
+	//auto mainObjectPos = XMFLOAT3(0, 0, 0);
+	//auto mainObjectRot = XMFLOAT3(0, 0, 0);
 	if (m_keyboard.KeyIsPressed(VK_SHIFT))
 	{
 		camera_speed = 0.01f;
@@ -56,21 +56,49 @@ void Engine::Update()
 		{
 			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetForwardVector(true) * camera_speed * delta_time);
 			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetRightVector(true) * camera_speed * delta_time);
+			if (!this->m_gfx.m_katamary.childs.empty())
+			{
+				for (int i = 0; i < m_gfx.m_katamary.childs.size(); i++)
+				{
+					this->m_gfx.m_katamary.childs[i]->UpdateMatrix();
+				}
+			}
 		}
 		if (m_keyboard.KeyIsPressed('S'))
 		{
 			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetBackwardVector(true) * camera_speed * delta_time);
 			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetLeftVector(true) * camera_speed * delta_time);
+			if (!this->m_gfx.m_katamary.childs.empty())
+			{
+				for (int i = 0; i < m_gfx.m_katamary.childs.size(); i++)
+				{
+					this->m_gfx.m_katamary.childs[i]->UpdateMatrix();
+				}
+			}
 		}
 		if (m_keyboard.KeyIsPressed('A'))
 		{
 			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetLeftVector(true) * camera_speed * delta_time);
 			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetBackwardVector(true) * camera_speed * delta_time);
+			if (!this->m_gfx.m_katamary.childs.empty())
+			{
+				for (int i = 0; i < m_gfx.m_katamary.childs.size(); i++)
+				{
+					this->m_gfx.m_katamary.childs[i]->UpdateMatrix();
+				}
+			}
 		}
 		if (m_keyboard.KeyIsPressed('D'))
 		{
 			this->m_gfx.m_katamary.AdjustPosition(this->m_gfx.m_katamary.GetRightVector(true) * camera_speed * delta_time);
 			this->m_gfx.m_katamary.AdjustRotation(m_gfx.m_katamary.GetForwardVector(true) * camera_speed * delta_time);
+			if (!this->m_gfx.m_katamary.childs.empty())
+			{
+				for (int i = 0; i < m_gfx.m_katamary.childs.size(); i++)
+				{
+					this->m_gfx.m_katamary.childs[i]->UpdateMatrix();
+				}
+			}
 		}
 	}
 	else

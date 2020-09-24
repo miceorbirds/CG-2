@@ -29,7 +29,6 @@ bool ShadowMap::Initialize(ID3D11Device* device)
 		m_viewport.MaxDepth = 1.0f;
 		m_viewport.TopLeftX = 0.0f;
 		m_viewport.TopLeftY = 0.0f;
-
 	}
 	catch (COMException& exception)
 	{
@@ -43,12 +42,12 @@ void ShadowMap::SetShadowmapRenderTarget(ID3D11DeviceContext* device_context)
 {
 	device_context->RSSetViewports(1, &m_viewport);
 
-	//Set null render target because we are only going to draw to depth buffer. Setting a null render target will disable color writes.
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view{0};
-	device_context->OMSetRenderTargets(1, render_target_view.GetAddressOf(), m_depth_stensil_view.Get());
+	//Set null render target because we are only going to draw to depth buffer. Setting a null render target will disable color 	writes.
 
-	device_context->ClearDepthStencilView(this->m_depth_stensil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,0);
-
+	ID3D11ShaderResourceView* pNullSRV = NULL;
+	device_context->PSSetShaderResources(1, 1, &pNullSRV);
+	device_context->OMSetRenderTargets(0, 0, m_depth_stensil_view.Get());
+	device_context->ClearDepthStencilView(this->m_depth_stensil_view.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 ID3D11ShaderResourceView* ShadowMap::GetShaderResourceView()
@@ -60,4 +59,3 @@ ID3D11ShaderResourceView** ShadowMap::GetShaderResourceViewAddress()
 {
 	return this->m_shader_resource_view.GetAddressOf();
 }
-

@@ -35,6 +35,7 @@ private:
 	bool InitializeShaders();
 	bool InitializeScene();
 
+	void UpdateConstantBuffers();
 	void RenderToTexture();
 	void RenderToWindow();
 	void CheckCollision();

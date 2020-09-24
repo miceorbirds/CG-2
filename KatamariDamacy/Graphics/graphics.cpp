@@ -149,6 +149,10 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_shadowmap.GetAddressOf()); //Create sampler state
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth sampler state.");
+
+		// create shadowmap things
+		if (!m_shadow_map.Initialize(this->m_device.Get()))
+			return false;
 	}
 	catch (COMException& exception)
 	{
@@ -160,20 +164,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 void Graphics::RenderFrame()
 {
-	this->m_katamary.UpdateKatamari();
 	CheckCollision();
 
-	this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
-	this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
-	this->m_cb_ps_light.data.light_position = m_sun.GetPositionFloat3();
-	this->m_cb_ps_light.data.ambient_color = m_sun.ambient_light_color;
-	this->m_cb_ps_light.data.ambient_strength = m_sun.ambient_light_strength;
-	this->m_cb_ps_light.data.camera_position = m_camera.GetPositionFloat3();
-	this->m_cb_ps_light.data.specular_strength = m_sun.specular_strength;
-	this->m_cb_ps_light.ApplyChanges();
-
-	this->m_cb_vs_lightmatrix.data.WVP_light_matrix = m_sun.GetProjectionMatrix() * m_sun.GetViewMatrix();
-	this->m_cb_vs_lightmatrix.ApplyChanges();
+	UpdateConstantBuffers();
 
 	float r, g, b;
 	XMVECTOR colorVector;
@@ -279,7 +272,8 @@ bool Graphics::InitializeScene()
 	{
 		float screen_near = 0.1f;
 		float screen_depth = 100.f;
-		//Initialize Constant Buffer(s)
+
+		// init constant buffers
 		auto hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_vs_lightmatrix.Initialize(this->m_device.Get(), this->m_device_context.Get());
@@ -287,25 +281,23 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
-		if (!m_shadow_map.Initialize(this->m_device.Get()))
-			return false;
-
+		// create katamari (player)
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 		m_katamary.CreateKatamari();
-
+		// create light
 		if (!m_sun.Initialize(screen_near, screen_depth))
 			return false;
+		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
 			return false;
-
+		// create collectable items
 		for (int j = 0; j < g_numItems; ++j)
 		{
 			for (int i = 0; i < pathToItems.size(); ++i)
 			{
 				KatamariThing game_obj;
 				game_obj.Initialize(pathToItems[i], this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader, true, pathToTextures[i]);
-				game_obj.SetScale(0.02f, 0.02f, 0.02f);
 				game_obj.CreateUniqueWorld();
 				m_items.push_back(game_obj);
 			}
@@ -322,15 +314,29 @@ bool Graphics::InitializeScene()
 	return true;
 }
 
+void Graphics::UpdateConstantBuffers()
+{
+	//Update Constant Buffer(s)
+	this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
+	this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
+	this->m_cb_ps_light.data.light_position = m_sun.GetPositionFloat3();
+	this->m_cb_ps_light.data.ambient_color = m_sun.ambient_light_color;
+	this->m_cb_ps_light.data.ambient_strength = m_sun.ambient_light_strength;
+	this->m_cb_ps_light.data.camera_position = m_camera.GetPositionFloat3();
+	this->m_cb_ps_light.data.specular_strength = m_sun.specular_strength;
+	this->m_cb_ps_light.ApplyChanges();
+
+	this->m_cb_vs_lightmatrix.data.WVP_light_matrix = m_sun.GetProjectionMatrix() * m_sun.GetViewMatrix();
+	this->m_cb_vs_lightmatrix.ApplyChanges();
+}
+
 void Graphics::RenderToTexture()
 {
 	m_shadow_map.SetShadowmapRenderTarget(this->m_device_context.Get());
 
 	this->m_device_context->VSSetShader(m_depth_vertexshader.GetShader(), NULL, 0);
-	this->m_device_context->PSSetShader(m_depth_pixelshader.GetShader(), NULL, 0);
+	this->m_device_context->PSSetShader(NULL, NULL, 0);
 	{
-		//this->m_land.Draw(this->m_cb_vs_vertexshader, m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
-		//this->m_game_object.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
 		this->m_katamary.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
 	}
 }
@@ -339,9 +345,10 @@ void Graphics::RenderToWindow()
 {
 	// Create & set the Viewport again
 	CD3D11_VIEWPORT viewport(.0f, .0f, this->m_window_width, this->m_window_height);
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 	this->m_device_context->RSSetViewports(1, &viewport);
-	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(),
-		this->m_depth_stencil_view.Get());
+	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 
 	float r, g, b;
 	XMVECTOR colorVector;
@@ -360,6 +367,7 @@ void Graphics::RenderToWindow()
 	m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
 	m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_lightmatrix.GetAddressOf());
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
 	{
@@ -369,31 +377,20 @@ void Graphics::RenderToWindow()
 	{
 		for (int i = 0; i < m_items.size(); ++i)
 		{
-			m_items[i].Update();
-			if (!m_items[i].IsGathered)
-			{
-				m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-			}
-			else
-			{
-				m_items[i].DrawAttached(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix(), m_katamary.GetWorld());
-			}
+			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		}
 	}
 }
 
 void Graphics::CheckCollision()
 {
-	for (int i = 0; i < m_items.size(); ++i)
+	for (int i = 0; i < m_items.size(); i++)
 	{
-		if (!(m_items[i].IsGathered))
+		if (!this->m_items[i].isChild)
 		{
-			bool IsIntersected = false;
-			IsIntersected = m_katamary.collisionSphere.sphere.Intersects(m_items[i].collisionSphere.sphere);
-			if (IsIntersected)
+			if (m_katamary.FindCollision(&m_items[i]))
 			{
-				m_items[i].collisionSphere.collision = INTERSECTS;
-				++score;
+				m_katamary.AddChild(&m_items[i]);
 			}
 		}
 	}
