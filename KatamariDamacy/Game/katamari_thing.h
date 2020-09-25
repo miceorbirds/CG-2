@@ -7,11 +7,7 @@ class KatamariThing : public RenderableGameObject
 public:
 	void CreateUniqueWorld();
 	void CreateKatamari();
-	void Update();
-	void UpdateKatamari();
-
 private:
-
 	bool isKatamari = false;
 	int getRandomNumber(int min, int max)
 	{

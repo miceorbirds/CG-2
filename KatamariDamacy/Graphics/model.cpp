@@ -272,8 +272,8 @@ void Model::CalculateBound(std::vector<Vertex>& vertex)
 	this->radiusBound = radiusBound;
 	this->centerBound = centerBound;
 
-	auto debug_string = L"++++++++++++++++++++ /n Radius bound: " + std::to_wstring(radiusBound) + L"/n";
+	/*auto debug_string = L"++++++++++++++++++++ /n Radius bound: " + std::to_wstring(radiusBound) + L"/n";
 	OutputDebugString(debug_string.c_str());
 	debug_string = L"Center bound: " + std::to_wstring(centerBound.x) + L" " + std::to_wstring(centerBound.y) + L" " + std::to_wstring(centerBound.z) + L" " + L"/n **********************";
-	OutputDebugString(debug_string.c_str());
+	OutputDebugString(debug_string.c_str());*/
 }

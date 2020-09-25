@@ -18,7 +18,7 @@ struct PS_INPUT
     float2 inTexCoord : TEXCOORD;
     float3 inNormal : NORMAL;
     float3 inWorldPos : WORLD_POSITION;
-    float4 inShadowPosition : SHADOW_TEXCOORD;
+    float4 outShadowMap : SHADOW_TEXCOORD;
 };
 
 Texture2D objTexture_diffuse : TEXTURE : register(t0);

@@ -24,13 +24,13 @@ struct VS_OUTPUT
     float2 outTexCoord : TEXCOORD;
     float3 outNormal : NORMAL;
     float3 outWorldPos : WORLD_POSITION;
-    float4 outShadowPosition : SHADOW_TEXCOORD;
+    float4 outShadowMap : SHADOW_TEXCOORD;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.outShadowPosition = mul(float4(input.inPos, 1.f), WVP_light_matrix);
+    output.outShadowMap = mul(float4(input.inPos, 1.f), WVP_light_matrix);
 
     output.outPosition = mul(float4(input.inPos, 1.f), WVP_matrix);
 

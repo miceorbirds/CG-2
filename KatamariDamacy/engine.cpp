@@ -23,7 +23,6 @@ void Engine::Update()
 	{
 		auto ch = m_keyboard.ReadChar();
 	}
-
 	while (!m_keyboard.KeyBufferIsEmpty())
 	{
 		auto kbe = m_keyboard.ReadKey();
@@ -41,10 +40,7 @@ void Engine::Update()
 		}
 	}
 	//this->m_gfx.m_katamary.AdjustRotation(.001 * delta_time, 0.f, .0f);
-
 	float camera_speed = 0.006f;
-	//auto mainObjectPos = XMFLOAT3(0, 0, 0);
-	//auto mainObjectRot = XMFLOAT3(0, 0, 0);
 	if (m_keyboard.KeyIsPressed(VK_SHIFT))
 	{
 		camera_speed = 0.01f;
@@ -131,8 +127,6 @@ void Engine::Update()
 		{
 			XMVECTOR lightPosition = this->m_gfx.m_camera.GetPositionVector();
 			lightPosition += this->m_gfx.m_camera.GetForwardVector();
-			//this->m_gfx.m_light.SetPosition(lightPosition);
-			//this->m_gfx.m_light.SetRotation(this->m_gfx.m_camera.GetRotationFloat3());
 		}
 	}
 }

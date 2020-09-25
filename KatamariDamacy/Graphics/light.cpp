@@ -13,10 +13,10 @@ bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context
 bool Light::Initialize(float screen_near, float screen_depth)
 {
 	this->isSun = true;
-	this->SetPosition(-10.0f, 10.0f, -2.0f);
-	this->SetLookAtPos(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	this->SetPosition(9.0f, 8.0f, -0.1f);
+	this->SetLookAtPos(XMFLOAT3(-9.0f, 0.0f, 0.0f));
 	this->UpdateMatrix();
-	this->GenerateProjectionMatrix(0.5f, 50.f);
+	this->GenerateProjectionMatrix(screen_near, screen_depth);
 	this->UpdateViewMatrix();
 	this->UpdateMatrix();
 	return true;
@@ -34,7 +34,7 @@ XMMATRIX Light::GetProjectionMatrix()
 
 void Light::GenerateProjectionMatrix(float screen_near, float screen_depth)
 {
-	this->m_projection_matrix = XMMatrixOrthographicLH(32, 32, screen_near, screen_depth);
+	this->m_projection_matrix = XMMatrixOrthographicLH(20.0f, 20.0f, screen_near, screen_depth);
 }
 
 void Light::UpdateViewMatrix()

@@ -168,15 +168,7 @@ void Graphics::RenderFrame()
 
 	UpdateConstantBuffers();
 
-	float r, g, b;
-	XMVECTOR colorVector;
-	colorVector = DirectX::Colors::PowderBlue.v;
-	r = XMVectorGetX(colorVector);
-	g = XMVectorGetY(colorVector);
-	b = XMVectorGetZ(colorVector);
-	float bgcolor[] = { r,g,b,1.0f };
-
-	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
+	//this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
 
@@ -184,11 +176,11 @@ void Graphics::RenderFrame()
 	this->m_device_context->OMSetBlendState(nullptr, nullptr, 0xFFF);
 	this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
 	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+	RenderToTexture();
 	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
 	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state.GetAddressOf());
-
-	RenderToTexture();
-
 	RenderToWindow();
 
 	// direct2d
@@ -272,7 +264,6 @@ bool Graphics::InitializeScene()
 	{
 		float screen_near = 0.1f;
 		float screen_depth = 100.f;
-
 		// init constant buffers
 		auto hr = this->m_cb_vs_vertexshader.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
@@ -280,7 +271,6 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-
 		// create katamari (player)
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
@@ -338,6 +328,10 @@ void Graphics::RenderToTexture()
 	this->m_device_context->PSSetShader(NULL, NULL, 0);
 	{
 		this->m_katamary.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
+		for (int i = 0; i < m_items.size(); ++i)
+		{
+			m_items[i].Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
+		}
 	}
 }
 
@@ -349,7 +343,6 @@ void Graphics::RenderToWindow()
 	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 	this->m_device_context->RSSetViewports(1, &viewport);
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
-
 	float r, g, b;
 	XMVECTOR colorVector;
 	colorVector = DirectX::Colors::PowderBlue.v;
@@ -364,8 +357,7 @@ void Graphics::RenderToWindow()
 
 	this->m_device_context->PSSetShaderResources(1, 1, m_shadow_map.GetShaderResourceViewAddress());
 
-	m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
-	m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_lightmatrix.GetAddressOf());
+	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_lightmatrix.GetAddressOf());
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
