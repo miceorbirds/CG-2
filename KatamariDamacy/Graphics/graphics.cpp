@@ -314,6 +314,7 @@ void Graphics::UpdateConstantBuffers()
 	this->m_cb_ps_light.data.ambient_strength = m_sun.ambient_light_strength;
 	this->m_cb_ps_light.data.camera_position = m_camera.GetPositionFloat3();
 	this->m_cb_ps_light.data.specular_strength = m_sun.specular_strength;
+	this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
 	this->m_cb_ps_light.ApplyChanges();
 
 	this->m_cb_vs_lightmatrix.data.WVP_light_matrix = m_sun.GetProjectionMatrix() * m_sun.GetViewMatrix();

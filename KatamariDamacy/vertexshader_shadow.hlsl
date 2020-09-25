@@ -6,7 +6,7 @@ cbuffer per_object_buffer : register(b0)
     float4x4 world_matrix;
 };
 
-cbuffer light_buffer : register(b1)
+cbuffer light_eye_buffer : register(b1)
 {
     float4x4 WVP_light_matrix;
 };
@@ -24,13 +24,13 @@ struct VS_OUTPUT
     float2 outTexCoord : TEXCOORD;
     float3 outNormal : NORMAL;
     float3 outWorldPos : WORLD_POSITION;
-    float4 outShadowMap : SHADOW_TEXCOORD;
+    float4 outlightViewPosition : SHADOW_TEXCOORD;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.outShadowMap = mul(float4(input.inPos, 1.f), WVP_light_matrix);
+    output.outlightViewPosition = mul(float4(input.inPos, 1.f), WVP_light_matrix);
 
     output.outPosition = mul(float4(input.inPos, 1.f), WVP_matrix);
 

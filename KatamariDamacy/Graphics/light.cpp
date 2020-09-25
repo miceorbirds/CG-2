@@ -13,8 +13,14 @@ bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context
 bool Light::Initialize(float screen_near, float screen_depth)
 {
 	this->isSun = true;
-	this->SetPosition(9.0f, 8.0f, -0.1f);
-	this->SetLookAtPos(XMFLOAT3(-9.0f, 0.0f, 0.0f));
+	static float lightAngle = 270.0f;
+	float radians;
+	static float lightPosX = 9.0f;
+
+	radians = lightAngle * 0.0174532925f;
+	this->SetDirection(sinf(radians), cosf(radians), 0.0f);
+	this->SetPosition(lightPosX, 8.0f, -0.1f);
+	this->SetLookAtPos(XMFLOAT3(-lightPosX, 0.0f, 0.0f));
 	this->UpdateMatrix();
 	this->GenerateProjectionMatrix(screen_near, screen_depth);
 	this->UpdateViewMatrix();
@@ -44,4 +50,17 @@ void Light::UpdateViewMatrix()
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	m_view_matrix = XMMatrixLookAtLH(camPos, camLookAt, Up);
+}
+
+void Light::SetDirection(float x, float y, float z)
+{
+	m_direction = XMLoadFloat3(&XMFLOAT3(x, y, z));
+	return;
+}
+
+XMFLOAT3 Light::GetDirection()
+{
+	XMFLOAT3 direction;
+	XMStoreFloat3(&direction, m_direction);
+	return direction;
 }

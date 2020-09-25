@@ -29,6 +29,8 @@ struct CB_PS_light
 	float specular_strength;
 
 	DirectX::XMFLOAT3 camera_position;
+	float padding;
+	DirectX::XMFLOAT3 light_direction;
 };
 
 struct CB_PS_light_pointbulb

@@ -14,8 +14,11 @@ public:
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	float diffuse_light_strength = 10.0f;
 
+	XMVECTOR m_direction;
 	XMMATRIX GetViewMatrix();
 	XMMATRIX GetProjectionMatrix();
+	XMFLOAT3 GetDirection();
+	void SetDirection(float x, float y, float z);
 
 	float specular_strength = 0.5f;
 
