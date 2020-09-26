@@ -140,14 +140,10 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create sampler state.");
 
-		sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
-		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_land.GetAddressOf());
-		COM_ERROR_IF_FAILED(hr, "Failed to create land sampler state.");
-
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 		sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_shadowmap.GetAddressOf()); //Create sampler state
+		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_shadowmap.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth sampler state.");
 
 		// create shadowmap things
@@ -180,7 +176,7 @@ void Graphics::RenderFrame()
 	m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
 	RenderToTexture();
 	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state.GetAddressOf());
-	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state.GetAddressOf());
+	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state_shadowmap.GetAddressOf());
 	RenderToWindow();
 
 	// direct2d
@@ -256,7 +252,7 @@ bool Graphics::InitializeShaders()
 	if (!m_depth_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_depth.cso"))
 		return false;
 	return true;
-}
+	}
 
 bool Graphics::InitializeScene()
 {
@@ -328,10 +324,10 @@ void Graphics::RenderToTexture()
 	this->m_device_context->VSSetShader(m_depth_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(NULL, NULL, 0);
 	{
-		this->m_katamary.Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
+		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		for (int i = 0; i < m_items.size(); ++i)
 		{
-			m_items[i].Draw(m_sun.GetViewMatrix() * m_sun.GetProjectionMatrix());
+			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		}
 	}
 }
