@@ -123,11 +123,6 @@ void Engine::Update()
 		{
 			this->m_gfx.m_camera.AdjustPosition(0.0f, -camera_speed * delta_time, 0.0f);
 		}
-		if (m_keyboard.KeyIsPressed('C'))
-		{
-			XMVECTOR lightPosition = this->m_gfx.m_camera.GetPositionVector();
-			lightPosition += this->m_gfx.m_camera.GetForwardVector();
-		}
 	}
 }
 

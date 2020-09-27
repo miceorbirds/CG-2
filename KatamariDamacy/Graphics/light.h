@@ -12,22 +12,23 @@ public:
 	float ambient_light_strength = 0.1f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	float diffuse_light_strength = 10.0f;
+	float diffuse_light_strength = 0.5f;
 
-	XMVECTOR m_direction;
 	XMMATRIX GetViewMatrix();
 	XMMATRIX GetProjectionMatrix();
 	XMFLOAT3 GetDirection();
 	void SetDirection(float x, float y, float z);
+	void UpdateViewMatrix();
+	void UpdateViewMatrix(XMFLOAT3 mainObjectPos);
 
-	float specular_strength = 0.5f;
+	float specular_strength = 25.5f;
 
 	float attenuation_a = 1.0f;
 	float attenuation_b = 0.1f;
 	float attenuation_c = 0.1f;
 private:
+	XMVECTOR m_direction;
 
-	void UpdateViewMatrix();
 	void GenerateProjectionMatrix(float screen_near, float screen_depth);
 
 	XMMATRIX m_view_matrix;

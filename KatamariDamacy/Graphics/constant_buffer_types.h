@@ -7,9 +7,10 @@ struct CB_VS_vertexshader
 	DirectX::XMMATRIX world_matrix;
 };
 
-struct CB_VS_light_matrix
+struct CB_VS_camLight_matrix
 {
-	DirectX::XMMATRIX WVP_light_matrix;
+	DirectX::XMMATRIX camLightViewMatrix;
+	DirectX::XMMATRIX camLightProjMatrix;
 };
 
 struct CB_PS_pixelshader

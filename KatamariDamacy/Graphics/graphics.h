@@ -44,8 +44,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_device_context;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_swapchain;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_render_target_view;
+	Microsoft::WRL::ComPtr<ID3D11Debug> m_debugger;
+	CD3D11_VIEWPORT m_viewport;
 
-	ShadowMap m_shadow_map;
+	ShadowMap* m_shadow_map = nullptr;
 
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
@@ -53,17 +55,16 @@ private:
 	PixelShader m_depth_pixelshader;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
-	ConstantBuffer<CB_VS_light_matrix> m_cb_vs_lightmatrix;
+	ConstantBuffer<CB_VS_camLight_matrix> m_cb_vs_camlightmatrix;
 
 	ConstantBuffer <CB_PS_light> m_cb_ps_light;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_buffer;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_texture;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 	Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_land;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_main;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_shadowmap;
 
 	Direct2D m_hud;
