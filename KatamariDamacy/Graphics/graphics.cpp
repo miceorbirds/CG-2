@@ -75,8 +75,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		hr = this->m_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D),
 			reinterpret_cast<void**>(back_buffer.GetAddressOf()));
 		COM_ERROR_IF_FAILED(hr, "GetBuffer Failed.");
-		hr = this->m_device->CreateRenderTargetView(back_buffer.Get(), 0,
-			this->m_render_target_view.GetAddressOf());
+
+		CD3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM);
+		hr = this->m_device->CreateRenderTargetView(back_buffer.Get(), &renderTargetViewDesc, this->m_render_target_view.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create render target view.");
 
 		// get Debugger for future using
