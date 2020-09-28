@@ -7,8 +7,8 @@
 class ShadowMap
 {
 public:
-	float SHADOWMAP_WIDTH = 1024;
-	float SHADOWMAP_HEIGHT = 1024;
+	float SHADOWMAP_WIDTH = 2048;
+	float SHADOWMAP_HEIGHT = 2048;
 
 	bool Initialize(ID3D11Device* device, float screenNear, float screenDepth);
 

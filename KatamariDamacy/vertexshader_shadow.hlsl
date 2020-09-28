@@ -31,14 +31,17 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
+    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix);
+
     float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
-    output.LightViewPosition = mul(float4(input.Position, 1.f), camShadowVPMatrix);
+    
+    
+    output.LightViewPosition = mul(float4(output.WorldPos, 1.f), camShadowVPMatrix);
 
     output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
 
     output.TexureCoord = input.TexureCoord;
     output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix));
-    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix);
-
+   
     return output;
 }
