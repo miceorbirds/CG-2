@@ -14,10 +14,10 @@ bool Landscape::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_con
 		// Textured Square
 		Vertex v[] =
 		{
-			Vertex(-50,  -0.5f, -50, 10.0f, 10.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Left   - [0]
-			Vertex(-50,  -0.5f,  50, 0.0f, 10.0f, 0.0f, 1.0f, 0.0f), //FRONT Top Left      - [1]
+			Vertex(-50,  -0.5f, -50, 2.0f, 2.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Left   - [0]
+			Vertex(-50,  -0.5f,  50, 0.0f, 2.0f, 0.0f, 1.0f, 0.0f), //FRONT Top Left      - [1]
 			Vertex(50,  -0.5f,  50, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f), //FRONT Top Right     - [2]
-			Vertex(50,  -0.5f, -50, 10.0f, 0.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Right   - [3]
+			Vertex(50,  -0.5f, -50, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Right   - [3]
 		};
 		// Load vertex data
 		hr = this->m_vertex_buffer.Initialize(device, v, ARRAYSIZE(v));

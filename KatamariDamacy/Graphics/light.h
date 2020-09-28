@@ -8,8 +8,8 @@ public:
 	bool Initialize(float screen_near, float screen_depth);
 
 	bool isSun;
-	XMFLOAT3 ambient_light_color = XMFLOAT3(0.8f, 0.8f, 0.96f);
-	float ambient_light_strength = 0.1f;
+	XMFLOAT3 ambient_light_color = XMFLOAT3(0.1f, 0.2f, 0.5f);
+	float ambient_light_strength = 0.9f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	float diffuse_light_strength = 0.5f;
@@ -21,7 +21,7 @@ public:
 	void UpdateViewMatrix();
 	void UpdateViewMatrix(XMFLOAT3 mainObjectPos);
 
-	float specular_strength = 25.5f;
+	float specular_strength = 0.5f;
 
 	float attenuation_a = 1.0f;
 	float attenuation_b = 0.1f;

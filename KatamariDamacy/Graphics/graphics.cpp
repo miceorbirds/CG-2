@@ -171,7 +171,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 void Graphics::RenderFrame()
 {
 	CheckCollision();
-	this->m_sun.UpdateViewMatrix(this->m_katamary.GetPositionFloat3());
+	this->m_sun.UpdateViewMatrix(this->m_camera.GetPositionFloat3());
 
 	UpdateConstantBuffers();
 
@@ -359,11 +359,13 @@ void Graphics::RenderToTexture()
 
 void Graphics::RenderToWindow()
 {
+	ID3D11ShaderResourceView* pNullSRV = NULL;
+	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
+
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 	this->m_device_context->RSSetViewports(1, &m_viewport);
-
-	/*ID3D11RenderTargetView* nullViews[] = { nullptr };
-	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);*/
 
 	float r, g, b;
 	XMVECTOR colorVector;

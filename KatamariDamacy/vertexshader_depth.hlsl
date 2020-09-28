@@ -8,8 +8,8 @@ cbuffer per_object_buffer : register(b0)
 
 cbuffer camlight_buffer : register(b1)
 {
-    row_major float4x4 camLightViewMatrix;
-    row_major float4x4 camLightProjMatrix;
+    float4x4 camLightViewMatrix;
+    float4x4 camLightProjMatrix;
 };
 
 struct VS_INPUT

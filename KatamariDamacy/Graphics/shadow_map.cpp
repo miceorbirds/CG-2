@@ -76,12 +76,14 @@ bool ShadowMap::Initialize(ID3D11Device* device, float screenNear, float screenD
 
 void ShadowMap::SetShadowmapRenderTarget(ID3D11DeviceContext* device_context)
 {
+	ID3D11ShaderResourceView* pNullSRV = NULL;
+	device_context->PSSetShaderResources(1, 1, &pNullSRV);
+
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
+
 	device_context->OMSetRenderTargets(1, m_RTV.GetAddressOf(), m_DSV.Get());
 	device_context->RSSetViewports(1, &m_viewport);
-	//Set null render target because we are only going to draw to depth buffer. Setting a null render target will disable color 	writes.
-
-	//ID3D11ShaderResourceView* pNullSRV = NULL;
-	//device_context->PSSetShaderResources(1, 1, &pNullSRV);
 
 	float color[4] = { 0.5, 0.5, 0.5, 1.0 };
 	device_context->ClearRenderTargetView(m_RTV.Get(), color);

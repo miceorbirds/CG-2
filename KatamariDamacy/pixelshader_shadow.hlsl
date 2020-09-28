@@ -100,6 +100,12 @@ float4 main(PS_INPUT input) : SV_TARGET
 	// Combine the light and texture color.
     color = color * textureColor;
 
+    float3 view_direction = normalize(camera_position - input.inWorldPos);
+    float3 reflection_direction = normalize(reflect(light_direction, input.inNormal));
+    float specular_impact = pow(max(dot(reflection_direction, view_direction), 0.0), 32);
+    float3 specular_light = specular_strength * specular_impact * diffuse_color;
+    color = saturate(color + float4(specular_light, 1.0f));
+    
     return color;
     
     
