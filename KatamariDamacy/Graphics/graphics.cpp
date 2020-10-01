@@ -1,6 +1,7 @@
 #include "graphics.h"
 
 constexpr int g_numItems = 1;
+constexpr UINT BUFFER_COUNT = 3;
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
@@ -70,7 +71,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		);
 		COM_ERROR_IF_FAILED(hr, "Failed to create device, device context and swapchain.");
 
-		// get Backbuffer from swapchain and use it as rendertatgetview. backbuffer is where our picture are painted.
+		// get Backbuffer from swapchain and use it as rendertargetview. backbuffer is where our picture are painted.
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer;
 		hr = this->m_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D),
 			reinterpret_cast<void**>(back_buffer.GetAddressOf()));
@@ -117,6 +118,9 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		// create shadowmap things
 		m_shadow_map = new ShadowMap();
 		if (!m_shadow_map->Initialize(this->m_device.Get(), 0.1f, 10000.0f))
+			return false;
+		m_gbuffer = new GBufferRT;
+		if (!m_gbuffer->Init(this->m_device.Get(), 0.1f, 10000.0f))
 			return false;
 
 		//Create Rasterizer State
@@ -291,6 +295,9 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
 		this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
 		this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
+
+		if (!m_bulb.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+			return false;
 
 		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))

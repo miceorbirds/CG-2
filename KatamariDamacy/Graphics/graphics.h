@@ -14,6 +14,7 @@
 #include "light.h"
 #include "../Game/landscape.h"
 #include "shadow_map.h"
+#include "deferred_rendertarget.h"
 #include "../Game/katamari_thing.h"
 
 class Graphics
@@ -29,6 +30,7 @@ public:
 	std::vector<KatamariThing> m_items;
 
 	Light m_sun;
+	Light m_bulb;
 	Landscape m_land;
 private:
 	bool InitializeDirectX(HWND hwnd);
@@ -48,8 +50,10 @@ private:
 	CD3D11_VIEWPORT m_viewport;
 
 	ShadowMap* m_shadow_map = nullptr;
+	//GBufferRT* m_gbuffer = nullptr;
+	TextureRenderTarget m_
 
-	VertexShader m_vertexshader;
+		VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
 	VertexShader m_depth_vertexshader;
 	PixelShader m_depth_pixelshader;

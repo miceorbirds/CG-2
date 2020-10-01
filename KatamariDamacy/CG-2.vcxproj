@@ -143,6 +143,7 @@
     <ClCompile Include="Game\renderable_game_object.cpp" />
     <ClCompile Include="Graphics\camera.cpp" />
     <ClCompile Include="Graphics\color.cpp" />
+    <ClCompile Include="Graphics\deferred_rendertarget.cpp" />
     <ClCompile Include="graphics\direct2d.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="error_logger.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Graphics\color.h" />
     <ClInclude Include="Graphics\const_buffer.h" />
     <ClInclude Include="Graphics\constant_buffer_types.h" />
+    <ClInclude Include="Graphics\deferred_rendertarget.h" />
     <ClInclude Include="graphics\direct2d.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="error_logger.h" />
