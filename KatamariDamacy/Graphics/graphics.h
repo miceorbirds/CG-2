@@ -17,6 +17,9 @@
 #include "deferred_rendertarget.h"
 #include "../Game/katamari_thing.h"
 
+constexpr int g_numItems = 1;
+constexpr UINT BUFFER_COUNT = 3;
+
 class Graphics
 {
 public:
@@ -51,9 +54,9 @@ private:
 
 	ShadowMap* m_shadow_map = nullptr;
 	//GBufferRT* m_gbuffer = nullptr;
-	TextureRenderTarget m_
+	TextureRenderTarget m_graphics_buffer[BUFFER_COUNT];
 
-		VertexShader m_vertexshader;
+	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
 	VertexShader m_depth_vertexshader;
 	PixelShader m_depth_pixelshader;
