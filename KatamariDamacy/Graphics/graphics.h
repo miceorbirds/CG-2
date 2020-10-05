@@ -17,8 +17,7 @@
 #include "deferred_rendertarget.h"
 #include "../Game/katamari_thing.h"
 
-constexpr int g_numItems = 1;
-constexpr UINT BUFFER_COUNT = 3;
+constexpr int g_numItems = 2;
 
 class Graphics
 {
@@ -42,6 +41,7 @@ private:
 
 	void UpdateConstantBuffers();
 	void RenderToTexture();
+	void RenderToGbuff();
 	void RenderToWindow();
 	void CheckCollision();
 
@@ -53,8 +53,9 @@ private:
 	CD3D11_VIEWPORT m_viewport;
 
 	ShadowMap* m_shadow_map = nullptr;
-	//GBufferRT* m_gbuffer = nullptr;
-	TextureRenderTarget m_graphics_buffer[BUFFER_COUNT];
+
+	Microsoft::WRL::ComPtr<GBufferRT> m_gbuffer = nullptr;
+	GbuffRenderTarget m_graphics_buffer[BUFFER_COUNT];
 
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;

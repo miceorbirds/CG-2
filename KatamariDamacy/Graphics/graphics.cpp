@@ -74,46 +74,12 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 			reinterpret_cast<void**>(back_buffer.GetAddressOf()));
 		COM_ERROR_IF_FAILED(hr, "GetBuffer Failed.");
 
-		////////
-		//Generate the render target textures.
-		D3D11_TEXTURE2D_DESC textureDesc{};
-		textureDesc.Width = this->m_window_width;
-		textureDesc.Height = this->m_window_height;
-		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Usage = D3D11_USAGE_DEFAULT;
-		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-
-		for (UINT i = 0; i < BUFFER_COUNT; i++)
-			this->m_device->CreateTexture2D(&textureDesc, NULL, &m_graphics_buffer[i].texture);
-
-		//Generate the render target views.
-		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc{};
-		renderTargetViewDesc.Format = textureDesc.Format;
-		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-
-		for (UINT i = 0; i < BUFFER_COUNT; i++)
-		{
-			m_device->CreateRenderTargetView(m_graphics_buffer[i].texture, &renderTargetViewDesc, &m_graphics_buffer[i].renderTargetView);
-		}
-
-		//Generate the shader resource views.
-		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
-		shaderResourceViewDesc.Format = textureDesc.Format;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-		for (UINT i = 0; i < BUFFER_COUNT; i++)
-		{
-			m_device->CreateShaderResourceView(m_graphics_buffer[i].texture, &shaderResourceViewDesc, &m_graphics_buffer[i].shaderResourceView);
-		}
-
-		///////
 		CD3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc(D3D11_RTV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 		hr = this->m_device->CreateRenderTargetView(back_buffer.Get(), &renderTargetViewDesc, this->m_render_target_view.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create render target view.");
+
+		//create gbuffer RTs
+		m_gbuffer->Init(this->m_device.Get(), m_window_width, m_window_height);
 
 		// get Debugger for future using
 		hr = m_device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(m_debugger.GetAddressOf()));
@@ -224,6 +190,7 @@ void Graphics::RenderFrame()
 
 	//m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
 	RenderToTexture();
+	RenderToGbuff();
 	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_main.GetAddressOf());
 	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state_shadowmap.GetAddressOf());
 	RenderToWindow();
@@ -394,6 +361,17 @@ void Graphics::RenderToTexture()
 		}
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
+}
+
+void Graphics::RenderToGbuff()
+{
+	this->m_device_context->RSSetViewports(1, &m_viewport);
+	//Set the rendertargets.
+	ID3D11RenderTargetView* renderTargets[] = {
+		m_graphics_buffer[0].renderTargetView,
+		m_graphics_buffer[1].renderTargetView,
+		m_graphics_buffer[2].renderTargetView,
+	};
 }
 
 void Graphics::RenderToWindow()
