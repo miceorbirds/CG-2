@@ -1,3 +1,5 @@
+#pragma pack_matrix( row_major )
+
 cbuffer light_buffer : register(b0)
 {
     float3 ambient_color;

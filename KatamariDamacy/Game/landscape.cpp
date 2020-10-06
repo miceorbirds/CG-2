@@ -7,7 +7,7 @@ bool Landscape::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_con
 	try
 	{
 		//Load Texture
-		auto hr = CreateWICTextureFromFile(device, L"Data\\Textures\\pinksquare.jpg", nullptr, &m_texture);
+		auto hr = CreateWICTextureFromFile(device, L"Data\\Textures\\seamless_pavement.jpg", nullptr, &m_texture);
 		COM_ERROR_IF_FAILED(hr, "Failed to create wic texture from file.");
 		this->m_device = device;
 		this->m_device_context = device_context;

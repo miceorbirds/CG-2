@@ -62,6 +62,8 @@ private:
 	VertexShader m_depth_vertexshader;
 	PixelShader m_depth_pixelshader;
 	PixelShader m_deferred_pixelshader;
+	VertexShader m_vertexshader_dirlight_pass;
+	PixelShader m_pixelshader_dirlight_pass;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
 	ConstantBuffer<CB_VS_camLight_matrix> m_cb_vs_camlightmatrix;

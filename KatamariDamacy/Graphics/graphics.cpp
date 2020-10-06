@@ -275,6 +275,11 @@ bool Graphics::InitializeShaders()
 		return false;
 	if (!m_depth_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_depth.cso"))
 		return false;
+	if (!m_vertexshader_dirlight_pass.Initialize(this->m_device, shaderfolder + L"vertexshader_dirlight_pass.cso", layout_description, num_elements))
+		return false;
+	if (!m_pixelshader_dirlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_dirlight_pass.cso"))
+		return false;
+
 	return true;
 }
 
@@ -426,10 +431,13 @@ void Graphics::RenderToWindow()
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	this->m_device_context->PSSetShaderResources(1, 1, m_shadow_map->GetShaderResourceViewAddress());
+	this->m_device_context->PSSetShaderResources(2, 1, &m_gbuffer->m_shaderResourceViewArray[0]);
+	this->m_device_context->PSSetShaderResources(3, 1, m_shadow_map->GetShaderResourceViewAddress());
+	this->m_device_context->PSSetShaderResources(4, 1, m_shadow_map->GetShaderResourceViewAddress());
 
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
-	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
-	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);
+	this->m_device_context->VSSetShader(m_vertexshader_dirlight_pass.GetShader(), nullptr, 0);
+	this->m_device_context->PSSetShader(m_pixelshader_dirlight_pass.GetShader(), nullptr, 0);
 	{
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
