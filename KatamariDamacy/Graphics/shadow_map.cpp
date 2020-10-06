@@ -76,12 +76,14 @@ bool ShadowMap::Initialize(ID3D11Device* device, float screenNear, float screenD
 
 void ShadowMap::SetShadowmapRenderTarget(ID3D11DeviceContext* device_context)
 {
+	//unbind shader resource view with shadowmap from past pass
 	ID3D11ShaderResourceView* pNullSRV = NULL;
 	device_context->PSSetShaderResources(1, 1, &pNullSRV);
-
+	//unbind render targets from past pass
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 
+	// bind shadowmap RT, depth stensil and viewport
 	device_context->OMSetRenderTargets(1, m_RTV.GetAddressOf(), m_DSV.Get());
 	device_context->RSSetViewports(1, &m_viewport);
 

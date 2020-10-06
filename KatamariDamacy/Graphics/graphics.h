@@ -54,13 +54,14 @@ private:
 
 	ShadowMap* m_shadow_map = nullptr;
 
-	Microsoft::WRL::ComPtr<GBufferRT> m_gbuffer = nullptr;
-	GbuffRenderTarget m_graphics_buffer[BUFFER_COUNT];
+	GBufferRT* m_gbuffer = nullptr;
+	//GbuffRenderTarget m_graphics_buffer[BUFFER_COUNT];
 
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
 	VertexShader m_depth_vertexshader;
 	PixelShader m_depth_pixelshader;
+	PixelShader m_deferred_pixelshader;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
 	ConstantBuffer<CB_VS_camLight_matrix> m_cb_vs_camlightmatrix;

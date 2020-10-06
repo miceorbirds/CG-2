@@ -35,7 +35,6 @@ VS_OUTPUT main(VS_INPUT input)
 
     float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
     
-    
     output.LightViewPosition = mul(float4(output.WorldPos, 1.f), camShadowVPMatrix);
 
     output.Position = mul(float4(input.Position, 1.f), WVP_matrix);

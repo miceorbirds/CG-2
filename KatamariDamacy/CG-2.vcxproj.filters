@@ -301,5 +301,8 @@
     <FxCompile Include="vertexshader_shadow.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="pixelshader_deferred.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

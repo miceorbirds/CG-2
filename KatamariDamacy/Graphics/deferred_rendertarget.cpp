@@ -1,5 +1,15 @@
 #include "deferred_rendertarget.h"
 
+GBufferRT::GBufferRT()
+{
+	for (int i = 0; i < BUFFER_COUNT; ++i)
+	{
+		m_renderTargetTextureArray[i] = 0;
+		m_renderTargetViewArray[i] = 0;
+		m_shaderResourceViewArray[i] = 0;
+	}
+}
+
 bool GBufferRT::Init(ID3D11Device* device, float texture_width, float texture_height)
 {
 	try
@@ -18,13 +28,8 @@ bool GBufferRT::Init(ID3D11Device* device, float texture_width, float texture_he
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
 		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 		HRESULT hr;
-		for (UINT i = 0; i < BUFFER_COUNT - 1; i++)
-			hr = device->CreateTexture2D(&textureDesc, NULL, &m_render_targets[i].texture);
-		COM_ERROR_IF_FAILED(hr, "Failed to create texture description for Render targets in gbuffer.");
-
-		textureDesc.Width = SHADOWMAP_WIDTH;
-		textureDesc.Height = SHADOWMAP_HEIGHT;
-		hr = device->CreateTexture2D(&textureDesc, NULL, &m_render_targets[BUFFER_COUNT - 1].texture);
+		for (UINT i = 0; i < BUFFER_COUNT; i++)
+			hr = device->CreateTexture2D(&textureDesc, NULL, &m_renderTargetTextureArray[i]);
 		COM_ERROR_IF_FAILED(hr, "Failed to create texture description for Render targets in gbuffer.");
 
 		//Generate the render target views.
@@ -33,7 +38,7 @@ bool GBufferRT::Init(ID3D11Device* device, float texture_width, float texture_he
 		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
 		for (UINT i = 0; i < BUFFER_COUNT; ++i)
-			hr = device->CreateRenderTargetView(m_render_targets[i].texture, &renderTargetViewDesc, &m_render_targets[i].renderTargetView);
+			hr = device->CreateRenderTargetView(m_renderTargetTextureArray[i], &renderTargetViewDesc, &m_renderTargetViewArray[i]);
 		COM_ERROR_IF_FAILED(hr, "Failed to create render target views from textures in gbuffer.");
 
 		//Generate the shader resource views.
@@ -43,7 +48,7 @@ bool GBufferRT::Init(ID3D11Device* device, float texture_width, float texture_he
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 		for (UINT i = 0; i < BUFFER_COUNT; ++i)
-			hr = device->CreateShaderResourceView(m_render_targets[i].texture, &shaderResourceViewDesc, &m_render_targets[i].shaderResourceView);
+			hr = device->CreateShaderResourceView(m_renderTargetTextureArray[i], &shaderResourceViewDesc, &m_shaderResourceViewArray[i]);
 		COM_ERROR_IF_FAILED(hr, "Failed to create render shader resource views from textures in gbuffer.");
 	}
 	catch (COMException& exception)

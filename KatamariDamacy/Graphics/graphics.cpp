@@ -79,6 +79,7 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		COM_ERROR_IF_FAILED(hr, "Failed to create render target view.");
 
 		//create gbuffer RTs
+		m_gbuffer = new GBufferRT;
 		m_gbuffer->Init(this->m_device.Get(), m_window_width, m_window_height);
 
 		// get Debugger for future using
@@ -176,22 +177,16 @@ void Graphics::RenderFrame()
 	this->m_sun.UpdateViewMatrix(this->m_camera.GetPositionFloat3());
 
 	UpdateConstantBuffers();
-
-	//this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
-
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
-	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
-
+	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
 	this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
 	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
 	this->m_device_context->OMSetBlendState(nullptr, nullptr, 0xFFF);
 
-	//m_device_context->VSSetConstantBuffers(0, 1, this->m_cb_vs_vertexshader.GetAddressOf());
+	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_main.GetAddressOf());
 	RenderToTexture();
 	RenderToGbuff();
-	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_main.GetAddressOf());
 	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state_shadowmap.GetAddressOf());
 	RenderToWindow();
 
@@ -220,8 +215,20 @@ void Graphics::RenderFrame()
 	ImGui::DragFloat3("Diffuse Light Color", &this->m_sun.diffuse_light_color.x, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.diffuse_light_strength, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("Specular Strength", &this->m_sun.specular_strength, 0.01f, 0.0f, 1.0f);
-
 	ImGui::End();
+
+	ImGui::Begin("Albedo");
+	ImGui::Image(m_gbuffer->m_shaderResourceViewArray[0], ImVec2(400, 400));
+	ImGui::End();
+
+	ImGui::Begin("Normal");
+	ImGui::Image(m_gbuffer->m_shaderResourceViewArray[1], ImVec2(400, 400));
+	ImGui::End();
+
+	ImGui::Begin("Position");
+	ImGui::Image(m_gbuffer->m_shaderResourceViewArray[2], ImVec2(400, 400));
+	ImGui::End();
+
 	//Assemble Together Draw Data
 	ImGui::Render();
 	//Render Draw Data
@@ -262,7 +269,8 @@ bool Graphics::InitializeShaders()
 		return false;
 	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_shadow.cso"))
 		return false;
-
+	if (!m_deferred_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_deferred.cso"))
+		return false;
 	if (!m_depth_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader_depth.cso", layout_description, num_elements))
 		return false;
 	if (!m_depth_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_depth.cso"))
@@ -347,41 +355,63 @@ void Graphics::RenderToTexture()
 
 	this->m_device_context->VSSetShader(m_depth_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(m_depth_pixelshader.GetShader(), NULL, 0);
-
-	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
-	this->m_cb_vs_camlightmatrix.data.camLightProjMatrix = this->m_sun.GetProjectionMatrix();
-	this->m_cb_vs_camlightmatrix.data.camLightViewMatrix = this->m_sun.GetViewMatrix();
-	this->m_cb_vs_camlightmatrix.ApplyChanges();
 	{
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-
 		for (int i = 0; i < m_items.size(); ++i)
-		{
 			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-		}
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 }
 
 void Graphics::RenderToGbuff()
 {
+	//unbind render targets from past pass
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
+	//unbind shader resource view with shadowmap from past pass so we will able to use it in next stages
+	ID3D11ShaderResourceView* pNullSRV = NULL;
+	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
+
+	//set default viewport
 	this->m_device_context->RSSetViewports(1, &m_viewport);
-	//Set the rendertargets.
-	ID3D11RenderTargetView* renderTargets[] = {
-		m_graphics_buffer[0].renderTargetView,
-		m_graphics_buffer[1].renderTargetView,
-		m_graphics_buffer[2].renderTargetView,
-	};
+	//set rendertargets
+	m_device_context->OMSetRenderTargets(BUFFER_COUNT, m_gbuffer->m_renderTargetViewArray, this->m_depth_stencil_view.Get());
+
+	float r, g, b;
+	XMVECTOR colorVector;
+	colorVector = DirectX::Colors::PowderBlue.v;
+	r = XMVectorGetX(colorVector);
+	g = XMVectorGetY(colorVector);
+	b = XMVectorGetZ(colorVector);
+	float bgcolor[] = { r,g,b,1.0f };
+	for (int i = 0; i < BUFFER_COUNT; ++i)
+		m_device_context->ClearRenderTargetView(m_gbuffer->m_renderTargetViewArray[i], bgcolor);
+	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
+	this->m_device_context->PSSetShader(m_deferred_pixelshader.GetShader(), nullptr, 0);
+	{
+		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	}
+	{
+		for (int i = 0; i < m_items.size(); ++i)
+		{
+			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		}
+	}
 }
 
 void Graphics::RenderToWindow()
 {
-	ID3D11ShaderResourceView* pNullSRV = NULL;
-	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
-
+	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+	//unbind render targets from past pass
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
+
+	//set גףאפדהו rendertarget
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
+	// set default viewport
 	this->m_device_context->RSSetViewports(1, &m_viewport);
 
 	float r, g, b;
@@ -393,10 +423,10 @@ void Graphics::RenderToWindow()
 	float bgcolor[] = { r,g,b,1.0f };
 
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
-	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(),
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 	this->m_device_context->PSSetShaderResources(1, 1, m_shadow_map->GetShaderResourceViewAddress());
-	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
+
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader.GetShader(), nullptr, 0);

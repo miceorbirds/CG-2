@@ -5,16 +5,17 @@
 
 constexpr UINT BUFFER_COUNT = 3;
 
-struct GbuffRenderTarget
-{
-	ID3D11Texture2D* texture = nullptr;
-	ID3D11RenderTargetView* renderTargetView = nullptr;
-	ID3D11ShaderResourceView* shaderResourceView = nullptr;
-};
+//struct GbuffRenderTarget
+//{
+//	ID3D11Texture2D* texture = nullptr;
+//	ID3D11RenderTargetView* renderTargetView = nullptr;
+//	ID3D11ShaderResourceView* shaderResourceView = nullptr;
+//};
 
 class GBufferRT
 {
 public:
+	GBufferRT();
 	bool Init(ID3D11Device* device, float texture_width, float texture_height);
 
 	void SetRenderTarget(ID3D11DeviceContext*);
@@ -35,7 +36,10 @@ public:
 	int SHADOWMAP_WIDTH = 2048;
 	int SHADOWMAP_HEIGHT = 2048;
 
-	GbuffRenderTarget m_render_targets[BUFFER_COUNT];
+	//std::vector<GbuffRenderTarget> m_render_targets[BUFFER_COUNT];
+	ID3D11Texture2D* m_renderTargetTextureArray[BUFFER_COUNT];
+	ID3D11RenderTargetView* m_renderTargetViewArray[BUFFER_COUNT];
+	ID3D11ShaderResourceView* m_shaderResourceViewArray[BUFFER_COUNT];
 
 private:
 	bool InitNormals(ID3D11Device*);
@@ -43,8 +47,8 @@ private:
 	bool InitAmbient(ID3D11Device*);
 	bool InitTexture(ID3D11Device*);
 	bool InitProjMatrix(float, float);
-	XMMATRIX m_projectionMatrix;
+	//XMMATRIX m_projectionMatrix;
 
-	float m_texture_width;
-	float m_texture_height;
+	float m_texture_width = 0;
+	float m_texture_height = 0;
 };
