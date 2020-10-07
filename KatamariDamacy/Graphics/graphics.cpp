@@ -213,11 +213,11 @@ void Graphics::RenderFrame()
 	ImGui::DragFloat("Ambient Light Strength", &this->m_sun.ambient_light_strength, 0.01f, 0.0f, 1.0f);
 	ImGui::NewLine();
 	ImGui::DragFloat3("Diffuse Light Color", &this->m_sun.diffuse_light_color.x, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.diffuse_light_strength, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("Specular Strength", &this->m_sun.specular_strength, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("Diffuse Light Strength", &this->m_sun.diffuse_light_strength, 0.01f, 0.0f, 10.0f);
+	ImGui::DragFloat("Specular Strength", &this->m_sun.specular_strength, 0.01f, 0.0f, 10.0f);
 	ImGui::End();
 
-	ImGui::Begin("Albedo");
+	/*ImGui::Begin("Albedo");
 	ImGui::Image(m_gbuffer->m_shaderResourceViewArray[0], ImVec2(400, 400));
 	ImGui::End();
 
@@ -227,7 +227,7 @@ void Graphics::RenderFrame()
 
 	ImGui::Begin("Position");
 	ImGui::Image(m_gbuffer->m_shaderResourceViewArray[2], ImVec2(400, 400));
-	ImGui::End();
+	ImGui::End();*/
 
 	//Assemble Together Draw Data
 	ImGui::Render();
