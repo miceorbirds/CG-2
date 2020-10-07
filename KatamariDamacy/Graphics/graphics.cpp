@@ -370,12 +370,15 @@ void Graphics::RenderToTexture()
 
 void Graphics::RenderToGbuff()
 {
-	//unbind render targets from past pass
-	ID3D11RenderTargetView* nullViews[] = { nullptr };
-	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 	//unbind shader resource view with shadowmap from past pass so we will able to use it in next stages
 	ID3D11ShaderResourceView* pNullSRV = NULL;
 	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
+	m_device_context->PSSetShaderResources(2, 1, &pNullSRV);
+	m_device_context->PSSetShaderResources(3, 1, &pNullSRV);
+	m_device_context->PSSetShaderResources(4, 1, &pNullSRV);
+	//unbind render targets from past pass
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 
 	//set default viewport
 	this->m_device_context->RSSetViewports(1, &m_viewport);
@@ -410,11 +413,15 @@ void Graphics::RenderToGbuff()
 void Graphics::RenderToWindow()
 {
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+
+	//unbind shader resource view with shadowmap from past pass so we will able to use it in next stages
+	ID3D11ShaderResourceView* pNullSRV = NULL;
+	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
 	//unbind render targets from past pass
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 
-	//set גףאפדהו rendertarget
+	//set default rendertarget
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 	// set default viewport
 	this->m_device_context->RSSetViewports(1, &m_viewport);
@@ -432,8 +439,8 @@ void Graphics::RenderToWindow()
 
 	this->m_device_context->PSSetShaderResources(1, 1, m_shadow_map->GetShaderResourceViewAddress());
 	this->m_device_context->PSSetShaderResources(2, 1, &m_gbuffer->m_shaderResourceViewArray[0]);
-	this->m_device_context->PSSetShaderResources(3, 1, m_shadow_map->GetShaderResourceViewAddress());
-	this->m_device_context->PSSetShaderResources(4, 1, m_shadow_map->GetShaderResourceViewAddress());
+	this->m_device_context->PSSetShaderResources(3, 1, &m_gbuffer->m_shaderResourceViewArray[1]);
+	this->m_device_context->PSSetShaderResources(4, 1, &m_gbuffer->m_shaderResourceViewArray[2]);
 
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 	this->m_device_context->VSSetShader(m_vertexshader_dirlight_pass.GetShader(), nullptr, 0);
