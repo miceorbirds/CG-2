@@ -15,15 +15,14 @@ cbuffer camlight_buffer : register(b1)
 struct VS_INPUT
 {
     float3 Position : POSITION;
-    float2 TextureCoord : TEXCOORD;
+    float2 TexureCoord : TEXCOORD;
     float3 Normal : NORMAL;
 };
 
 struct VS_OUTPUT
 {
     float4 Position : SV_POSITION;
-    float2 TextureCoord : TEXCOORD;
-    float3 Normal : NORMAL;
+    //float2 TexureCoord : TEXCOORD;
     float3 WorldPos : WORLD_POSITION;
     float4 LightViewPosition : SHADOW_TEXCOORD;
 };
@@ -31,16 +30,13 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix);
-
+    //screen position
+    output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
+    // world position
+    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix).xyz;
+    // for shadows........
     float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
-    
     output.LightViewPosition = mul(float4(output.WorldPos, 1.f), camShadowVPMatrix);
 
-    output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
-
-    output.TextureCoord = input.TextureCoord;
-    output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix));
-   
     return output;
 }

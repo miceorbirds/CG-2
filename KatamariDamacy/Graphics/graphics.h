@@ -64,11 +64,14 @@ private:
 	PixelShader m_deferred_pixelshader;
 	VertexShader m_vertexshader_dirlight_pass;
 	PixelShader m_pixelshader_dirlight_pass;
+	VertexShader m_vertexshader_pointlight_pass;
+	PixelShader m_pixelshader_pointlight_pass;
 
 	ConstantBuffer<CB_VS_vertexshader> m_cb_vs_vertexshader;
 	ConstantBuffer<CB_VS_camLight_matrix> m_cb_vs_camlightmatrix;
 
 	ConstantBuffer <CB_PS_light> m_cb_ps_light;
+	ConstantBuffer <CB_PS_light_pointbulb> m_cb_ps_pointlight;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_texture;

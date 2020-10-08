@@ -9,7 +9,7 @@ public:
 
 	bool isSun;
 	XMFLOAT3 ambient_light_color = XMFLOAT3(0.1f, 0.2f, 0.5f);
-	float ambient_light_strength = 0.9f;
+	float ambient_light_strength = 0.1f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	float diffuse_light_strength = 0.1f;
@@ -28,6 +28,7 @@ public:
 	float attenuation_c = 0.1f;
 private:
 	XMVECTOR m_direction;
+	Model m_model;
 
 	void GenerateProjectionMatrix(float screen_near, float screen_depth);
 

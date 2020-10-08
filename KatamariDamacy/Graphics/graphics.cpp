@@ -103,6 +103,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 		// Create depth stencil state
 		CD3D11_DEPTH_STENCIL_DESC depth_stencil_desc(D3D11_DEFAULT);
+		depth_stencil_desc.DepthEnable = true;
+		/// depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_stencil_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
@@ -128,19 +130,34 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		COM_ERROR_IF_FAILED(hr, "Failed to create rasterizer state.");
 
 		//// Create Blend State
-		//D3D11_RENDER_TARGET_BLEND_DESC render_target_blend_desc{ 0 };
-		//render_target_blend_desc.BlendEnable = true;
-		//render_target_blend_desc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		//render_target_blend_desc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		//render_target_blend_desc.BlendOp = D3D11_BLEND_OP_ADD;
-		//render_target_blend_desc.SrcBlendAlpha = D3D11_BLEND_ONE;
-		//render_target_blend_desc.DestBlendAlpha = D3D11_BLEND_ZERO;
-		//render_target_blend_desc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		//render_target_blend_desc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		//D3D11_BLEND_DESC blend_desc{ 0 };
-		//blend_desc.RenderTarget[0] = render_target_blend_desc;
-		//hr = this->m_device->CreateBlendState(&blend_desc, this->m_blend_state.GetAddressOf());
-		//COM_ERROR_IF_FAILED(hr, "Failed to create blend state.");
+		/*D3D11_RENDER_TARGET_BLEND_DESC render_target_blend_desc{ 0 };
+		render_target_blend_desc.BlendEnable = true;
+		render_target_blend_desc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		render_target_blend_desc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		render_target_blend_desc.BlendOp = D3D11_BLEND_OP_ADD;
+		render_target_blend_desc.SrcBlendAlpha = D3D11_BLEND_ONE;
+		render_target_blend_desc.DestBlendAlpha = D3D11_BLEND_ZERO;
+		render_target_blend_desc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		render_target_blend_desc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		D3D11_BLEND_DESC blend_desc{ 0 };
+		blend_desc.RenderTarget[0] = render_target_blend_desc;
+		hr = this->m_device->CreateBlendState(&blend_desc, this->m_blend_state.GetAddressOf());*/
+		//Blend state setup
+		D3D11_BLEND_DESC blendDesc;
+		ZeroMemory(&blendDesc, sizeof(blendDesc));
+		blendDesc.AlphaToCoverageEnable = false;
+		blendDesc.IndependentBlendEnable = false;
+		blendDesc.RenderTarget[0].BlendEnable = true;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		m_device->CreateBlendState(&blendDesc, this->m_blend_state.GetAddressOf());
+		COM_ERROR_IF_FAILED(hr, "Failed to create blend state.");
 
 		//Create sampler description for main sampler state
 		CD3D11_SAMPLER_DESC sampler_desc(D3D11_DEFAULT);
@@ -279,6 +296,10 @@ bool Graphics::InitializeShaders()
 		return false;
 	if (!m_pixelshader_dirlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_dirlight_pass.cso"))
 		return false;
+	if (!m_pixelshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_pointlight_pass.cso"))
+		return false;
+	if (!m_vertexshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"vertexshader_pointlight_pass.cso", layout_description, num_elements))
+		return false;
 
 	return true;
 }
@@ -293,6 +314,8 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_vs_camlightmatrix.Initialize(this->m_device.Get(), this->m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
+		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
+		hr = this->m_cb_ps_pointlight.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
 		// create katamari (player)
@@ -309,6 +332,9 @@ bool Graphics::InitializeScene()
 
 		if (!m_bulb.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
+		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_a = m_bulb.attenuation_a;
+		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_b = m_bulb.attenuation_b;
+		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_c = m_bulb.attenuation_c;
 
 		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
@@ -352,6 +378,8 @@ void Graphics::UpdateConstantBuffers()
 	this->m_cb_vs_camlightmatrix.data.camLightViewMatrix = m_sun.GetViewMatrix();
 	this->m_cb_vs_camlightmatrix.data.camLightProjMatrix = m_sun.GetProjectionMatrix();
 	this->m_cb_vs_camlightmatrix.ApplyChanges();
+
+	this->m_cb_ps_pointlight.ApplyChanges();
 }
 
 void Graphics::RenderToTexture()
@@ -455,6 +483,24 @@ void Graphics::RenderToWindow()
 			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		}
 	}
+
+	this->m_device_context->PSSetConstantBuffers(1, 1, this->m_cb_ps_pointlight.GetAddressOf());
+	this->m_device_context->VSSetShader(m_vertexshader_pointlight_pass.GetShader(), nullptr, 0);
+	this->m_device_context->PSSetShader(m_pixelshader_pointlight_pass.GetShader(), nullptr, 0);
+	float blend[4] = { 1,1,1, 1 };
+	m_device_context->OMSetBlendState(m_blend_state.Get(), blend, 0xFFFFFFFF);
+	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
+	//// pointlight pass
+	//{
+	//	this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	//	this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	//}
+	//{
+	//	for (int i = 0; i < m_items.size(); ++i)
+	//	{
+	//		m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	//	}
+	//}
 }
 
 void Graphics::CheckCollision()

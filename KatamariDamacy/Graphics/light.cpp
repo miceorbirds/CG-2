@@ -2,10 +2,13 @@
 
 bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader)
 {
-	if (!m_model.Initialize("Data/Objects/light.fbx", device, device_context, cb_vs_vertexshader))
+	if (!m_model.Initialize("Data/Objects/Samples/orange_disktexture.fbx", device, device_context, cb_vs_vertexshader))
 		return false;
-	this->SetPosition(0.0f, 0.0f, 0.0f);
+	this->SetPosition(2.0f, 3.0f, 4.0f);
 	this->SetRotation(0.0f, 0.0f, 0.0f);
+	this->diffuse_light_color = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	this->attenuation_a = 10;
+
 	this->UpdateMatrix();
 	return true;
 }
@@ -13,15 +16,7 @@ bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context
 bool Light::Initialize(float screen_near, float screen_depth)
 {
 	this->isSun = true;
-	/*static float lightAngle = 270.0f;
-	float radians;
-	static float lightPosX = 9.0f;
-
-	radians = lightAngle * 0.0174532925f;*/
-
 	this->SetDirection(1.0, -1.0, 0.0f);
-	//this->SetPosition(lightPosX, 8.0f, -0.1f);
-	//this->SetLookAtPos(XMFLOAT3(-lightPosX, 0.0f, 0.0f));
 	this->GenerateProjectionMatrix(screen_near, screen_depth);
 	return true;
 }
