@@ -213,7 +213,7 @@ void Graphics::RenderFrame()
 	fps_counter += 1;
 	if (m_fps_timer.GetMilisecondsElapsed() > 1000.0)
 	{
-		fps_string = "FPS: " + std::to_string(score);
+		fps_string = "FPS: " + std::to_string(fps_counter);
 		fps_counter = 0;
 		m_fps_timer.Restart();
 	}

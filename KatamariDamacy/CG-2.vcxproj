@@ -173,7 +173,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="com_exception.h" />
-    <ClInclude Include="Graphics\debug_draw.h" />
     <ClInclude Include="Game\game_object.h" />
     <ClInclude Include="Game\landscape.h" />
     <ClInclude Include="Game\renderable_game_object.h" />

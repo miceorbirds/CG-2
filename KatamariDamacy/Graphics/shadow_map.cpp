@@ -87,7 +87,7 @@ void ShadowMap::SetShadowmapRenderTarget(ID3D11DeviceContext* device_context)
 	device_context->OMSetRenderTargets(1, m_RTV.GetAddressOf(), m_DSV.Get());
 	device_context->RSSetViewports(1, &m_viewport);
 
-	float color[4] = { 0.5, 0.5, 0.5, 1.0 };
+	float color[4] = { 0.0, 0.0, 0.0, 1.0 };
 	device_context->ClearRenderTargetView(m_RTV.Get(), color);
 	device_context->ClearDepthStencilView(this->m_DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
