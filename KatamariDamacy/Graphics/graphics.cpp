@@ -108,6 +108,10 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_stencil_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
+		// create depthstencil state for 2d rendering
+		depth_stencil_desc.DepthEnable = false;
+		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_disabled_stencil_state.GetAddressOf());
+		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
 
 		// Create & set the Viewport
 		m_viewport.Width = static_cast<float>(this->m_window_width);
@@ -179,6 +183,10 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_shadowmap.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth sampler state.");
+
+		sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		hr = this->m_device->CreateSamplerState(&sampler_desc, this->m_sampler_state_point.GetAddressOf());
+		COM_ERROR_IF_FAILED(hr, "Failed to create point sampler state.");
 	}
 	catch (COMException& exception)
 	{
@@ -195,7 +203,6 @@ void Graphics::RenderFrame()
 
 	UpdateConstantBuffers();
 	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
-	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
 	this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
 	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
@@ -204,6 +211,7 @@ void Graphics::RenderFrame()
 	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_main.GetAddressOf());
 	RenderToTexture();
 	RenderToGbuff();
+	this->m_device_context->PSSetSamplers(0, 1, this->m_sampler_state_point.GetAddressOf());
 	this->m_device_context->PSSetSamplers(1, 1, this->m_sampler_state_shadowmap.GetAddressOf());
 	RenderToWindow();
 
@@ -279,27 +287,34 @@ bool Graphics::InitializeShaders()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0  },
 	};
 	UINT num_elements = ARRAYSIZE(layout_description);
 	if (!m_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader_shadow.cso", layout_description, num_elements))
 		return false;
 	if (!m_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_shadow.cso"))
 		return false;
+
+	if (!m_deferred_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader_deferred.cso", layout_description, num_elements))
+		return false;
 	if (!m_deferred_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_deferred.cso"))
 		return false;
+
 	if (!m_depth_vertexshader.Initialize(this->m_device, shaderfolder + L"vertexshader_depth.cso", layout_description, num_elements))
 		return false;
 	if (!m_depth_pixelshader.Initialize(this->m_device, shaderfolder + L"pixelshader_depth.cso"))
 		return false;
+
 	if (!m_vertexshader_dirlight_pass.Initialize(this->m_device, shaderfolder + L"vertexshader_dirlight_pass.cso", layout_description, num_elements))
 		return false;
 	if (!m_pixelshader_dirlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_dirlight_pass.cso"))
 		return false;
-	if (!m_pixelshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_pointlight_pass.cso"))
-		return false;
+
 	if (!m_vertexshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"vertexshader_pointlight_pass.cso", layout_description, num_elements))
 		return false;
+	if (!m_pixelshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_pointlight_pass.cso"))
+		return false;
+
 
 	return true;
 }
@@ -315,8 +330,8 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-		hr = this->m_cb_ps_pointlight.Initialize(m_device.Get(), m_device_context.Get());
-		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
+		///hr = this->m_cb_ps_pointlight.Initialize(m_device.Get(), m_device_context.Get());
+		//COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
 		// create katamari (player)
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
@@ -329,16 +344,12 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.diffuse_color = m_sun.diffuse_light_color;
 		this->m_cb_ps_light.data.diffuse_strength = m_sun.diffuse_light_strength;
 		this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
-
-		if (!m_bulb.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
-			return false;
-		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_a = m_bulb.attenuation_a;
-		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_b = m_bulb.attenuation_b;
-		this->m_cb_ps_pointlight.data.dynamic_light_attenuation_c = m_bulb.attenuation_c;
-
 		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
 			return false;
+		//if(!m_windowQuad.InitOrthoWindow(this->m_device.Get(), this->m_device_context.Get(), float(m_window_width), float(m_window_height)))
+			//return false;
+
 		// create collectable items
 		for (int j = 0; j < g_numItems; ++j)
 		{
@@ -378,14 +389,14 @@ void Graphics::UpdateConstantBuffers()
 	this->m_cb_vs_camlightmatrix.data.camLightViewMatrix = m_sun.GetViewMatrix();
 	this->m_cb_vs_camlightmatrix.data.camLightProjMatrix = m_sun.GetProjectionMatrix();
 	this->m_cb_vs_camlightmatrix.ApplyChanges();
-
-	this->m_cb_ps_pointlight.ApplyChanges();
 }
 
 void Graphics::RenderToTexture()
 {
 	m_shadow_map->SetShadowmapRenderTarget(this->m_device_context.Get());
 
+	this->m_device_context->VSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
+	// set shaders for shadow mapping
 	this->m_device_context->VSSetShader(m_depth_vertexshader.GetShader(), NULL, 0);
 	this->m_device_context->PSSetShader(m_depth_pixelshader.GetShader(), NULL, 0);
 	{
@@ -413,18 +424,12 @@ void Graphics::RenderToGbuff()
 	//set rendertargets
 	m_device_context->OMSetRenderTargets(BUFFER_COUNT, m_gbuffer->m_renderTargetViewArray, this->m_depth_stencil_view.Get());
 
-	float r, g, b;
-	XMVECTOR colorVector;
-	colorVector = DirectX::Colors::PowderBlue.v;
-	r = XMVectorGetX(colorVector);
-	g = XMVectorGetY(colorVector);
-	b = XMVectorGetZ(colorVector);
-	float bgcolor[] = { r,g,b,1.0f };
+	float bgcolor[] = { 0.0f,0.0f,0.0f,1.0f };
 	for (int i = 0; i < BUFFER_COUNT; ++i)
 		m_device_context->ClearRenderTargetView(m_gbuffer->m_renderTargetViewArray[i], bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	this->m_device_context->VSSetShader(m_vertexshader.GetShader(), nullptr, 0);
+	this->m_device_context->VSSetShader(m_deferred_vertexshader.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_deferred_pixelshader.GetShader(), nullptr, 0);
 	{
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
@@ -440,8 +445,8 @@ void Graphics::RenderToGbuff()
 
 void Graphics::RenderToWindow()
 {
-	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
-
+	//disable z-buffer
+	m_device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state.Get(), 0);
 	//unbind shader resource view with shadowmap from past pass so we will able to use it in next stages
 	ID3D11ShaderResourceView* pNullSRV = NULL;
 	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
@@ -451,16 +456,14 @@ void Graphics::RenderToWindow()
 
 	//set default rendertarget
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
-	// set default viewport
-	this->m_device_context->RSSetViewports(1, &m_viewport);
-
+	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 	float r, g, b;
 	XMVECTOR colorVector;
 	colorVector = DirectX::Colors::PowderBlue.v;
 	r = XMVectorGetX(colorVector);
 	g = XMVectorGetY(colorVector);
 	b = XMVectorGetZ(colorVector);
-	float bgcolor[] = { r,g,b,1.0f };
+	float bgcolor[] = { 0.0,0.0,0.0,1.0f };
 
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -470,37 +473,24 @@ void Graphics::RenderToWindow()
 	this->m_device_context->PSSetShaderResources(3, 1, &m_gbuffer->m_shaderResourceViewArray[1]);
 	this->m_device_context->PSSetShaderResources(4, 1, &m_gbuffer->m_shaderResourceViewArray[2]);
 
-	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+	DoDirLightPass();
+
+	//enable z-buff
+	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
+
+}
+
+void Graphics::DoDirLightPass()
+{
+	ID3D11Buffer* nothing = 0;
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	m_device_context->IASetVertexBuffers(0, 1, &nothing, &stride, &offset);
+	m_device_context->IASetIndexBuffer(0, DXGI_FORMAT_R32_UINT, 0);
 	this->m_device_context->VSSetShader(m_vertexshader_dirlight_pass.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader_dirlight_pass.GetShader(), nullptr, 0);
-	{
-		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-	}
-	{
-		for (int i = 0; i < m_items.size(); ++i)
-		{
-			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-		}
-	}
 
-	this->m_device_context->PSSetConstantBuffers(1, 1, this->m_cb_ps_pointlight.GetAddressOf());
-	this->m_device_context->VSSetShader(m_vertexshader_pointlight_pass.GetShader(), nullptr, 0);
-	this->m_device_context->PSSetShader(m_pixelshader_pointlight_pass.GetShader(), nullptr, 0);
-	float blend[4] = { 1,1,1, 1 };
-	m_device_context->OMSetBlendState(m_blend_state.Get(), blend, 0xFFFFFFFF);
-	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
-	//// pointlight pass
-	//{
-	//	this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-	//	this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-	//}
-	//{
-	//	for (int i = 0; i < m_items.size(); ++i)
-	//	{
-	//		m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-	//	}
-	//}
+	m_device_context->Draw(3, 0);
 }
 
 void Graphics::CheckCollision()

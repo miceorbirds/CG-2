@@ -22,15 +22,18 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position : SV_POSITION;
+    float2 UV : TEXCOORD;
+    float3 Normal : NORMAL;
+    float3 WorldPos : WORLD_POSITION;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
+    output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
+    output.UV = input.TextureCoord;
+    output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix).xyz);
+    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix).xyz;
     
-    float4x4 camLightVPmatrix = mul(camLightViewMatrix, camLightProjMatrix);
-    float4x4 wvplight_matrix = mul(world_matrix, camLightVPmatrix);
-    
-    output.Position = mul(float4(input.Position, 1.f), wvplight_matrix);
     return output;
 }

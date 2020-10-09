@@ -34,6 +34,7 @@ public:
 	Light m_sun;
 	Light m_bulb;
 	Landscape m_land;
+	Landscape m_windowQuad;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();
@@ -43,6 +44,7 @@ private:
 	void RenderToTexture();
 	void RenderToGbuff();
 	void RenderToWindow();
+	void DoDirLightPass();
 	void CheckCollision();
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
@@ -59,11 +61,16 @@ private:
 
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;
+
 	VertexShader m_depth_vertexshader;
 	PixelShader m_depth_pixelshader;
+
+	VertexShader m_deferred_vertexshader;
 	PixelShader m_deferred_pixelshader;
+
 	VertexShader m_vertexshader_dirlight_pass;
 	PixelShader m_pixelshader_dirlight_pass;
+
 	VertexShader m_vertexshader_pointlight_pass;
 	PixelShader m_pixelshader_pointlight_pass;
 
@@ -76,10 +83,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_texture;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>  m_depth_disabled_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
 	Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_main;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_shadowmap;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_point;
 
 	Direct2D m_hud;
 	Timer m_fps_timer;

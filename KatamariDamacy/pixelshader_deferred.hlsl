@@ -3,10 +3,9 @@
 struct PS_INPUT
 {
     float4 Position : SV_POSITION;
-    float2 TextureCoord : TEXCOORD;
+    float2 UV : TEXCOORD;
     float3 Normal : NORMAL;
     float3 WorldPos : WORLD_POSITION;
-    float4 LightViewPosition : SHADOW_TEXCOORD;
 };
 
 
@@ -25,9 +24,9 @@ PS_OUTPUT main(PS_INPUT input)
 {
     PS_OUTPUT output;
     
-    output.texturecolor = objTexture.Sample(wrapSamplerState, input.TextureCoord);
+    output.texturecolor = objTexture.Sample(wrapSamplerState, input.UV);
     output.normalcolor = float4(input.Normal, 1.0f);
-    output.position = input.Position;
+    output.position = float4(input.WorldPos, 1.0f);
     
 	return output;
 }

@@ -4,13 +4,13 @@
 bool Landscape::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
 	this->m_device_context = device_context;
+	this->m_device = device;
 	try
 	{
 		//Load Texture
 		auto hr = CreateWICTextureFromFile(device, L"Data\\Textures\\seamless_pavement.jpg", nullptr, &m_texture);
 		COM_ERROR_IF_FAILED(hr, "Failed to create wic texture from file.");
-		this->m_device = device;
-		this->m_device_context = device_context;
+
 		// Textured Square
 		Vertex v[] =
 		{
@@ -21,6 +21,53 @@ bool Landscape::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_con
 		};
 		// Load vertex data
 		hr = this->m_vertex_buffer.Initialize(device, v, ARRAYSIZE(v));
+		COM_ERROR_IF_FAILED(hr, "Failed to initialize vertex buffer.");
+		DWORD indices[] =
+		{
+			0, 1, 2, //FRONT
+			0, 2, 3, //FRONT
+		};
+		// Load index data
+		hr = this->m_index_buffer.Initialize(device, indices, ARRAYSIZE(indices));
+		COM_ERROR_IF_FAILED(hr, "Failed to initialize index buffer.");
+	}
+	catch (COMException& exception)
+	{
+		ErrorLogger::Log(exception);
+		return false;
+	}
+	return true;
+}
+
+bool Landscape::InitOrthoWindow(ID3D11Device* device, ID3D11DeviceContext* device_context, float window_width, float window_height)
+{
+	this->m_device_context = device_context;
+	this->m_device = device;
+	try
+	{
+		float left, right, top, bottom;
+		// Calculate the screen coordinates of the left side of the window.
+		left = (float)((window_width / 2) * -1);
+
+		// Calculate the screen coordinates of the right side of the window.
+		right = left + (float)window_width;
+
+		// Calculate the screen coordinates of the top of the window.
+		top = (float)(window_height / 2);
+
+		// Calculate the screen coordinates of the bottom of the window.
+		bottom = top - (float)window_height;
+
+		// Textured Square
+		Vertex v[] =
+		{
+			Vertex(left,  bottom, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Left   - [0]
+			Vertex(left, top, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f), //FRONT Top Left      - [1]
+			Vertex(right, top, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f), //FRONT Top Right     - [2]
+			Vertex(right, bottom, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f), //FRONT Bottom Right   - [3]
+		};
+		// Load vertex data
+		auto hr = this->m_vertex_buffer.Initialize(device, v, ARRAYSIZE(v));
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize vertex buffer.");
 		DWORD indices[] =
 		{

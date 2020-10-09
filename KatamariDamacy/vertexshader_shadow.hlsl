@@ -31,7 +31,7 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix);
+    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix).xyz;
 
     float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
     
@@ -40,7 +40,7 @@ VS_OUTPUT main(VS_INPUT input)
     output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
 
     output.TextureCoord = input.TextureCoord;
-    output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix));
+    output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix).xyz);
    
     return output;
 }
