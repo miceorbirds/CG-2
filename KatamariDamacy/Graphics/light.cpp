@@ -2,10 +2,11 @@
 
 bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader)
 {
-	if (!m_model.Initialize("Data/Objects/Samples/orange_disktexture.fbx", device, device_context, cb_vs_vertexshader))
+	if (!m_model.Initialize("Data/Objects/Samples/sphere.obj", device, device_context, cb_vs_vertexshader))
 		return false;
-	this->SetPosition(2.0f, 3.0f, 4.0f);
+	this->SetPosition(0.0f, 1.0f, 0.0f);
 	this->SetRotation(0.0f, 0.0f, 0.0f);
+	this->SetScale(1.f, 1.f, 1.f);
 	this->diffuse_light_color = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->attenuation_a = 10;
 

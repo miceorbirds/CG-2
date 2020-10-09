@@ -4,7 +4,6 @@ class Landscape
 {
 public:
 	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-	bool InitOrthoWindow(ID3D11Device* device, ID3D11DeviceContext* deviceContext, float window_width, float window_height);
 	void Draw(const XMMATRIX& viewProjectionMatrix);
 	void Draw(ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, const XMMATRIX& viewProjectionMatrix);
 

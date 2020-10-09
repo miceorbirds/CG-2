@@ -6,12 +6,6 @@ cbuffer per_object_buffer : register(b0)
     float4x4 world_matrix;
 };
 
-cbuffer camlight_buffer : register(b1)
-{
-    float4x4 camLightViewMatrix;
-    float4x4 camLightProjMatrix;
-};
-
 struct VS_INPUT
 {
     float3 Position : POSITION;
@@ -22,9 +16,6 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 Position : SV_POSITION;
-    //float2 TexureCoord : TEXCOORD;
-    float3 WorldPos : WORLD_POSITION;
-    float4 LightViewPosition : SHADOW_TEXCOORD;
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -32,11 +23,5 @@ VS_OUTPUT main(VS_INPUT input)
     VS_OUTPUT output;
     //screen position
     output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
-    // world position
-    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix).xyz;
-    // for shadows........
-    float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
-    output.LightViewPosition = mul(float4(output.WorldPos, 1.f), camShadowVPMatrix);
-
     return output;
 }

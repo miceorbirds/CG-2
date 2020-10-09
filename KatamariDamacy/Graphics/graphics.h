@@ -32,9 +32,8 @@ public:
 	std::vector<KatamariThing> m_items;
 
 	Light m_sun;
-	Light m_bulb;
+	RenderableGameObject m_bulb;
 	Landscape m_land;
-	Landscape m_windowQuad;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool InitializeShaders();

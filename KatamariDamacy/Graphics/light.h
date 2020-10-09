@@ -28,7 +28,6 @@ public:
 	float attenuation_c = 0.1f;
 private:
 	XMVECTOR m_direction;
-	Model m_model;
 
 	void GenerateProjectionMatrix(float screen_near, float screen_depth);
 

@@ -330,8 +330,6 @@ bool Graphics::InitializeScene()
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
-		///hr = this->m_cb_ps_pointlight.Initialize(m_device.Get(), m_device_context.Get());
-		//COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
 		// create katamari (player)
 		if (!m_katamary.Initialize("Data/Objects/Samples/orange_disktexture.fbx", this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
@@ -346,6 +344,10 @@ bool Graphics::InitializeScene()
 		this->m_cb_ps_light.data.light_direction = m_sun.GetDirection();
 		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
+			return false;
+
+
+		if (!m_bulb.Initialize("Data/Objects/Samples/sphere.obj",this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
 
 		// create collectable items
@@ -431,6 +433,7 @@ void Graphics::RenderToGbuff()
 	this->m_device_context->PSSetShader(m_deferred_pixelshader.GetShader(), nullptr, 0);
 	{
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		m_bulb.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
