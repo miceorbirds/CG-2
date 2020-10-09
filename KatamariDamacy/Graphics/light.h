@@ -9,10 +9,10 @@ public:
 
 	bool isSun;
 	XMFLOAT3 ambient_light_color = XMFLOAT3(0.1f, 0.2f, 0.5f);
-	float ambient_light_strength = 0.1f;
+	float ambient_light_strength = 0.005f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
-	float diffuse_light_strength = 0.1f;
+	float diffuse_light_strength = 0.5f;
 
 	XMMATRIX GetViewMatrix();
 	XMMATRIX GetProjectionMatrix();

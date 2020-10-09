@@ -347,8 +347,6 @@ bool Graphics::InitializeScene()
 		// create landscape
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
 			return false;
-		//if(!m_windowQuad.InitOrthoWindow(this->m_device.Get(), this->m_device_context.Get(), float(m_window_width), float(m_window_height)))
-			//return false;
 
 		// create collectable items
 		for (int j = 0; j < g_numItems; ++j)
@@ -457,6 +455,7 @@ void Graphics::RenderToWindow()
 	//set default rendertarget
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
+	this->m_device_context->PSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
 	float r, g, b;
 	XMVECTOR colorVector;
 	colorVector = DirectX::Colors::PowderBlue.v;
