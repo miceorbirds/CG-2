@@ -21,7 +21,6 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    //screen position
     output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
     return output;
 }

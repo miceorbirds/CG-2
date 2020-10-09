@@ -6,8 +6,8 @@ bool PointLightMesh::Initialize(ID3D11Device* device, ID3D11DeviceContext* devic
 		return false;
 
 	SetPosition(getRandomNumber(-50, 50), 0.f, getRandomNumber(-50, 50));
-	this->SetSize(getRandomNumber(0.1f, 10.0f));
-	this->m_light_radius = this->m_size * 0.5;
+	this->SetSize(getRandomNumber(0.1f, 5.0f));
+	this->m_light_radius = this->m_size * 2;
 	this->_lightColor = XMFLOAT3(1.0f, 1.0f, 0.0f);
 	SetRotation(XMFLOAT3(0, 0, 0));
 	this->UpdateMatrix();

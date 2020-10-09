@@ -471,6 +471,7 @@ void Graphics::RenderToWindow()
 
 	//set default rendertarget
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
+
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 	this->m_device_context->PSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
 
@@ -489,10 +490,10 @@ void Graphics::RenderToWindow()
 
 	DoDirLightPass();
 	//enable z-buff
-	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
+	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
 	DoPointLightPass();
 	this->m_device_context->OMSetBlendState(nullptr, blend, 0xFFF);
-	this->m_device_context->RSSetState(nullptr);
+	//this->m_device_context->RSSetState(nullptr);
 }
 
 void Graphics::DoDirLightPass()

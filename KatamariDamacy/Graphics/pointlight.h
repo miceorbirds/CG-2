@@ -12,7 +12,6 @@ private:
 	XMFLOAT3 _lightColor;
 	float m_light_radius;
 
-
 	float getRandomNumber(float min, float max)
 	{
 		static float r3 = min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
