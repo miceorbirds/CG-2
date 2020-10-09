@@ -16,8 +16,10 @@
 #include "shadow_map.h"
 #include "deferred_rendertarget.h"
 #include "../Game/katamari_thing.h"
+#include "pointlight.h"
 
 constexpr int g_numItems = 2;
+constexpr int g_numLights = 20;
 
 class Graphics
 {
@@ -33,6 +35,8 @@ public:
 
 	Light m_sun;
 	RenderableGameObject m_bulb;
+	PointLightMesh m_pointlight;
+	std::vector<PointLightMesh> m_pointlights;
 	Landscape m_land;
 private:
 	bool InitializeDirectX(HWND hwnd);
@@ -44,6 +48,7 @@ private:
 	void RenderToGbuff();
 	void RenderToWindow();
 	void DoDirLightPass();
+	void DoPointLightPass();
 	void CheckCollision();
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_device;
@@ -56,7 +61,6 @@ private:
 	ShadowMap* m_shadow_map = nullptr;
 
 	GBufferRT* m_gbuffer = nullptr;
-	//GbuffRenderTarget m_graphics_buffer[BUFFER_COUNT];
 
 	VertexShader m_vertexshader;
 	PixelShader m_pixelshader;

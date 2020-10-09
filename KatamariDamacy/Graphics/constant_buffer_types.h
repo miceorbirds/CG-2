@@ -36,7 +36,8 @@ struct CB_PS_light
 
 struct CB_PS_light_pointbulb
 {
-	float dynamic_light_attenuation_a;
-	float dynamic_light_attenuation_b;
-	float dynamic_light_attenuation_c;
+	DirectX::XMFLOAT3 cameraPosition;
+	DirectX::XMFLOAT3 lightColor;
+	DirectX::XMFLOAT3 lightPosition;
+	float lightRadius;
 };

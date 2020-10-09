@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Graphics\debug_draw.cpp" />
     <ClCompile Include="Game\game_object.cpp" />
     <ClCompile Include="Game\landscape.cpp" />
     <ClCompile Include="Game\renderable_game_object.cpp" />
@@ -154,6 +153,7 @@
     <ClCompile Include="Graphics\ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="Graphics\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Graphics\pointlight.cpp" />
     <ClCompile Include="Graphics\texture.cpp" />
     <ClCompile Include="Game\katamari_thing.cpp" />
     <ClCompile Include="keyboard\keyboard_class.cpp" />
@@ -204,6 +204,7 @@
     <ClInclude Include="Graphics\light.h" />
     <ClInclude Include="mouse\mouse_class.h" />
     <ClInclude Include="mouse\mouse_event.h" />
+    <ClInclude Include="Graphics\pointlight.h" />
     <ClInclude Include="render_window.h" />
     <ClInclude Include="graphics\shaders.h" />
     <ClInclude Include="Graphics\shadow_map.h" />

@@ -2,6 +2,8 @@
 
 bool Graphics::Initialize(HWND hwnd, int width, int height)
 {
+	srand(static_cast <unsigned> (time(0)));
+
 	this->m_window_width = width;
 	this->m_window_height = height;
 	this->m_fps_timer.Start();
@@ -130,6 +132,8 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 		//Create Rasterizer State
 		CD3D11_RASTERIZER_DESC rasterizer_desc(D3D11_DEFAULT);
 		rasterizer_desc.CullMode = D3D11_CULL_BACK;
+		rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+		rasterizer_desc.DepthClipEnable = false;
 		hr = this->m_device->CreateRasterizerState(&rasterizer_desc, this->m_rasterizer_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create rasterizer state.");
 
@@ -202,7 +206,7 @@ void Graphics::RenderFrame()
 	this->m_sun.UpdateViewMatrix(this->m_camera.GetPositionFloat3());
 
 	UpdateConstantBuffers();
-	this->m_device_context->RSSetState(this->m_rasterizer_state.Get());
+	this->m_device_context->RSSetState(nullptr);
 	this->m_device_context->IASetInputLayout(this->m_vertexshader.GetInputLayout());
 	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->OMSetDepthStencilState(this->m_depth_stencil_state.Get(), 0);
@@ -315,7 +319,6 @@ bool Graphics::InitializeShaders()
 	if (!m_pixelshader_pointlight_pass.Initialize(this->m_device, shaderfolder + L"pixelshader_pointlight_pass.cso"))
 		return false;
 
-
 	return true;
 }
 
@@ -329,6 +332,8 @@ bool Graphics::InitializeScene()
 		hr = this->m_cb_vs_camlightmatrix.Initialize(this->m_device.Get(), this->m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 		hr = this->m_cb_ps_light.Initialize(m_device.Get(), m_device_context.Get());
+		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
+		hr = this->m_cb_ps_pointlight.Initialize(m_device.Get(), m_device_context.Get());
 		COM_ERROR_IF_FAILED(hr, "Failed to initialize constant buffer.");
 
 		// create katamari (player)
@@ -346,9 +351,15 @@ bool Graphics::InitializeScene()
 		if (!m_land.Initialize(this->m_device.Get(), this->m_device_context.Get()))
 			return false;
 
-
-		if (!m_bulb.Initialize("Data/Objects/Samples/sphere.obj",this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
+		if (!m_pointlight.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader))
 			return false;
+
+		for (int k = 0; k < g_numLights; ++k)
+		{
+			PointLightMesh pointlight;
+			pointlight.Initialize(this->m_device.Get(), this->m_device_context.Get(), this->m_cb_vs_vertexshader);
+			m_pointlights.push_back(pointlight);
+		}
 
 		// create collectable items
 		for (int j = 0; j < g_numItems; ++j)
@@ -389,6 +400,9 @@ void Graphics::UpdateConstantBuffers()
 	this->m_cb_vs_camlightmatrix.data.camLightViewMatrix = m_sun.GetViewMatrix();
 	this->m_cb_vs_camlightmatrix.data.camLightProjMatrix = m_sun.GetProjectionMatrix();
 	this->m_cb_vs_camlightmatrix.ApplyChanges();
+
+	this->m_cb_ps_pointlight.data.cameraPosition = m_camera.GetPositionFloat3();
+	this->m_cb_ps_pointlight.ApplyChanges();
 }
 
 void Graphics::RenderToTexture()
@@ -433,7 +447,7 @@ void Graphics::RenderToGbuff()
 	this->m_device_context->PSSetShader(m_deferred_pixelshader.GetShader(), nullptr, 0);
 	{
 		this->m_katamary.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
-		m_bulb.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+		/*m_bulb.Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());*/
 		this->m_land.Draw(this->m_cb_vs_vertexshader, m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 	}
 	{
@@ -459,14 +473,8 @@ void Graphics::RenderToWindow()
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
 	this->m_device_context->PSSetConstantBuffers(1, 1, this->m_cb_vs_camlightmatrix.GetAddressOf());
-	float r, g, b;
-	XMVECTOR colorVector;
-	colorVector = DirectX::Colors::PowderBlue.v;
-	r = XMVectorGetX(colorVector);
-	g = XMVectorGetY(colorVector);
-	b = XMVectorGetZ(colorVector);
-	float bgcolor[] = { 0.0,0.0,0.0,1.0f };
 
+	float bgcolor[] = { 0.0,0.0,0.0,1.0f };
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
 	this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -475,11 +483,16 @@ void Graphics::RenderToWindow()
 	this->m_device_context->PSSetShaderResources(3, 1, &m_gbuffer->m_shaderResourceViewArray[1]);
 	this->m_device_context->PSSetShaderResources(4, 1, &m_gbuffer->m_shaderResourceViewArray[2]);
 
+	float blend[4] = { 1,1,1, 1 };
+	this->m_device_context->OMSetBlendState(m_blend_state.Get(), blend, 0xFFF);
+	this->m_device_context->RSSetState(m_rasterizer_state.Get());
+
 	DoDirLightPass();
-
 	//enable z-buff
-	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
-
+	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
+	DoPointLightPass();
+	this->m_device_context->OMSetBlendState(nullptr, blend, 0xFFF);
+	this->m_device_context->RSSetState(nullptr);
 }
 
 void Graphics::DoDirLightPass()
@@ -493,6 +506,23 @@ void Graphics::DoDirLightPass()
 	this->m_device_context->PSSetShader(m_pixelshader_dirlight_pass.GetShader(), nullptr, 0);
 
 	m_device_context->Draw(3, 0);
+}
+
+void Graphics::DoPointLightPass()
+{
+	for (int i = 0; i < m_pointlights.size(); ++i)
+	{
+		this->m_cb_ps_pointlight.data.lightColor = m_pointlights[i].GetLightColor();
+		this->m_cb_ps_pointlight.data.lightPosition = m_pointlights[i].GetPositionFloat3();
+		this->m_cb_ps_pointlight.data.lightRadius = m_pointlights[i].GetLightRadius();
+		this->m_cb_ps_pointlight.ApplyChanges();
+
+		this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pointlight.GetAddressOf());
+		this->m_device_context->VSSetShader(m_vertexshader_pointlight_pass.GetShader(), nullptr, 0);
+		this->m_device_context->PSSetShader(m_pixelshader_pointlight_pass.GetShader(), nullptr, 0);
+
+		m_pointlights[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
+	}
 }
 
 void Graphics::CheckCollision()
