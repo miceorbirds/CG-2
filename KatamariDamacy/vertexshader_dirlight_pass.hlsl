@@ -2,8 +2,7 @@
 
 struct VS_OUTPUT
 {
-    float4 Position : SV_POSITION;
-    float2 Texture : TEXCOORD;
+    float4 PositionClipSpace : SV_POSITION;
 };
 
 VS_OUTPUT main(uint id : SV_VertexID)
