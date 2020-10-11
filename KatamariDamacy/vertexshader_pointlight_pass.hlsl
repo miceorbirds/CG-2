@@ -21,6 +21,6 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
+    output.Position = mul(float4(input.Position, 1.f), world_matrix);
     return output;
 }
