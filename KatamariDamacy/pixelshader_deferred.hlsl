@@ -2,18 +2,18 @@
 
 struct PS_INPUT
 {
-    float4 Position : SV_POSITION;
+    float4 PositionClipSpace : SV_POSITION;
     float2 UV : TEXCOORD;
-    float3 Normal : NORMAL;
-    float3 WorldPos : WORLD_POSITION;
+    float3 NormalWS : NORMAL;
+    float3 PositionWS : WORLD_POSITION;
 };
 
 
 struct PS_OUTPUT
 {
-    float4 texturecolor : SV_Target0;
-    float4 normalcolor : SV_Target1;
-    float4 position : SV_Target2;
+    float4 TextureColor : SV_Target0;
+    float4 NormalWS : SV_Target1;
+    float4 PositionWS : SV_Target2;
 };
 
 Texture2D objTexture : register(t0);
@@ -23,10 +23,13 @@ SamplerState wrapSamplerState : register(s0);
 PS_OUTPUT main(PS_INPUT input)
 {
     PS_OUTPUT output;
+    // Sample the texture of object
+    output.TextureColor = objTexture.Sample(wrapSamplerState, input.UV);
     
-    output.texturecolor = objTexture.Sample(wrapSamplerState, input.UV);
-    output.normalcolor = float4(input.Normal, 1.0f);
-    output.position = float4(input.WorldPos, 1.0f);
+    float3 normalWS = normalize(input.NormalWS);
+    // Outputs of g-buff
+    output.NormalWS = float4(normalWS, 1.0f);
+    output.PositionWS = float4(input.PositionWS, 1.0f);
     
 	return output;
 }

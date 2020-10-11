@@ -25,26 +25,26 @@ cbuffer camlight_buffer : register(b1)
 
 struct PS_INPUT
 {
-    float4 Position : SV_POSITION;
-    float2 Texture : TEXCOORD;
+    float4 PositionClipSpace : SV_POSITION;
 };
 
 
 Texture2D objTexture_diffuse : TEXTURE : register(t0);
 Texture2D depthMapTexture : DEPTH_TEXTURE : register(t1);
-Texture2D albedo_texture : ALBEDO_TEXTURE : register(t2);
-Texture2D normal_texture : NORMAL_TEXTURE : register(t3);
-Texture2D position_texture : POSITION_TEXTURE : register(t4);
+Texture2D TextureColor : ALBEDO_TEXTURE : register(t2);
+Texture2D NormalWS : NORMAL_TEXTURE : register(t3);
+Texture2D PositionWS : POSITION_TEXTURE : register(t4);
 
 SamplerState objSamplerStateWrap : SAMPLER : register(s0);
 SamplerState objSamplerStateClamp : SAMPLER1 : register(s1);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    int3 sampleIndices = int3(input.Position.xy, 0);
-    float3 normal = normal_texture.Load(sampleIndices).xyz;
-    float3 position = position_texture.Load(sampleIndices).xyz;
-    float3 albedo_color = albedo_texture.Load(sampleIndices).xyz;
+    // Determine our indices for sampling the texture based on the current screen position
+    int3 sampleIndices = int3(input.PositionClipSpace.xy, 0);
+    float3 normal = NormalWS.Load(sampleIndices).xyz;
+    float3 position = PositionWS.Load(sampleIndices).xyz;
+    float3 albedo_color = TextureColor.Load(sampleIndices).xyz;
 
     float4x4 camShadowVPMatrix = mul(camLightViewMatrix, camLightProjMatrix);
     float4 LightViewPosition = mul(float4(position, 1.f), camShadowVPMatrix);

@@ -21,19 +21,22 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-    float4 Position : SV_POSITION;
+    float4 PositionClipSpace : SV_POSITION;
     float2 UV : TEXCOORD;
-    float3 Normal : NORMAL;
-    float3 WorldPos : WORLD_POSITION;
+    float3 NormalWS : NORMAL;
+    float3 PositionWS : WORLD_POSITION;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.Position = mul(float4(input.Position, 1.f), WVP_matrix);
+    // Calculate the clip-space position
+    output.PositionClipSpace = mul(float4(input.Position, 1.f), WVP_matrix);
+    // Pass along the texture coordinate
     output.UV = input.TextureCoord;
-    output.Normal = normalize(mul(float4(input.Normal, 0.0f), world_matrix).xyz);
-    output.WorldPos = mul(float4(input.Position, 1.0f), world_matrix).xyz;
+    // Convert position and normals to world space
+    output.NormalWS = normalize(mul(float4(input.Normal, 0.0f), world_matrix).xyz);
+    output.PositionWS = mul(float4(input.Position, 1.0f), world_matrix).xyz;
     
     return output;
 }
