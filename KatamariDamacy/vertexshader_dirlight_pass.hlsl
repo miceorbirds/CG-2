@@ -16,9 +16,9 @@ VS_OUTPUT main(uint id : SV_VertexID)
 		id & 2);
 
 	// Adjust the position based on the UV
-    output.Position = float4(uv, 0, 1);
-    output.Position.x = output.Position.x * 2 - 1;
-    output.Position.y = output.Position.y * -2 + 1;
+    output.PositionClipSpace = float4(uv, 0, 1);
+    output.PositionClipSpace.x = output.PositionClipSpace.x * 2 - 1;
+    output.PositionClipSpace.y = output.PositionClipSpace.y * -2 + 1;
 
     return output;
 }
