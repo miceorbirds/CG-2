@@ -8,7 +8,6 @@ bool Light::Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context
 	this->SetRotation(0.0f, 0.0f, 0.0f);
 	this->SetScale(1.f, 1.f, 1.f);
 	this->diffuse_light_color = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	this->attenuation_a = 10;
 
 	this->UpdateMatrix();
 	return true;

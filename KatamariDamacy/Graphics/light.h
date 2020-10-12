@@ -9,7 +9,7 @@ public:
 
 	bool isSun;
 	XMFLOAT3 ambient_light_color = XMFLOAT3(0.1f, 0.2f, 0.5f);
-	float ambient_light_strength = 0.005f;
+	float ambient_light_strength = 0.2f;
 
 	XMFLOAT3 diffuse_light_color = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	float diffuse_light_strength = 0.5f;
@@ -21,11 +21,7 @@ public:
 	void UpdateViewMatrix();
 	void UpdateViewMatrix(XMFLOAT3 mainObjectPos);
 
-	float specular_strength = 0.5f;
-
-	float attenuation_a = 1.0f;
-	float attenuation_b = 0.1f;
-	float attenuation_c = 0.1f;
+	float specular_strength = 0.3f;
 private:
 	XMVECTOR m_direction;
 

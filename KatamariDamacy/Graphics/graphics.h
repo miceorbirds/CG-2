@@ -19,7 +19,7 @@
 #include "pointlight.h"
 
 constexpr int g_numItems = 2;
-constexpr int g_numLights = 100;
+constexpr int g_numLights = 6;
 
 class Graphics
 {
@@ -84,10 +84,19 @@ private:
 	ConstantBuffer <CB_PS_light_pointbulb> m_cb_ps_pointlight;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depth_stencil_view;
+
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depth_stencil_texture;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_state;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_greater;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depth_stencil_less;
+
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>  m_depth_disabled_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizer_state;
+
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>  m_rasterizer_cullfront;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>  m_rasterizer_cullback;
+
 	Microsoft::WRL::ComPtr<ID3D11BlendState> m_blend_state;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_main;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_sampler_state_shadowmap;

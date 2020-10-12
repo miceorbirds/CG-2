@@ -37,7 +37,9 @@ struct CB_PS_light
 struct CB_PS_light_pointbulb
 {
 	DirectX::XMFLOAT3 cameraPosition;
-	DirectX::XMFLOAT3 lightColor;
-	DirectX::XMFLOAT3 lightPosition;
 	float lightRadius;
+	DirectX::XMFLOAT3 lightColor;
+	float padding;
+	DirectX::XMFLOAT3 lightPosition;
+
 };

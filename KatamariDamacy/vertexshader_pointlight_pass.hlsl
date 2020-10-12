@@ -15,12 +15,14 @@ struct VS_INPUT
 
 struct VS_OUTPUT
 {
-    float4 Position : SV_POSITION;
+    float4 PositionClipSpace : SV_POSITION;
+    float3 PositionWS : WORLD_POSITION;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.Position = mul(float4(input.Position, 1.f), world_matrix);
+    output.PositionClipSpace = mul(float4(input.Position, 1.f), WVP_matrix);
+    output.PositionWS = mul(float4(input.Position, 1.f), world_matrix);
     return output;
 }

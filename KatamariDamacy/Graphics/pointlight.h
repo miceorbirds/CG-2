@@ -4,7 +4,7 @@
 class PointLightMesh : public RenderableGameObject
 {
 public:
-	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader);
+	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* device_context, ConstantBuffer<CB_VS_vertexshader>& cb_vs_vertexshader, int pointlightnumber);
 	XMFLOAT3 GetLightColor();
 	float GetLightRadius();
 	void UpdateMatrix();
