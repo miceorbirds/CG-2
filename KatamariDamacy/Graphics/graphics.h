@@ -18,8 +18,8 @@
 #include "../Game/katamari_thing.h"
 #include "pointlight.h"
 
-constexpr int g_numItems = 2;
-constexpr int g_numLights = 6;
+constexpr int g_numItems = 10;
+constexpr int g_numLights = 100;
 
 class Graphics
 {

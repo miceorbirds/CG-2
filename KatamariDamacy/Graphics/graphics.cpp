@@ -117,20 +117,17 @@ bool Graphics::InitializeDirectX(HWND hwnd)
 
 		// create depthstencil state for 2d rendering
 		depth_stencil_desc.DepthEnable = false;
+		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_disabled_stencil_state.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
 
 
 		//create greater
-		depth_stencil_desc.DepthEnable = true;
 		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_GREATER;
-		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_stencil_greater.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
 		//create greater
-		depth_stencil_desc.DepthEnable = true;
 		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
-		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		hr = this->m_device->CreateDepthStencilState(&depth_stencil_desc, this->m_depth_stencil_less.GetAddressOf());
 		COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil state.");
 
@@ -463,7 +460,10 @@ void Graphics::RenderToGbuff()
 	//set default viewport
 	this->m_device_context->RSSetViewports(1, &m_viewport);
 	//set rendertargets
+	m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
 	m_device_context->OMSetRenderTargets(BUFFER_COUNT, m_gbuffer->m_renderTargetViewArray, this->m_depth_stencil_view.Get());
+
+
 
 	float bgcolor[] = { 0.0f,0.0f,0.0f,1.0f };
 	for (int i = 0; i < BUFFER_COUNT; ++i)
@@ -483,12 +483,13 @@ void Graphics::RenderToGbuff()
 			m_items[i].Draw(m_camera.GetViewMatrix() * m_camera.GetProjectionMatrix());
 		}
 	}
+	//disable z-buffer and set readonly
+	m_device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state.Get(), 0);
 }
 
 void Graphics::RenderToWindow()
 {
-	//disable z-buffer
-	m_device_context->OMSetDepthStencilState(m_depth_disabled_stencil_state.Get(), 0);
+
 	//unbind shader resource view with shadowmap from past pass so we will able to use it in next stages
 	ID3D11ShaderResourceView* pNullSRV = NULL;
 	m_device_context->PSSetShaderResources(1, 1, &pNullSRV);
@@ -497,6 +498,7 @@ void Graphics::RenderToWindow()
 	m_device_context->OMSetRenderTargets(_countof(nullViews), nullViews, nullptr);
 
 	//set default rendertarget
+
 	this->m_device_context->OMSetRenderTargets(1, this->m_render_target_view.GetAddressOf(), this->m_depth_stencil_view.Get());
 
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_light.GetAddressOf());
@@ -504,7 +506,6 @@ void Graphics::RenderToWindow()
 
 	float bgcolor[] = { 0.0,0.0,0.0,1.0f };
 	this->m_device_context->ClearRenderTargetView(this->m_render_target_view.Get(), bgcolor);
-	//this->m_device_context->ClearDepthStencilView(this->m_depth_stencil_view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	this->m_device_context->PSSetShaderResources(1, 1, m_shadow_map->GetShaderResourceViewAddress());
 	this->m_device_context->PSSetShaderResources(2, 1, &m_gbuffer->m_shaderResourceViewArray[0]);
@@ -514,10 +515,7 @@ void Graphics::RenderToWindow()
 	float blend[4] = { 1,1,1, 1 };
 	this->m_device_context->OMSetBlendState(m_blend_state.Get(), blend, 0xFFF);
 
-
 	DoDirLightPass();
-	//enable z-buff
-	//m_device_context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 0);
 	DoPointLightPass();
 
 	this->m_device_context->OMSetBlendState(nullptr, blend, 0xFFF);
@@ -539,6 +537,8 @@ void Graphics::DoDirLightPass()
 
 void Graphics::DoPointLightPass()
 {
+	this->m_device_context->RSSetState(m_rasterizer_cullfront.Get());
+
 	this->m_device_context->PSSetConstantBuffers(0, 1, this->m_cb_ps_pointlight.GetAddressOf());
 	this->m_device_context->VSSetShader(m_vertexshader_pointlight_pass.GetShader(), nullptr, 0);
 	this->m_device_context->PSSetShader(m_pixelshader_pointlight_pass.GetShader(), nullptr, 0);
@@ -549,20 +549,20 @@ void Graphics::DoPointLightPass()
 		float cameraToCenter = sqrt((m_camera.GetPositionFloat3().x - m_pointlights[i].GetPositionFloat3().x) * (m_camera.GetPositionFloat3().x - m_pointlights[i].GetPositionFloat3().x) +
 			(m_camera.GetPositionFloat3().y - m_pointlights[i].GetPositionFloat3().y) * (m_camera.GetPositionFloat3().y - m_pointlights[i].GetPositionFloat3().y) +
 			(m_camera.GetPositionFloat3().z - m_pointlights[i].GetPositionFloat3().z) * (m_camera.GetPositionFloat3().z - m_pointlights[i].GetPositionFloat3().z));
+	// why delete that all? https://gamedev.stackexchange.com/a/118289
 
 		//if we are inside the light volume, draw the sphere's inside face
 
-		if (cameraToCenter < m_pointlights[i].GetLightRadius())
-		{
-			this->m_device_context->RSSetState(m_rasterizer_cullfront.Get());
-			this->m_device_context->OMSetDepthStencilState(m_depth_stencil_greater.Get(), 0);
-		}
-		else
-		{
-
-			this->m_device_context->RSSetState(m_rasterizer_cullback.Get());
-			this->m_device_context->OMSetDepthStencilState(m_depth_stencil_less.Get(), 0);
-		}
+		//if (cameraToCenter <= m_pointlights[i].GetLightRadius())
+		//{
+		//	this->m_device_context->RSSetState(m_rasterizer_cullfront.Get());
+		//	this->m_device_context->OMSetDepthStencilState(m_depth_stencil_greater.Get(), 0);
+		//}
+		//else
+		//{
+		//	this->m_device_context->RSSetState(m_rasterizer_cullback.Get());
+		//	this->m_device_context->OMSetDepthStencilState(m_depth_stencil_less.Get(), 0);
+		//}
 
 
 		this->m_cb_ps_pointlight.data.lightColor = m_pointlights[i].GetLightColor();

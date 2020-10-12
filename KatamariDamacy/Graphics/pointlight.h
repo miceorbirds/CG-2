@@ -14,7 +14,7 @@ private:
 
 	float getRandomNumber(float min, float max)
 	{
-		static float r3 = min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+		float r3 = min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
 		return r3;
 	}
 	int getRandomNumber(int min, int max)
