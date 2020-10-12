@@ -47,7 +47,7 @@ void Light::UpdateViewMatrix()
 
 void Light::UpdateViewMatrix(XMFLOAT3 mainObjectPos)
 {
-	XMVECTOR lightCamPos = XMVECTOR(XMLoadFloat3(&mainObjectPos)) - this->m_direction * 10;
+	XMVECTOR lightCamPos = XMVECTOR(XMLoadFloat3(&mainObjectPos)) - this->m_direction * 20;
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	this->m_view_matrix = XMMatrixLookAtLH(lightCamPos, XMVECTOR(XMLoadFloat3(&mainObjectPos)), Up);
 }

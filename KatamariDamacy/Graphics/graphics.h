@@ -19,7 +19,7 @@
 #include "pointlight.h"
 
 constexpr int g_numItems = 10;
-constexpr int g_numLights = 100;
+constexpr int g_numLights = 200;
 
 class Graphics
 {
